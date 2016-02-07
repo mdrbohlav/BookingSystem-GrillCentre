@@ -16,6 +16,7 @@ var uglify = require("uglify-js");
 var routes = require('./routes/index');
 var apiUser = require('./routes/api/user');
 var apiReservation = require('./routes/api/reservation');
+var apiAccessory = require('./routes/api/accessory');
 
 var app = express();
 
@@ -90,6 +91,7 @@ app.use(function(req, res, next) {
 app.use('/', routes);
 app.use('/api/user', apiUser);
 app.use('/api/reservation', apiReservation);
+app.use('/api/accessory', apiAccessory);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

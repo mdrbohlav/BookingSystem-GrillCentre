@@ -6,19 +6,25 @@ var InvalidRequestError = require('../../errors/InvalidRequestError');
 
 var Reservation = require('../../models').Reservation;
 var Rating = require('../../models').Rating;
+var Accessory = require('../../models').Accessory;
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {
     var data = {
-        from: req.body.from,
-        to: req.body.to,
-        userId: req.body.userId,
-        priority: req.body.priority
-    };
+            from: req.body.from,
+            to: req.body.to,
+            userId: req.body.userId,
+            priority: req.body.priority
+        },
+        accessories = req.body.accessories;
     Reservation.create(data).then(function(reservation) {
-        res.json(reservation.get({
+        reservation = reservation.get({
             plain: true
-        }));
+        });
+        for (var i = 0; i < accessories.length; i++) {
+
+        }
+        res.json(reservation);
     }).catch(function(data) {
         return next(new InvalidRequestError(data.errors));
     });

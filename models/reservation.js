@@ -70,6 +70,13 @@ module.exports = function(sequelize, DataTypes) {
                         unique: true
                     }
                 });
+                Reservation.belongsToMany(models.Accessory, {
+                    foreignKey: {
+                        name: 'reservationId',
+                        allowNull: false
+                    },
+                    through: 'reservation_accessory'
+                });
             }
         }
     });

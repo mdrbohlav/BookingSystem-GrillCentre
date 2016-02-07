@@ -67,11 +67,11 @@ router.get('/', function(req, res, next) {
     var where = {},
         offset = req.query.offset ? req.query.offset : 0,
         limit = req.query.limit ? req.query.limit : 20;
-    if (req.query.filter === 'native') {
+    if (req.query.provider === 'native') {
         where = {
             isId: null
         };
-    } else if (req.query.filter === 'is') {
+    } else if (req.query.provider === 'is') {
         where = {
             isId: {
                 $ne: null
