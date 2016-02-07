@@ -8,7 +8,7 @@ function EmailExistsError() {
     this.status = 400;
     
     this.customType = "EmailExists";
-    this.customMessage = "User with specified e-mail already exists.";
+    this.customMessage = "User with specified email already exists.";
 }
 
 util.inherits(EmailExistsError, Error);

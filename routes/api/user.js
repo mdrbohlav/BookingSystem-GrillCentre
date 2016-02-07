@@ -62,12 +62,64 @@ router.post('/create', function(req, res, next) {
     });
 });
 
+// GET /api/user
+router.get('/', function(req, res, next) {
+    var where = {},
+        offset = req.query.offset ? req.query.offset : 0,
+        limit = req.query.limit ? req.query.limit : 20;
+    if (req.query.filter === 'native') {
+        where = {
+            isId: null
+        };
+    } else if (req.query.filter === 'is') {
+        where = {
+            isId: {
+                $ne: null
+            }
+        }
+    }
+    User.findAndCountAll({
+        where: where,
+        offset: offset,
+        limit: limit
+    }).then(function(data) {
+        var users = [];
+        for (var i = 0; i < data.rows.length; i++) {
+            users.push(data.rows[i].get({
+                plain: true
+            }));
+        }
+        res.json({
+            users: users,
+            total: data.count
+        });
+    }).catch(function(data) {
+        return next(new InvalidRequestError('Something went wrong, please try again.'));
+    });
+});
+
 // GET /api/user/:id
 router.get('/:id', function(req, res, next) {
     User.findById(req.params.id).then(function(user) {
         res.json(user.get({
             plain: true
         }));
+    }).catch(function(data) {
+        return next(new InvalidRequestError('This user does not exist.'));
+    });
+});
+
+// DELETE /api/user/:id
+router.delete('/:id', function(req, res, next) {
+    User.destroy({
+        where: {
+            id: req.params.id
+        }
+    }).then(function(destroyedRows) {
+        res.json({
+            success: true,
+            destroyedRows: destroyedRows
+        });
     }).catch(function(data) {
         return next(new InvalidRequestError('This user does not exist.'));
     });
