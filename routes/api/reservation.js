@@ -18,13 +18,35 @@ router.post('/create', function(req, res, next) {
         },
         accessories = req.body.accessories;
     Reservation.create(data).then(function(reservation) {
-        reservation = reservation.get({
-            plain: true
-        });
-        for (var i = 0; i < accessories.length; i++) {
-
+        var unsavedAccessories = accessories.length,
+            result = reservation.get({
+                plain: true
+            });
+        result.accessory = [];
+        if (unsavedAccessories === 0) {
+            res.json(result);
+        } else {
+            Accessory.findAll({ 
+                where: {
+                    id: {
+                        $any: accessories
+                    }
+                }
+            }).then(function(data) {
+                for (var i = 0; i < data.length; i++) {
+                    result.accessory.push(data[i].get({
+                        plain: true
+                    }));
+                }
+                reservation.addAccessory(data).then(function(response) {
+                    res.json(result);
+                }).catch(function(data) {
+                    return next(new InvalidRequestError('Cannot set associations between reservation and accessories.'));
+                });
+            }).catch(function(data) {
+                return next(new InvalidRequestError('Cannot find specified accessories.'));
+            });
         }
-        res.json(reservation);
     }).catch(function(data) {
         return next(new InvalidRequestError(data.errors));
     });
@@ -34,11 +56,23 @@ router.post('/create', function(req, res, next) {
 router.get('/:id', function(req, res, next) {
     Reservation.findById(req.params.id).then(function(reservation) {
         reservation.getRating().then(function(rating) {
-            reservation = reservation.get({
-                plain: true
+            reservation.getAccessories().then(function(data) {
+                reservation = reservation.get({
+                    plain: true
+                });
+                reservation.rating = rating;
+                reservation.accessory = [];
+                for (var i = 0; i < data.length; i++) {
+                    reservation.accessory.push(data[i].get({
+                        plain: true
+                    }));
+                }
+                res.json(reservation);
+            }).catch(function(data) {
+                return next(new InvalidRequestError('Cannot get accessories for the reservation.'));
             });
-            reservation.rating = rating;
-            res.json(reservation);
+        }).catch(function(data) {
+            return next(new InvalidRequestError('Cannot get rating for the reservation.'));
         });
     }).catch(function(data) {
         return next(new InvalidRequestError('This reservation does not exist.'));
