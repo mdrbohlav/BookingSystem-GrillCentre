@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "grill",
+    "password": "test123",
+    "database": "grill",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "grill",
+    "password": "test123",
+    "database": "grill",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "grill",
+    "password": "test123",
+    "database": "grill",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}
