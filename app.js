@@ -23,6 +23,7 @@ var stylus = require('stylus'),
 var routes = require('./routes/index'),
     auth = require('./routes/auth'),
     apiUser = require('./routes/api/user'),
+    apiUsers = require('./routes/api/users'),
     apiReservation = require('./routes/api/reservation'),
     apiAccessory = require('./routes/api/accessory');
 
@@ -193,6 +194,7 @@ app.use(function(req, res, next) {
 app.use('/', routes);
 app.use('/auth', auth);
 app.use('/api/user', apiUser);
+app.use('/api/users', apiUsers);
 app.use('/api/reservation', apiReservation);
 app.use('/api/accessory', apiAccessory);
 
