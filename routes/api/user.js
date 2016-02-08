@@ -9,26 +9,13 @@ var InvalidRequestError = require('../../errors/InvalidRequestError');
 
 var User = require('../../models').User;
 
-/* Hashing password */
+// hashing password
 function hashPassword(password) {
     return new Promise(function(resolve, reject) {
         bcrypt.genSalt(10, function(err, salt) {
             bcrypt.hash(password, salt, null, function(err, hash) {
                 resolve(hash);
             });
-        });
-    });
-}
-
-/* Verify password */
-function verifyPassword(password, passwordHash) {
-    return new Promise(function(resolve, reject) {
-        bcrypt.compare(password, passwordHash, function(err, isVerify) {
-            if (isVerify) {
-                resolve();
-            } else {
-                return reject(new InvalidPasswordError());
-            }
         });
     });
 }

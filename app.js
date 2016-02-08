@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var expressSession = require('express-session');
+var redisStore = require('connect-redis')(expressSession);
 
 var config = require('./config');
 var expressValidator = require('express-validator');
@@ -14,6 +16,7 @@ var fs = require('fs');
 var uglify = require("uglify-js");
 
 var routes = require('./routes/index');
+var auth = require('./routes/auth');
 var apiUser = require('./routes/api/user');
 var apiReservation = require('./routes/api/reservation');
 var apiAccessory = require('./routes/api/accessory');
@@ -68,6 +71,14 @@ var uglified = uglify.minify([
   }      
 });*/
 
+// Redis Store options
+var redisOptions = {
+    host: config.REDIS_HOST,
+    port: config.REDIS_PORT,
+    pass: config.REDIT_PASS,
+    db: 0
+};
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
@@ -77,18 +88,37 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(expressValidator());
 app.use(cookieParser(config.SECRET));
+app.use(expressSession({
+    secret: config.SECRET,
+    store: new redisStore(redisOptions),
+    saveUninitialized: false,
+    resave: false
+}));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// handle lost connection to Redis
+app.use(function (req, res, next) {
+  if (!req.session) {
+    res.status(500);
+    res.render('error', {
+        message: 'Lost connection to the Redis.',
+        error: {}
+    });
+  }
+  next();
+})
 
 // enable CORS
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", /*config.AdminUrl*/ "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
-  next();
+    res.header("Access-Control-Allow-Origin", /*config.AdminUrl*/ "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
+    next();
 });
 
 // routing
 app.use('/', routes);
+app.use('/auth', auth);
 app.use('/api/user', apiUser);
 app.use('/api/reservation', apiReservation);
 app.use('/api/accessory', apiAccessory);
@@ -104,14 +134,16 @@ app.use(function(req, res, next) {
 
 // custom error handler
 app.use(function(err, req, res, next) {
-  if(err.customType) {
-    res.status(err.status || 500);
-    return res.send({ error: {
-      type: err.customType,
-      message: err.customMessage
-    }});
-  }
-  next(err);
+    if (err.customType) {
+        res.status(err.status || 500);
+        return res.send({
+            error: {
+                type: err.customType,
+                message: err.customMessage
+            }
+        });
+    }
+    next(err);
 });
 
 // development error handler
