@@ -2,14 +2,9 @@
 
 module.exports = function(sequelize, DataTypes) {
     var User = sequelize.define("User", {
-        sessionId: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            unique: true
-        },
-        roles: {
-            type: DataTypes.ARRAY(DataTypes.STRING(16)),
-            defaultValue: ['Member'],
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allowNull: false
         },
         email: {

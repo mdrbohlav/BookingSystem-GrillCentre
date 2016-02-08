@@ -4,25 +4,16 @@ var bcrypt = require('bcrypt-nodejs');
 var router = express.Router();
 var config = require('../../config');
 
+var AuthHelper = require('../../helpers/AuthHelper');
+
 var EmailExistsError = require('../../errors/EmailExistsError');
 var InvalidRequestError = require('../../errors/InvalidRequestError');
 
 var User = require('../../models').User;
 
-// hashing password
-function hashPassword(password) {
-    return new Promise(function(resolve, reject) {
-        bcrypt.genSalt(10, function(err, salt) {
-            bcrypt.hash(password, salt, null, function(err, hash) {
-                resolve(hash);
-            });
-        });
-    });
-}
-
 // POST /api/user/create
 router.post('/create', function(req, res, next) {
-    hashPassword(req.body.password).then(function(passwordHash) {
+    AuthHelper.hashPassword(req.body.password).then(function(passwordHash) {
         var data = {
             password: passwordHash,
             firstname: req.body.firstname,
@@ -94,6 +85,55 @@ router.get('/:id', function(req, res, next) {
     }).catch(function(data) {
         return next(new InvalidRequestError('This user does not exist.'));
     });
+});
+
+// PUT /api/user/:id
+function processUserUpdate(req, res, next, passwordHash) {
+    passwordHash = typeof(passwordHash) === 'undefined' ? null : passwordHash;
+    var data = {};
+    if (passwordHash) {
+        data.password = passwordHash;
+    }
+    if (req.body.email) {
+        data.email = req.body.email;
+    }
+    if (req.body.firstname) {
+        data.firstname = req.body.firstname;
+    }
+    if (req.body.lastname) {
+        data.lastname = req.body.lastname;
+    }
+    if (req.body.block) {
+        data.block = req.body.block;
+    }
+    if (req.body.room) {
+        data.room = req.body.room;
+    }
+    if (req.body.isAdmin) {
+        data.isAdmin = req.body.isAdmin;
+    }
+    User.update(data, {
+        where: {
+            id: req.params.id
+        }
+    }).then(function(affectedRows) {
+        res.json({
+            success: true,
+            affectedRows: affectedRows
+        });
+    }).catch(function(data) {
+        return next(new InvalidRequestError(data.errors));
+    });
+}
+
+router.put('/:id', function(req, res, next) {
+    if (req.body.password) {
+        AuthHelper.hashPassword(req.body.password).then(function(passwordHash) {
+            processUserUpdate(req, res, next, passwordHash);
+        });
+    } else {
+        processUserUpdate(req, res, next);
+    }
 });
 
 // DELETE /api/user/:id

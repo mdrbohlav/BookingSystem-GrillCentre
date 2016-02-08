@@ -1,25 +1,30 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var expressSession = require('express-session');
-var redisStore = require('connect-redis')(expressSession);
+var express = require('express'),
+    path = require('path'),
+    favicon = require('serve-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
+    expressSession = require('express-session'),
+    redisStore = require('connect-redis')(expressSession);
 
-var config = require('./config');
-var expressValidator = require('express-validator');
+var passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy,
+    OAuth2Strategy = require('passport-oauth2'),
+    AuthHelper = require('./helpers/AuthHelper');
 
-var stylus = require('stylus');
-var nib = require('nib');
-var fs = require('fs');
-var uglify = require("uglify-js");
+var config = require('./config'),
+    expressValidator = require('express-validator');
 
-var routes = require('./routes/index');
-var auth = require('./routes/auth');
-var apiUser = require('./routes/api/user');
-var apiReservation = require('./routes/api/reservation');
-var apiAccessory = require('./routes/api/accessory');
+var stylus = require('stylus'),
+    nib = require('nib'),
+    fs = require('fs'),
+    uglify = require("uglify-js");
+
+var routes = require('./routes/index'),
+    auth = require('./routes/auth'),
+    apiUser = require('./routes/api/user'),
+    apiReservation = require('./routes/api/reservation'),
+    apiAccessory = require('./routes/api/accessory');
 
 var app = express();
 
@@ -91,22 +96,90 @@ app.use(cookieParser(config.SECRET));
 app.use(expressSession({
     secret: config.SECRET,
     store: new redisStore(redisOptions),
-    saveUninitialized: false,
-    resave: false
+    saveUninitialized: true,
+    resave: true
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // handle lost connection to Redis
-app.use(function (req, res, next) {
-  if (!req.session) {
-    res.status(500);
-    res.render('error', {
-        message: 'Lost connection to the Redis.',
-        error: {}
+app.use(function(req, res, next) {
+    if (!req.session) {
+        res.status(500);
+        res.render('error', {
+            message: 'Lost connection to the Redis.',
+            error: {}
+        });
+    }
+    next();
+});
+
+// session-persisted message middleware
+app.use(function(req, res, next) {
+    var err = req.session.error,
+        msg = req.session.notice,
+        success = req.session.success;
+
+    if (req.session.notice) {
+        console.log(req.session.notice);
+    }
+
+    delete req.session.error;
+    delete req.session.success;
+    delete req.session.notice;
+
+    if (err) res.locals.error = err;
+    if (msg) res.locals.notice = msg;
+    if (success) res.locals.success = success;
+
+    next();
+});
+
+// passport setup
+passport.use('login-native', new LocalStrategy({
+    usernameField: 'email',
+    passReqToCallback: true // allows us to pass back the request to the callback
+}, function(req, email, password, done) {
+    AuthHelper.localAuth(email, password).then(function(user) {
+        if (user) {
+            req.session.success = 'You are successfully logged in ' + user.fullName + '!';
+            done(null, user);
+        }
+        if (!user) {
+            req.session.error = 'Could not log user in. Please try again.';
+            done(null, user);
+        }
+    }).catch(function(err) {
+        console.log(err);
     });
-  }
-  next();
-})
+}));
+
+/*passport.use('login-is', new OAuth2Strategy({
+        authorizationURL: 'https://www.example.com/oauth2/authorize',
+        tokenURL: 'https://www.example.com/oauth2/token',
+        clientID: EXAMPLE_CLIENT_ID,
+        clientSecret: EXAMPLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/auth/example/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        console.log(profile);
+        //models.User.upsert(profile).then(function(user) {
+        //    return done(err, user);
+        //}).catch(function(data) {
+        //    console.log(data);
+        //});
+    }
+));*/
+
+// passport session setup
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+});
 
 // enable CORS
 app.use(function(req, res, next) {

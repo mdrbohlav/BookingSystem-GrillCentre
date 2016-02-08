@@ -88,7 +88,7 @@ router.post('/:id/confirm', function(req, res, next) {
         where: {
             id: req.params.id
         }
-    }).spread(function(affectedRows) {
+    }).then(function(affectedRows) {
         // TODO: send email with generated pdf
         res.json({
             success: true,
@@ -108,7 +108,7 @@ router.post('/:id/reject', function(req, res, next) {
         where: {
             id: req.params.id
         }
-    }).spread(function(affectedRows) {
+    }).then(function(affectedRows) {
         // TODO: send email
         res.json({
             success: true,
