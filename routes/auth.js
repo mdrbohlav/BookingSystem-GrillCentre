@@ -24,7 +24,7 @@ router.get('/logout', function(req, res, next) {
         req.session.notice = "You have successfully been logged out " + name + "!";
         res.redirect('/');
     }).catch(function() {
-        res.redirect('/');
+        res.redirect('/login');
     });
 });
 

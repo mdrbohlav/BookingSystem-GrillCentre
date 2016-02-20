@@ -64,11 +64,7 @@ exports.localAuth = function(email, password) {
                 return reject(new InvalidPasswordError());
             });
         }).catch(function(err) {
-            if (err.body.message == 'The requested items could not be found.') {
-                return reject(new InvalidRequestError('This user does not exist.'));
-            } else {
-                return reject(new InvalidRequestError(err.body));
-            }
+            return reject(new InvalidRequestError(err.body));
         });
     });
 };

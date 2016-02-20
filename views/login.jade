@@ -3,4 +3,21 @@ extends layout
 block content
     if error
         p #{error}
-    p Welcome to login
+    .table
+        .table__cell.table--middle
+            ul.list__login
+                li
+                    button(type='button') Log in using IS
+                li
+                    form#login.form.form__login(method='POST', action='/auth/login/native')
+                        .fieldset
+                            .field__container
+                                label(for='email') Email
+                                .field
+                                    input#email(type='email', name='email', required)
+                            .field__container
+                                label(for='password') Password
+                                .field
+                                    input#password(type='password', name='password', required)
+                        .form__footer
+                            button(type='submit') Log in

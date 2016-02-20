@@ -3,3 +3,6 @@ exports.DATABASE_URL = "postgres://localhost:5432/grill";
 exports.REDIS_HOST = "localhost";
 exports.REDIS_PORT = 6379;
 exports.REDIS_PASS = "";
+exports.MAX_RESERVATIONS = 2;
+exports.MAX_RESERVATIONS_USER = 1;
+exports.MAX_RESERVATION_LENGTH = 1;

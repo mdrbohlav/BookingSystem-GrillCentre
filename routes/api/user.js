@@ -13,7 +13,7 @@ var User = require('../../models').User;
 
 // POST /api/user/create
 router.post('/create', function(req, res, next) {
-    AuthHelper.isAuthenticated(req, res, next, true).then(function() {
+    //AuthHelper.isAuthenticated(req, res, next, true).then(function() {
         AuthHelper.hashPassword(req.body.password).then(function(passwordHash) {
             var data = {
                 password: passwordHash,
@@ -39,9 +39,9 @@ router.post('/create', function(req, res, next) {
                 return next(new InvalidRequestError(data.errors));
             });
         });
-    }).catch(function(err) {
-        return next(err);
-    });
+    //}).catch(function(err) {
+    //    return next(err);
+    //});
 });
 
 // GET /api/user
