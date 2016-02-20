@@ -3,7 +3,7 @@ var router = express.Router();
 
 var AuthHelper = require('../helpers/AuthHelper');
 
-// homepage
+// GET /
 router.get('/', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, false).then(function() {
         res.render('index');
@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// config
+// GET /config
 router.get('/config', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, true).then(function() {
         res.render('config');
@@ -21,7 +21,7 @@ router.get('/config', function(req, res, next) {
     });
 });
 
-// login
+// GET /login
 router.get('/login', function(req, res, next) {
     res.render('login');
 });

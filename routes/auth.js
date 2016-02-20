@@ -18,7 +18,7 @@ router.post('/login/is', passport.authenticate('login-is', {
 
 // GET /auth/logout
 router.get('/logout', function(req, res, next) {
-    AuthHelper.isAuthenticated(req, res, next, true).then(function() {
+    AuthHelper.isAuthenticated(req, res, next, false).then(function() {
         var name = req.user.fullName;
         req.logout();
         req.session.notice = "You have successfully been logged out " + name + "!";

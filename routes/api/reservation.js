@@ -5,6 +5,7 @@ var config = require('../../config');
 var AuthHelper = require('../../helpers/AuthHelper');
 
 var InvalidRequestError = require('../../errors/InvalidRequestError');
+var MaxReservationUpfrontError = require('../../errors/MaxReservationUpfrontError');
 var MaxReservationsError = require('../../errors/MaxReservationsError');
 var MaxReservationLengthError = require('../../errors/MaxReservationLengthError');
 
@@ -19,44 +20,47 @@ router.post('/create', function(req, res, next) {
             return next(new InvalidRequestError('Cannot add accessories when booking separate grill!'));
         }
 
-        var dayStart = new Date(req.body.from),
-            dayEnd = new Date(req.body.to);
-        dayStart.setUTCHours(0, 0, 0, 0);
-        dayEnd.setUTCHours(23, 59, 59, 999);
-        dayStartString = dayStart.toISOString();
-        dayEndString = dayEnd.toISOString();
-        dayStartMs = dayStart.getTime();
-        dayEndMs = dayEnd.getTime();
+        var dateUpfront = new Date(),
+            dateStart = new Date(req.body.from),
+            dateEnd = new Date(req.body.to),
+            MS_PER_DAY = 1000 * 60 * 60 *  24;
 
-        var MS_PER_DAY = 1000 * 60 * 60 * 24;
+        dateUpfront.setDate(dateUpfront.getDate() + config.MAX_RESERVATION_UPFRONT);
 
-        if (dayEndMs - dayStartMs > config.MAX_RESERVATION_LENGTH * MS_PER_DAY) {
+        dateStart.setUTCHours(0, 0, 0, 0);
+        dateEnd.setUTCHours(23, 59, 59, 999);
+
+        dateStartString = dateStart.toISOString();
+        dateEndString = dateEnd.toISOString();
+
+        dateStartMs = dateStart.getTime();
+        dateEndMs = dateEnd.getTime();
+
+        if (dateStart > dateUpfront) {
+            return next(new MaxReservationUpfrontError());
+        }
+        if (dateEndMs - dateStartMs > config.MAX_RESERVATION_LENGTH * MS_PER_DAY) {
             return next(new MaxReservationLengthError());
         }
 
-        Reservation.count({
+        var options = {
             where: {
                 state: 'new',
                 $and: [
-                    { from: { gt: dayStartString } },
-                    { from: { lte: dayEndString } }
+                    { from: { gt: dateStartString } },
+                    { from: { lte: dateEndString } }
                 ]
             }
-        }).then(function(countReservations) {
+        };
+
+        Reservation.count(options).then(function(countReservations) {
             if (countReservations >= config.MAX_RESERVATIONS) {
                 return next(new MaxReservationsError());
             }
 
-            Reservation.count({
-                where: {
-                    userId: req.user.id,
-                    state: 'new',
-                    $and: [
-                        { from: { gt: dayStartString } },
-                        { from: { lte: dayEndString } }
-                    ]
-                }
-            }).then(function(countUserReservations) {
+            options.where.userId = req.user.id;
+
+            Reservation.count(options).then(function(countUserReservations) {
                 if (countUserReservations >= config.MAX_RESERVATIONS_USER) {
                     return next(new MaxReservationsError(true));
                 }

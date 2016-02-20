@@ -20,12 +20,15 @@ var stylus = require('stylus'),
     fs = require('fs'),
     uglify = require("uglify-js");
 
+var nodemon = require('nodemon');
+
 var routes = require('./routes/index'),
     auth = require('./routes/auth'),
     apiUser = require('./routes/api/user'),
     apiUsers = require('./routes/api/users'),
     apiReservation = require('./routes/api/reservation'),
-    apiAccessory = require('./routes/api/accessory');
+    apiAccessory = require('./routes/api/accessory'),
+    apiPdf = require('./routes/api/pdf');
 
 var app = express();
 
@@ -197,6 +200,7 @@ app.use('/api/user', apiUser);
 app.use('/api/users', apiUsers);
 app.use('/api/reservation', apiReservation);
 app.use('/api/accessory', apiAccessory);
+app.use('/api/pdf', apiPdf);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -242,6 +246,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

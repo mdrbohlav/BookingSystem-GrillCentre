@@ -1,0 +1,65 @@
+.notification
+    border-radius 50px
+    bottom 0
+    color $color-white
+    display none
+    margin 0 0 0 auto
+    padding 10px 15px 10px 25px
+    position relative
+    right 0
+    text-align center
+    width 100%
+    
+    & .fixed
+        position absolute
+    
+    & + .notification
+        margin-top 10px
+    
+    a
+        border-bottom 1px dotted transparent
+        color $color-white
+        transition border-color .2s linear
+            
+        &:hover
+            border-color $color-white
+    
+    &__wrapper
+        bottom 10px
+        margin-left 10px
+        position fixed
+        right 10px
+        width 100%
+        max-width 350px
+        z-index 30
+        
+    &__text, &__close
+        display table-cell
+        vertical-align middle
+        
+    &__text
+        padding-right 15px
+        
+    &__close
+        border-left 1px solid transparent
+        cursor pointer
+        padding-left 10px
+        width 15%
+        
+    &__error
+        background-color $color-red-hover
+        
+        .notification__close
+            border-color $color-red
+
+    &__success
+        background-color $color-green-hover
+        
+        .notification__close
+            border-color $color-green
+        
+    &__info
+        background-color $color-blue-hover
+        
+        .notification__close
+            border-color $color-blue

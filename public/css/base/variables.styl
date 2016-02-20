@@ -1,0 +1,50 @@
+/*------------------------------------*\
+    VARIABLES
+\*------------------------------------*/
+
+/*
+ * FONT
+ */
+$font-size = 1.5rem
+$font-regular = Arial, sans-serif
+
+/*
+ * MEDIA QUERIES
+ */
+$xs-up = 'screen and (min-width: 20em)' // 320px
+$xs-only = $xs-up + ' and (max-width: 47.938em)'
+$sm-up = 'screen and (min-width: 48em)' // 768px
+$sm-only = $sm-up + ' and (max-width: 63.938em)'
+$md-up = 'screen and (min-width: 64em)' // 1024px
+$md-only = $md-up + ' and (max-width: 78.063em)'
+$lg-up = 'screen and (min-width: 78.125em)' // 1250px
+$lg-only = 'screen and (min-width: 119.938em)'
+$xlg-up = 'screen and (min-width: 120em)' // 1920px
+
+/*
+ * RADIUS
+ */
+$radius-default = 3px;
+
+/*
+ * GRID
+ */
+$grid-columns ?=              12
+$grid-gutter-width ?=         30px
+$grid-float-breakpoint ?=     $screen-sm-min
+$grid-float-breakpoint-max ?= ($grid-float-breakpoint - 1)
+
+/*
+ * CONTAINER
+ */
+$container-tablet ?=           (720px + $grid-gutter-width)
+$container-sm ?=               $container-tablet
+
+$container-desktop ?=          (940px + $grid-gutter-width)
+$container-md ?=               852px
+
+$container-large-desktop ?=    (970px + $grid-gutter-width)
+$container-lg ?=               1280px
+
+$container-lg-half ?=          640px
+

@@ -1,0 +1,47 @@
+.field__checkbox
+    position relative
+
+.checkbox
+    border 1px solid $color-grey-1
+    border-radius 50%
+    display inline-block
+    position relative
+    top -1px
+    vertical-align middle
+    size(12px)
+    
+    @media $sm-up
+        top 0
+        
+    &:before
+        background-color transparent
+        border-radius 50%
+        content ''
+        display inline-block
+        left 1px
+        position absolute
+        top 1px
+        size(8px)
+        
+    & + label
+        display inline-block
+        margin-left 10px
+        vertical-align middle
+        opacity(1)
+            
+    &.active
+        &:before
+            background-color $color-green-2
+
+input[type='checkbox']
+    appearance none
+    bottom 0
+    left 0
+    opacity 0
+    position absolute
+    right 0
+    top 0
+    size(100%)
+    
+    &:focus
+        outline none    

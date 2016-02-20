@@ -1,0 +1,45 @@
+.field__select
+    position relative
+    
+    &:after
+        icon()
+        bottom 9px
+        content $icon-dropdown
+        height 12px
+        position absolute
+        right 15px
+        set-font-size 10px
+        z-index 1
+        
+    select
+        padding-right 35px
+        position relative
+        z-index 2
+
+select
+    appearance none
+    background-color transparent
+    border none
+    border-bottom 1px solid $color-grey-10
+    border-radius 0
+    padding 10px 5% 5px
+    width 100%
+    transition border-color .2s linear, color .2s linear
+    
+    @media $md-up
+        padding 10px 3% 5px
+
+    &:focus
+        border-color $color-grey-1
+        outline none
+        
+    &::-ms-expand
+        display none
+        
+option
+    background-color $color-white
+    color $color-text-default
+
+.error
+    select
+        border-color $color-red

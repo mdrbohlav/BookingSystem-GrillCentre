@@ -3,6 +3,8 @@ extends layout
 block content
     if error
         p #{error}
+    if notice
+        p #{notice}
     .table
         .table__cell.table--middle
             ul.list__login

@@ -4,7 +4,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "supervisor -e 'node,js,jade,styl' bin/www"
+    "start": "nodemon -e '.js|.jade|.styl' bin/www"
+  },
+  "dev-dependencies": {
+    "nodemon": "^1.9.0"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
@@ -26,6 +29,7 @@
     "passport-oauth2": "^1.1.2",
     "pg": "^4.4.4",
     "pg-hstore": "^2.3.2",
+    "phantom": "^2.0.0-alpha.4",
     "sequelize": "^3.0.0",
     "sequelize-cli": "^2.3.1",
     "serve-favicon": "~2.2.1",

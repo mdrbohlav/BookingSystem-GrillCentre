@@ -1,0 +1,41 @@
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="password"]
+    appearance none
+    background-color transparent
+    border none
+    border-bottom 1px solid $color-grey-10
+    border-radius 0
+    padding 10px 5% 5px
+    width 100%
+    transition border-color .2s linear, color .2s linear
+    
+    @media $md-up
+        padding 10px 3% 5px
+
+    &:focus
+        border-color $color-grey-1
+        outline none
+
+.error
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    input[type="password"]
+        border-color $color-red
+
+    &.field
+        &:after
+            background-color $color-red
+            border-radius 50%
+            bottom 10px
+            color $color-background
+            content '!'
+            line-height 16px
+            position absolute
+            right 0
+            text-align center
+            harmonia-bold()
+            set-font-size 9px
+            size(14px)

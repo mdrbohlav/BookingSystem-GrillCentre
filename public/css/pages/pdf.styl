@@ -1,0 +1,16 @@
+.page__pdf
+    color $color-black
+    margin 0 auto
+    padding 0 15px
+    max-width $container-md
+
+    *
+        overflow visible !important // forces a built-in PDF rendering gotcha in WebKit so that images never span 2 pages
+
+    img
+        margin-top 20px
+        max-width 92% // images will never overflow off the right hand side of a page
+
+    .page-break
+        display block
+        page-break-before always // force a page break

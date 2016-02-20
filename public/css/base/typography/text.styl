@@ -1,0 +1,36 @@
+h1, h2, h3, h4, h5, h6, p
+    margin 0 auto
+
+alpha()
+    set-font-size 24px
+    
+    @media $sm-up
+        set-font-size 28px
+    
+    @media $md-up
+        set-font-size 38px
+        
+beta()
+    set-font-size 14px
+    
+    @media $sm-up
+        set-font-size 16px
+    
+    @media $md-up
+        set-font-size 18px
+        
+gamma()
+    set-font-size 10px
+    
+    @media $sm-up
+        set-font-size 12px
+
+.text
+    &__mainTitle
+        alpha()
+        
+    &__paragraph
+        beta()
+        
+    &__caption
+        gamma()

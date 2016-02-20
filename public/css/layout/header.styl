@@ -1,0 +1,58 @@
+.scroll
+  .header__container
+    &.fixed
+      background-color $color-grey-3
+
+.header
+  padding 0
+  margin 0 auto
+  max-width $container-lg
+  clearfix()
+  
+  @media $sm-up
+    height 100px
+  
+  &__placeholder
+    height 52px
+    
+    @media $sm-up
+      height 100px
+      position relative
+      z-index -1
+      
+    &.minimize
+      @media $lg-up
+        display none
+  
+  &__container
+    background-color $color-header
+    color $color-white
+    position fixed
+    transition background-color .2s linear
+    width 100%
+    z-index 10
+    
+    @media $sm-up
+      background-color transparent
+      position relative
+      z-index 4
+      
+    &.fixed
+      @media $sm-up
+        position fixed
+    
+    &.light
+      background-color $color-header
+
+  .logo
+    float left
+    margin 14px 0 15px 22px
+    
+    @media $sm-up
+      margin 39px 0 0 50px
+      
+  .nav__trigger
+    position absolute
+    right 15px
+    top 16px
+    z-index 26
