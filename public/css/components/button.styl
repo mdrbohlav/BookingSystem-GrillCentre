@@ -1,0 +1,51 @@
+btn()
+    appearance none
+    background-color transparent
+    border 1px solid transparent
+    border-radius 3px
+    cursor pointer
+    display inline-block
+    padding 10px 25px
+    set-font-size 16px
+    transition background-color .2s linear, border-color .2s linear, color .2s linear
+
+    &:focus
+        outline none
+        
+    &[disabled]
+        cursor not-allowed
+        opacity(.5)
+
+.btn
+    btn()
+
+    &__orange
+        border-color $color-orange
+        color $color-orange
+        
+        &:hover
+            background-color $color-orange
+            color $color-white
+            
+        &:focus
+            background-color $color-orange-hover
+            border-color $color-orange-hover
+            color $color-white
+            
+        &--full
+            background-color $color-orange
+            color $color-white
+            
+            &:hover
+                background-color $color-orange-hover
+                border-color $color-orange-hover
+                color $color-white
+                
+            &:focus
+                background-color $color-orange-focus
+                border-color $color-orange-focus
+                color $color-white
+            
+    &--block
+        display block
+        width 100%
