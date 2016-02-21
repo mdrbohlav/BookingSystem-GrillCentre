@@ -1,4 +1,5 @@
 var nodemailer = require('nodemailer'),
+    fs = require('fs'),
     config = require('../config');
 
 var MailError = require('../errors/MailError');
@@ -23,7 +24,7 @@ var MailHelper = function() {
             if (type === 'draft' &&  typeof(filePath) !== 'undefined') {
                 mailOptions.attachments = [{
                     filename: 'test.pdf',
-                    path: filePath
+                    content: fs.createReadStream(filePath)
                 }];
             }
 
