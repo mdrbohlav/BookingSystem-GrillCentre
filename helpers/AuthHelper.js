@@ -43,7 +43,6 @@ module.exports.isAuthenticated = function(req, res, next, isAdmin) {
                 reject(new UnauthorizedError());
             }
         }
-        req.session.error = 'Please login!';
         reject(new UnauthorizedError());
     });
 };

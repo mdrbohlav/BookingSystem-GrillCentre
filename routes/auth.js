@@ -22,7 +22,7 @@ router.get('/logout', function(req, res, next) {
         var name = req.user.fullName;
         req.logout();
         req.session.notice = "You have successfully been logged out " + name + "!";
-        res.redirect('/');
+        res.redirect('/login');
     }).catch(function() {
         res.redirect('/login');
     });
