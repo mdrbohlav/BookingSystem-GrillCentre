@@ -71,8 +71,8 @@ router.post('/create', function(req, res, next) {
                 }
 
                 var data = {
-                        from: req.body.from,
-                        to: req.body.to,
+                        from: dateStartString,
+                        to: dateEndString,
                         userId: req.body.userId,
                         priority: req.body.priority
                     },

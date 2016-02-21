@@ -3,7 +3,9 @@ html
     head
         title= title
         link(rel='stylesheet', href='/css/style.css')
-    body
+    body(class=(page ? 'page__' + page : ''))
         block content
 
+        script(src="/js/app.min.js")
+        script(src="/js/global.js")
         block scripts

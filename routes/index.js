@@ -6,7 +6,9 @@ var AuthHelper = require('../helpers/AuthHelper');
 // GET /
 router.get('/', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, false).then(function() {
-        res.render('index');
+        res.render('index', {
+            page: 'index'
+        });
     }).catch(function() {
         res.redirect('/login');
     });
@@ -15,7 +17,9 @@ router.get('/', function(req, res, next) {
 // GET /config
 router.get('/config', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, true).then(function() {
-        res.render('config');
+        res.render('config', {
+            page: 'config'
+        });
     }).catch(function() {
         res.redirect('/login');
     });
@@ -23,7 +27,13 @@ router.get('/config', function(req, res, next) {
 
 // GET /login
 router.get('/login', function(req, res, next) {
-    res.render('login');
+    AuthHelper.isAuthenticated(req, res, next, false).then(function() {
+        res.redirect('/');
+    }).catch(function() {
+        res.render('login', {
+            page: 'login'
+        });
+    });
 });
 
 module.exports = router;

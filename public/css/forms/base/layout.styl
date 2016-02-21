@@ -1,23 +1,23 @@
 .form
-    .col-xs-12
-        & + .col-xs-12
+    label
+        & + .field
+            margin-top 5px
+  
+    &__footer
+        margin-top 15px
+            
+        @media $sm-up
             margin-top 20px
             
-            @media $sm-up
-                margin-top 0
-        
-    .row
-        & + .row
-            margin-top 20px
-            
-            @media $sm-up
-                margin-top 30px
-            
-            @media $md-up
-                margin-top 40px
-            
-    &__submit
-        text-align right
+        @media $md-up
+            margin-top 25px
 
 .field
     position relative
+    
+    &__container
+        & + .field__container
+            margin-top 15px
+                
+            @media $md-up
+                margin-top 20px

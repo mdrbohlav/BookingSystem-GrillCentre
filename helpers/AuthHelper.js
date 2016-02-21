@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 var InvalidPasswordError = require('../errors/InvalidPasswordError');
 var InvalidRequestError = require('../errors/InvalidRequestError');
 var UnauthorizedError = require('../errors/UnauthorizedError');
+var UserDoesnotExistError = require('../errors/UserDoesnotExistError');
 
 var User = require('../models').User;
 
@@ -58,6 +59,9 @@ module.exports.localAuth = function(email, password) {
                 email: email
             }
         }).then(function(user) {
+            if (!user) {
+                reject (new UserDoesnotExistError());
+            }
             verifyPassword(password, user.password).then(function(result) {
                 resolve(user);
             }).catch(function(data) {

@@ -10,7 +10,8 @@ var express = require('express'),
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     OAuth2Strategy = require('passport-oauth2'),
-    AuthHelper = require('./helpers/AuthHelper');
+    AuthHelper = require('./helpers/AuthHelper'),
+    FinishReservationHelper = require('./helpers/FinishReservationHelper');
 
 var config = require('./config'),
     expressValidator = require('express-validator');
@@ -56,7 +57,12 @@ app.use(stylus.middleware({
 
 // uglify setup
 var uglified = uglify.minify([
-    path.join(__dirname, 'public/js/global.js')
+    path.join(__dirname, 'bower_components/jquery/dist/jquery.js'),
+    path.join(__dirname, 'bower_components/velocity/velocity.js'),
+    path.join(__dirname, 'bower_components/jquery-validation/dist/jquery.validate.js'),
+    path.join(__dirname, 'bower_components/console-polyfill/index.js'),
+    path.join(__dirname, 'bower_components/es5-shim/es5-shim.js'),
+    path.join(__dirname, 'bower_components/fastclick/lib/fastclick.js')
 ], {
     mangle: true,
     compress: {
@@ -71,13 +77,13 @@ var uglified = uglify.minify([
     }
 });
 
-/*fs.writeFile(path.join(__dirname, 'public/js/global.min.js'), uglified.code, function(err) {
-  if(err) {
-    console.log(err);
-  } else {
-    console.log("Script generated and saved.");
-  }      
-});*/
+//fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, function(err) {
+//  if(err) {
+//    console.log(err);
+//  } else {
+//    console.log("Script generated and saved.");
+//  }      
+//});
 
 // Redis Store options
 var redisOptions = {
@@ -118,6 +124,9 @@ app.use(function(req, res, next) {
     next();
 });
 
+// schedule checking unfinished reservations on start and midnight
+FinishReservationHelper.scheduleFinishReservations();
+
 // session-persisted message middleware
 app.use(function(req, res, next) {
     var err = req.session.error,
@@ -154,7 +163,8 @@ passport.use('login-native', new LocalStrategy({
             done(null, user);
         }
     }).catch(function(err) {
-        done(err);
+        req.session.error = err.customMessage;
+        done (null, false);
     });
 }));
 
