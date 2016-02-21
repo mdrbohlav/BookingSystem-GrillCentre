@@ -27,8 +27,7 @@ var routes = require('./routes/index'),
     apiUser = require('./routes/api/user'),
     apiUsers = require('./routes/api/users'),
     apiReservation = require('./routes/api/reservation'),
-    apiAccessory = require('./routes/api/accessory'),
-    apiPdf = require('./routes/api/pdf');
+    apiAccessory = require('./routes/api/accessory');
 
 var app = express();
 
@@ -155,7 +154,7 @@ passport.use('login-native', new LocalStrategy({
             done(null, user);
         }
     }).catch(function(err) {
-        console.log(err);
+        done(err);
     });
 }));
 
@@ -200,7 +199,6 @@ app.use('/api/user', apiUser);
 app.use('/api/users', apiUsers);
 app.use('/api/reservation', apiReservation);
 app.use('/api/accessory', apiAccessory);
-app.use('/api/pdf', apiPdf);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

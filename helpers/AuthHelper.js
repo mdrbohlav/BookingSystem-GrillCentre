@@ -21,7 +21,7 @@ function verifyPassword(password, passwordHash) {
 }
 
 // hashing password
-exports.hashPassword = function(password) {
+module.exports.hashPassword = function(password) {
     return new Promise(function(resolve, reject) {
         bcrypt.genSalt(10, function(err, salt) {
             bcrypt.hash(password, salt, null, function(err, hash) {
@@ -32,7 +32,7 @@ exports.hashPassword = function(password) {
 };
 
 // is authenticated middleware
-exports.isAuthenticated = function(req, res, next, isAdmin) {
+module.exports.isAuthenticated = function(req, res, next, isAdmin) {
     return new Promise(function(resolve, reject) {
         if (req.user) {
             if (!isAdmin || req.user.isAdmin) {
@@ -51,7 +51,7 @@ exports.isAuthenticated = function(req, res, next, isAdmin) {
 //if user exists check if passwords match (use bcrypt.compareSync(password, hash); // true where 'hash' is password in DB)
 //if password matches take into website
 //if user doesn't exist or password doesn't match tell them it failed
-exports.localAuth = function(email, password) {
+module.exports.localAuth = function(email, password) {
     return new Promise(function(resolve, reject) {
         User.findOne({
             where: {
@@ -61,10 +61,10 @@ exports.localAuth = function(email, password) {
             verifyPassword(password, user.password).then(function(result) {
                 resolve(user);
             }).catch(function(data) {
-                return reject(new InvalidPasswordError());
+                reject(new InvalidPasswordError());
             });
         }).catch(function(err) {
-            return reject(new InvalidRequestError(err.body));
+            reject(new InvalidRequestError(err.message));
         });
     });
 };

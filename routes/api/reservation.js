@@ -3,6 +3,10 @@ var router = express.Router();
 var config = require('../../config');
 
 var AuthHelper = require('../../helpers/AuthHelper');
+var PdfHelper = require('../../helpers/PdfHelper'),
+    pdf_helper = new PdfHelper();
+var MailHelper = require('../../helpers/MailHelper'),
+    mail_helper = new MailHelper();
 
 var InvalidRequestError = require('../../errors/InvalidRequestError');
 var MaxReservationUpfrontError = require('../../errors/MaxReservationUpfrontError');
@@ -39,13 +43,14 @@ router.post('/create', function(req, res, next) {
         if (dateStart > dateUpfront) {
             return next(new MaxReservationUpfrontError());
         }
+
         if (dateEndMs - dateStartMs > config.MAX_RESERVATION_LENGTH * MS_PER_DAY) {
             return next(new MaxReservationLengthError());
         }
 
         var options = {
             where: {
-                state: 'new',
+                state: 'draft',
                 $and: [
                     { from: { gt: dateStartString } },
                     { from: { lte: dateEndString } }
@@ -84,7 +89,20 @@ router.post('/create', function(req, res, next) {
                         });
                     result.accessory = [];
                     if (unsavedAccessories === 0) {
-                        res.json(result);
+                        pdf_helper.getFile(req).then(function(pdfFile) {
+                            if (config.SEND_EMAILS) {
+                                mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
+                                    result.mailSent = true;
+                                    res.json(result);
+                                }).catch(function(err) {
+                                    return next(err);
+                                });
+                            } else {
+                                res.json(result);
+                            }
+                        }).catch(function(err) {
+                            return next(err);
+                        });
                     } else {
                         Accessory.findAll({ 
                             where: {
@@ -99,7 +117,20 @@ router.post('/create', function(req, res, next) {
                                 }));
                             }
                             reservation.addAccessory(data).then(function(response) {
-                                res.json(result);
+                                pdf_helper.getFile(req).then(function(pdfFile) {
+                                    if (config.SEND_EMAILS) {
+                                        mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
+                                            result.mailSent = true;
+                                            res.json(result);
+                                        }).catch(function(err) {
+                                            return next(err);
+                                        });
+                                    } else {
+                                        res.json(result);
+                                    }
+                                }).catch(function(err) {
+                                    return next(err);
+                                });
                             }).catch(function(data) {
                                 return next(new InvalidRequestError('Cannot set associations between reservation and accessories.'));
                             });

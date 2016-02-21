@@ -58,12 +58,12 @@ module.exports = function(sequelize, DataTypes) {
         },
         state: {
             type: DataTypes.ENUM,
-            values: ['new', 'confirmed', 'rejected', 'finished'],
+            values: ['draft', 'confirmed', 'rejected', 'finished'],
             allowNull: false,
-            defaultValue: 'new',
+            defaultValue: 'draft',
             validate: {
                 isIn: function(val) {
-                    if (['new', 'confirmed', 'rejected', 'finished'].indexOf(val) === -1) {
+                    if (['draft', 'confirmed', 'rejected', 'finished'].indexOf(val) === -1) {
                         throw new Error('Invalid reservation state.');
                     }
                 }

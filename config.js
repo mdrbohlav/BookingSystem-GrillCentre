@@ -4,10 +4,10 @@ exports.REDIS_HOST = "localhost";
 exports.REDIS_PORT = 6379;
 exports.REDIS_PASS = "";
 
-exports.CONFIRMED_RESERVATION_HEADING = 'Reservation confirmed.';
+exports.CONFIRM_RESERVATION_HEADING = 'Reservation confirmed.';
 exports.DRAFT_RESERVATION_HEADING = 'Reservation created.';
-exports.MAX_RESERVATIONS = 2;
-exports.MAX_RESERVATIONS_USER = 1;
-exports.MAX_RESERVATION_LENGTH = 1;
-exports.MAX_RESERVATION_UPFRONT = 14;
-exports.SEND_EMAILS = true;
+exports.MAX_RESERVATIONS = 10;
+exports.MAX_RESERVATIONS_USER = 10;
+exports.MAX_RESERVATION_LENGTH = 2;
+exports.MAX_RESERVATION_UPFRONT = 31;
+exports.SEND_EMAILS = false;
