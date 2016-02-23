@@ -28,6 +28,7 @@ var routes = require('./routes/index'),
     apiUser = require('./routes/api/user'),
     apiUsers = require('./routes/api/users'),
     apiReservation = require('./routes/api/reservation'),
+    apiReservations = require('./routes/api/reservations'),
     apiAccessory = require('./routes/api/accessory');
 
 var app = express();
@@ -219,6 +220,7 @@ app.use('/auth', auth);
 app.use('/api/user', apiUser);
 app.use('/api/users', apiUsers);
 app.use('/api/reservation', apiReservation);
+app.use('/api/reservations', apiReservations);
 app.use('/api/accessory', apiAccessory);
 
 // catch 404 and forward to error handler
