@@ -1,7 +1,107 @@
 extends layout
 
 block content
-    p Welcome to index
+    section.hero.table.table--fullsize
+        .table__cell
+            .hero__content
+                h1.text__mainTitle Grilovací centrum
+                h2.text__subtitle SiliconHill
+    section.content
+        .container__md
+            .box
+                .box__header.box__header--border
+                    h2.text__title Kalendář
+                .box__body
+                    .calendar
+                        script#calendar-template(type="text/template").
+                            <div class="calendar__controls text--center">
+                                <button class="calendar__prev text__paragraph" type="button">&lsaquo;</button>
+                                <div class="calendar__current text__paragraph"><%= this.month.format('MMMM YYYY') %></div>
+                                <button class="calendar__next text__paragraph" type="button">&rsaquo;</button>
+                            </div>
+                            <div class="calendar__grid">
+                                <div class="calendar__daysWeek text--center clearfix">
+                                    <% _.each(daysOfTheWeek, function(day) { %>
+                                        <div class="calendar__cell day__header"><%= day %></div>
+                                    <% }); %>
+                                </div>
+                                <div class="calendar__days clearfix">
+                                <% _.each(days, function(day) { %>
+                                    <div class="calendar__cell <%= day.classes %>">
+                                        <div class="day__num"><%= day.day %></div>
+                                        <% if (day.events.length) { %>
+                                            <div class="day__event">
+                                                <% if (day.events[0].title.length > 20) { %>
+                                                    <%= day.events[0].title.substr(0, 20) %>…
+                                                <% } else { %>
+                                                    <%= day.events[0].title %>
+                                                <% } %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                                </div>
+                            </div>
+                            <button class="calendar__today text__paragraph text--center" type="button">Dnes</button>
 
-    if success
-        p #{success}
+            .box
+                .box__header.box__header--border
+                    h2.text__title Nová rezervace
+                .box__body
+                    p aaa
+
+block scripts
+    script.
+        $(document).ready(function() {
+
+            moment.locale('cs');
+            var thisMonth = moment().format('YYYY-MM');
+            var eventArray = [
+                {
+                    title: 'Multi-Day Event',
+                    endDate: thisMonth + '-14',
+                    startDate: thisMonth + '-10'
+                }, {
+                    endDate: thisMonth + '-23',
+                    startDate: thisMonth + '-21',
+                    title: 'Another Multi-Day Event',
+                    content: 'aaa'
+                }, {
+                    date: thisMonth + '-27',
+                    title: 'Single Day Event'
+                }
+            ];
+
+            var calendar = $('.calendar').clndr({
+                events: eventArray,
+                multiDayEvents: {
+                    endDate: 'endDate',
+                    startDate: 'startDate'
+                },
+                targets: {
+                    day: 'day',
+                    empty: 'empty',
+                    nextButton: 'calendar__next',
+                    todayButton: 'calendar__today',
+                    previousButton: 'calendar__prev'
+                },
+                clickEvents: {
+                    click: function (target) {
+                        console.log('Calendar clicked: ', target);
+                    },
+                    nextInterval: function () {
+                        console.log('Calendar next interval');
+                    },
+                    previousInterval: function () {
+                        console.log('Calendar previous interval');
+                    },
+                    onIntervalChange: function () {
+                        console.log('Calendar interval changed');
+                    }
+                },
+                template: $('#calendar-template').html(),
+                showAdjacentMonths: true,
+                adjacentDaysChangeMonth: true
+            });
+
+        });

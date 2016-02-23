@@ -1,0 +1,19 @@
+.hero
+    background transparent url(../img/background-sm.jpg) no-repeat center
+    background-attachment fixed
+    background-size cover
+    padding 10px
+    
+    @media $sm-up
+        background-image url(../img/background-md.jpg)
+        padding 15px
+        
+    @media $lg-up
+        background-image url(../img/background-lg.jpg)
+        
+    @media $xlg-up
+        background-image url(../img/background-xl.jpg)
+        
+    &__content
+        margin 0 auto
+        max-width $container-md

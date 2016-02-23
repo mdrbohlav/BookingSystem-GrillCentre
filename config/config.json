@@ -2,7 +2,7 @@
   "development": {
     "username": "grill",
     "password": "test123",
-    "database": "grill",
+    "database": "grill_dev",
     "host": "127.0.0.1",
     "port": 5432,
     "dialect": "postgres"
@@ -10,7 +10,7 @@
   "test": {
     "username": "grill",
     "password": "test123",
-    "database": "grill",
+    "database": "grill_test",
     "host": "127.0.0.1",
     "port": 5432,
     "dialect": "postgres"

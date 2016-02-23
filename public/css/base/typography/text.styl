@@ -30,10 +30,34 @@ delta()
     
     @media $sm-up
         set-font-size 14px
+        
+eta()
+    set-font-size 18px
+    
+    @media $sm-up
+        set-font-size 20px
+    
+    @media $md-up
+        set-font-size 22px
 
 .text
     &__mainTitle
         alpha()
+        color $color-white
+        
+    &__subtitle
+        color $color-white
+        eta()
+        
+    &__title
+        eta()
+        
+    &__nav
+        color $color-text-default
+        eta()
+        
+        @media $sm-up
+            beta()
         
     &__paragraph
         beta()

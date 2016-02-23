@@ -50,7 +50,7 @@ router.post('/create', function(req, res, next) {
 
         var options = {
             where: {
-                state: 'draft',
+                state: 'confirmed',
                 $and: [
                     { from: { gt: dateStartString } },
                     { from: { lte: dateEndString } }
@@ -63,6 +63,7 @@ router.post('/create', function(req, res, next) {
                 return next(new MaxReservationsError());
             }
 
+            options.where.state = 'draft';
             options.where.userId = req.user.id;
 
             Reservation.count(options).then(function(countUserReservations) {

@@ -1,0 +1,80 @@
+.nav__trigger
+    appearance none
+    background-color $color-white
+    border 1px solid $color-text-default
+    border-radius 50%
+    box-shadow none
+    cursor pointer
+    overflow hidden
+    padding 0
+    position fixed
+    right 15px
+    text-align center
+    top 14px
+    transition border-color .2s linear 0s, color .2s linear 0s
+    vertical-align middle
+    z-index 2
+    hide-text()
+    size(30px)
+    
+    @media $sm-up
+        top 15px
+    
+    &:hover
+        border-color $color-red
+        color $color-red
+        
+        .lines
+            background-color $color-red
+            
+            &:before,
+            &:after
+                background-color $color-red
+    
+    &:focus
+        outline none
+            
+    .lines
+        background $color-text-default
+        display inline-block
+        height 1px
+        left 0
+        position relative
+        top -1px
+        transition background-color .2s linear 0s
+        vertical-align middle
+        width 16px
+        
+        &:before,
+        &:after
+            background-color $color-text-default
+            content ""
+            display block
+            height 1px
+            left 0
+            position absolute
+            width 100%
+            
+        &:before
+            top -5px
+            transition background-color .2s linear 0s, top .2s linear 0s, transform .2s linear 0s
+            
+        &:after
+            bottom -5px
+            transition background-color .2s linear 0s, bottom .2s linear 0s, transform .2s linear 0s
+            
+    &.is-active
+        .lines
+            background none
+            
+            &:before,
+            &:after
+                transition-delay 0s
+
+            &:before
+                top 0
+                transform rotate(45deg)
+
+            &:after
+                bottom 0
+                transform rotate(-45deg)

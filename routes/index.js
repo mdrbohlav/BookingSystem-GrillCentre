@@ -27,12 +27,11 @@ router.get('/config', function(req, res, next) {
 
 // GET /login
 router.get('/login', function(req, res, next) {
-    AuthHelper.isAuthenticated(req, res, next, false).then(function() {
+    if (req.user) {
         res.redirect('/');
-    }).catch(function() {
-        res.render('login', {
-            page: 'login'
-        });
+    }
+    res.render('login', {
+        page: 'login'
     });
 });
 

@@ -1,0 +1,116 @@
+.calendar
+    border-radius 3px
+
+    &__controls
+        background-color $color-grey-1
+        border-top-left-radius 3px
+        border-top-right-radius 3px
+        color $color-white
+        font-size 0
+        padding 10px 0
+        
+    &__prev,
+    &__next,
+    &__current
+        display inline-block
+        
+    &__prev,
+    &__next,
+    &__today
+        appearance none
+        background-color transparent
+        border none
+        border-radius 0
+        cursor pointer
+        transition color .2s linear
+        
+        &:hover
+            color $color-red
+        
+        &:focus
+            outline none
+        
+    &__prev,
+    &__next
+        width 10%
+        
+    &__current
+        border-left 1px solid $color-white
+        border-right 1px solid $color-white
+        width 80%
+        
+    &__today
+        background-color $color-grey-1
+        border-bottom-left-radius 3px
+        border-bottom-right-radius 3px
+        color $color-white
+        padding 10px 0
+        width 100%
+        
+    &__grid
+        border-bottom 1px solid $color-grey-1
+        margin 1px auto
+        
+    &__daysWeek
+        background-color $color-grey-1
+        color $color-white
+        padding 10px 0
+        
+    &__cell
+        display inline-block
+        float left
+        width 14.2857%
+
+.day
+    border-left 1px solid $color-grey-1
+    border-top 1px solid $color-grey-1
+    height 47px
+    padding 10px 5px 5px
+    position relative
+    text-align center
+    
+    @media $sm-up
+        height 74px
+        padding 30px 5px 5px
+        text-align left
+    
+    &.calendar-dow-6
+        border-right 1px solid $color-grey-1
+        
+    &.event
+        cursor pointer
+        
+        &:hover
+            .day__num
+                color $color-red
+            
+    &.adjacent-month
+        background-color $color-grey-2
+        color $color-grey-1
+        
+    &__num
+        transition color .2s linear
+        
+        @media $sm-up
+            position absolute
+            right 10px
+            top 10px
+        
+    &__event
+        background-color $color-red
+        border-radius 50%
+        font-size 0
+        margin 5px auto 0
+        size(10px)
+        
+        @media $sm-up
+            border-radius 5px
+            color $color-white
+            margin 0 auto
+            padding 5px
+            set-font-size 12px
+            size(auto)
+    
+    &__header
+        & + .day__header
+            border-left 1px solid $color-white

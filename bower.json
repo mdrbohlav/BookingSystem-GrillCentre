@@ -19,6 +19,8 @@
     "es5-shim": "*",
     "console-polyfill": "*",
     "fastclick": "*",
-    "jquery-validation": "jquery-validate#^1.14.0"
+    "jquery-validation": "jquery-validate#^1.14.0",
+    "clndr": "^1.4.1",
+    "underscore": "^1.8.3"
   }
 }

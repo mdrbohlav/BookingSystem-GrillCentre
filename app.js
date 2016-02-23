@@ -55,13 +55,17 @@ app.use(stylus.middleware({
     debug: true
 }));
 
-// uglify setup
+/*// uglify setup
 var uglified = uglify.minify([
     path.join(__dirname, 'bower_components/jquery/dist/jquery.js'),
     path.join(__dirname, 'bower_components/velocity/velocity.js'),
     path.join(__dirname, 'bower_components/jquery-validation/dist/jquery.validate.js'),
     path.join(__dirname, 'bower_components/console-polyfill/index.js'),
     path.join(__dirname, 'bower_components/es5-shim/es5-shim.js'),
+    path.join(__dirname, 'bower_components/underscore/underscore.js'),
+    path.join(__dirname, 'bower_components/moment/moment.js'),
+    path.join(__dirname, 'bower_components/moment/locale/cs.js'),
+    path.join(__dirname, 'bower_components/clndr/clndr.min.js'),
     path.join(__dirname, 'bower_components/fastclick/lib/fastclick.js')
 ], {
     mangle: true,
@@ -77,13 +81,13 @@ var uglified = uglify.minify([
     }
 });
 
-//fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, function(err) {
-//  if(err) {
-//    console.log(err);
-//  } else {
-//    console.log("Script generated and saved.");
-//  }      
-//});
+fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, function(err) {
+  if(err) {
+    console.log(err);
+  } else {
+    console.log("Script generated and saved.");
+  }      
+});*/
 
 // Redis Store options
 var redisOptions = {
@@ -124,7 +128,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-// schedule checking unfinished reservations on start and midnight
+// schedule checking unfinished reservations on start and at midnight
 FinishReservationHelper.scheduleFinishReservations();
 
 // session-persisted message middleware
@@ -144,6 +148,7 @@ app.use(function(req, res, next) {
     if (err) res.locals.error = err;
     if (msg) res.locals.notice = msg;
     if (success) res.locals.success = success;
+    if (req.user) res.locals.user = req.user;
 
     next();
 });
@@ -169,21 +174,27 @@ passport.use('login-native', new LocalStrategy({
 }));
 
 /*passport.use('login-is', new OAuth2Strategy({
-        authorizationURL: 'https://www.example.com/oauth2/authorize',
-        tokenURL: 'https://www.example.com/oauth2/token',
-        clientID: EXAMPLE_CLIENT_ID,
-        clientSecret: EXAMPLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/example/callback"
-    },
-    function(accessToken, refreshToken, profile, done) {
-        console.log(profile);
-        //models.User.upsert(profile).then(function(user) {
-        //    return done(err, user);
-        //}).catch(function(data) {
-        //    console.log(data);
-        //});
-    }
-));*/
+    authorizationURL: 'https://www.example.com/oauth2/authorize',
+    tokenURL: 'https://www.example.com/oauth2/token',
+    clientID: config.EXAMPLE_CLIENT_ID,
+    clientSecret: config.EXAMPLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/example/callback"
+}, function(accessToken, refreshToken, profile, done) {
+    console.log(profile);
+    AuthHelper.isAuth(accessToken, refreshToken, profile).then(function(user) {
+        if (user) {
+            req.session.success = 'You are successfully logged in ' + user.fullName + '!';
+            done(null, user);
+        }
+        if (!user) {
+            req.session.error = 'Could not log user in. Please try again.';
+            done(null, user);
+        }
+    }).catch(function(err) {
+        req.session.error = err.customMessage;
+        done (null, false);
+    });
+}));*/
 
 // passport session setup
 passport.serializeUser(function(user, done) {

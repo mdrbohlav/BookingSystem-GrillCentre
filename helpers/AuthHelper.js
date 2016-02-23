@@ -36,7 +36,7 @@ module.exports.hashPassword = function(password) {
 module.exports.isAuthenticated = function(req, res, next, isAdmin) {
     return new Promise(function(resolve, reject) {
         if (req.user) {
-            if (!isAdmin || req.user.isAdmin) {
+            if (!isAdmin ||  req.user.isAdmin) {
                 resolve();
             } else {
                 req.session.error = 'You are not authorized for this action!';
@@ -59,13 +59,23 @@ module.exports.localAuth = function(email, password) {
             }
         }).then(function(user) {
             if (!user) {
-                reject (new UserDoesnotExistError());
+                reject(new UserDoesnotExistError());
             }
             verifyPassword(password, user.password).then(function(result) {
                 resolve(user);
             }).catch(function(data) {
                 reject(new InvalidPasswordError());
             });
+        }).catch(function(err) {
+            reject(new InvalidRequestError(err.message));
+        });
+    });
+};
+
+module.exports.isAuth = function(accessToken, refreshToken, profile) {
+    return new Promise(function(resolve, reject) {
+        User.upsert(profile).then(function(user) {
+            resolve(user);
         }).catch(function(err) {
             reject(new InvalidRequestError(err.message));
         });

@@ -1,0 +1,44 @@
+.nav__main
+    background-color $color-white
+    display none
+    position fixed
+    size(100%)
+    z-index 1
+    
+    @media $sm-up
+        box-shadow 0 0 15px rgba(0, 0, 0, .5)
+        position relative
+        size(100%, auto)
+
+    ul
+        reset-list()
+        display table-cell
+        padding 10px
+        vertical-align middle
+        
+        @media $sm-up
+            display block
+            padding 20px 10px
+        
+    li
+        @media $sm-up
+            display inline-block
+
+        & + li
+            @media $sm-up
+                border-left 1px solid $color-grey-2
+                margin-left 15px
+                padding-left 15px
+                
+            @media $md-up
+                margin-left 25px
+                padding-left 25px
+
+            a
+                margin-top 10px
+                
+                @media $sm-up
+                    margin-top 0
+
+    a
+        display block
