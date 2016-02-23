@@ -21,8 +21,12 @@
             padding 20px 10px
         
     li
+        opacity 0
+        transform translateX(-100%)
+        
         @media $sm-up
             display inline-block
+            transform translateY(-100%)
 
         & + li
             @media $sm-up

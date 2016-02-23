@@ -99,6 +99,24 @@ function showMainMenu($trigger) {
             }
         }
     });
+    var delay = 200;
+    $mainNav.find('li').each(function(i, element) {
+        var $element = $(element);
+        setTimeout(function() {
+            $element.velocity({
+                before: function() {
+                    if ($window.width() < 768) {
+                        $.Velocity.hook($element, "translateX", "-100%");
+                    } else {
+                        $.Velocity.hook($element, "translateY", "-100%");
+                    }
+                },
+                translateX: 0,
+                translateY: 0,
+                opacity: 1
+            });
+        }, delay * i);
+    });
 }
 
 function hideMainMenu($trigger) {
@@ -108,6 +126,7 @@ function hideMainMenu($trigger) {
             if ($window.width() < 768) {
                 removeBodyOverflowHidden();
             }
+            $mainNav.find('li').removeAttr('style');
         }
     });
 }

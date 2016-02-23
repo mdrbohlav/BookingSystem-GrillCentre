@@ -1,0 +1,31 @@
+.separator
+    &__after
+        &:after
+            background-color $color-white
+            content ''
+            display block
+            margin 15px 0
+            size(100%, 1px)
+            max-width 200px
+            
+    &__text
+        margin 0 0 15px
+        position relative
+        set-font-size 12px
+        
+        &:before,
+        &:after
+            background-color $color-grey-1
+            bottom 0
+            content ''
+            display inline-block
+            margin auto
+            position absolute
+            size(25%, 1px)
+            top 0
+            
+        &:before
+            left 10px
+            
+        &:after
+            right 10px
