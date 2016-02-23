@@ -1,4 +1,6 @@
 .field__checkbox
+    display inline-block
+    margin 5px 15px 0
     position relative
 
 .checkbox
@@ -9,9 +11,6 @@
     top -1px
     vertical-align middle
     size(12px)
-    
-    @media $sm-up
-        top 0
         
     &:before
         background-color transparent
@@ -26,12 +25,13 @@
     & + label
         display inline-block
         margin-left 10px
+        padding-left 0
         vertical-align middle
         opacity(1)
             
     &.active
         &:before
-            background-color $color-green-2
+            background-color $color-green
 
 input[type='checkbox']
     appearance none

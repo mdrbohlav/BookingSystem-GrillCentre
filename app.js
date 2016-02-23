@@ -28,7 +28,6 @@ var routes = require('./routes/index'),
     apiUser = require('./routes/api/user'),
     apiUsers = require('./routes/api/users'),
     apiReservation = require('./routes/api/reservation'),
-    apiReservations = require('./routes/api/reservations'),
     apiAccessory = require('./routes/api/accessory');
 
 var app = express();
@@ -56,8 +55,8 @@ app.use(stylus.middleware({
     debug: true
 }));
 
-/*// uglify setup
-var uglified = uglify.minify([
+// uglify setup
+/*var uglified = uglify.minify([
     path.join(__dirname, 'bower_components/jquery/dist/jquery.js'),
     path.join(__dirname, 'bower_components/velocity/velocity.js'),
     path.join(__dirname, 'bower_components/jquery-validation/dist/jquery.validate.js'),
@@ -66,6 +65,10 @@ var uglified = uglify.minify([
     path.join(__dirname, 'bower_components/underscore/underscore.js'),
     path.join(__dirname, 'bower_components/moment/moment.js'),
     path.join(__dirname, 'bower_components/moment/locale/cs.js'),
+    path.join(__dirname, 'bower_components/pickadate/lib/picker.js'),
+    path.join(__dirname, 'bower_components/pickadate/lib/picker.date.js'),
+    path.join(__dirname, 'bower_components/pickadate/lib/picker.time.js'),
+    path.join(__dirname, 'bower_components/pickadate/lib/translations/cs_CZ.js'),
     path.join(__dirname, 'bower_components/clndr/clndr.min.js'),
     path.join(__dirname, 'bower_components/fastclick/lib/fastclick.js')
 ], {
@@ -220,7 +223,6 @@ app.use('/auth', auth);
 app.use('/api/user', apiUser);
 app.use('/api/users', apiUsers);
 app.use('/api/reservation', apiReservation);
-app.use('/api/reservations', apiReservations);
 app.use('/api/accessory', apiAccessory);
 
 // catch 404 and forward to error handler

@@ -5,7 +5,7 @@ block content
         .table__cell
             .hero__content
                 h1.text__mainTitle.separator__after Grilovací centrum
-                h2.text__subtitle SiliconHill
+                h2.text__subtitle.text--white SiliconHill
     section.content
         .container__md
             .box
@@ -30,7 +30,7 @@ block content
                                     <div class="calendar__cell <%= day.classes %>">
                                         <div class="day__num"><%= day.day %></div>
                                         <% if (day.events.length) { %>
-                                            <div class="day__event">
+                                            <div class="day__event <%= day.events[0].state %>">
                                                 <%= day.events[0].id %>
                                             </div>
                                         <% } %>
@@ -48,7 +48,45 @@ block content
                 .box__header.box__header--border
                     h2.text__title Nová rezervace
                 .box__body
-                    p aaa
+                    form#create-reservation.form.form__reservation(method='POST', action='/api/reservation/create')
+                        .separateGrill
+                            .fieldset.row
+                                .field__container.col-xs-12.col-md-6.field__checkbox
+                                    span.checkbox
+                                        input#separateGrill(type='checkbox', name='separateGrill')
+                                    label.t__label(for='separateGrill') Separátní gril
+
+                        .centre
+                            .fieldset.row
+                                if reservationLength === 1
+                                    .field__container.col-xs-12.col-md-6.margin--top-20
+                                        label.text__label(for='date') Datum
+                                        .field
+                                            input#date(type='text', name='date', required)
+                                else
+                                    .field__container.col-xs-12.col-md-6.margin--top-20
+                                        label.text__label(for='date') Od
+                                        .field
+                                            input#date(type='text', name='date', required)
+                                    .field__container.col-xs-12.col-md-6.margin--top-20
+                                        label.text__label(for='date-to') Do
+                                        .field
+                                            input#date-to(type='text', name='date-to', required)
+                                .field__container.col-xs-12.col-md-6.margin--top-20
+                                    label.text__label(for='pickup') Vyzvednutí klíčů
+                                    .field
+                                        input#pickup(type='text', name='pickup', required)
+                            if accessories.length > 0
+                                h2.text__subtitle.margin--top-35.text--default Příslušenství
+                                .fieldset
+                                    each accessory, index in accessories
+                                        if accessory.available
+                                            .field__checkbox
+                                                span.checkbox
+                                                    input(id='accessory-#{index}', type='checkbox', name='accessory[]', value= accessory.id)
+                                                label.t__label(for='accessory-#{index}')= accessory.name
+                        .form__footer.text--center.margin--top-45
+                            button.btn.btn__orange(type='submit') Vytvořit
 
 block scripts
     script.
@@ -68,37 +106,28 @@ block scripts
                 $('.calendar').prepend($spinner);
             }
 
-            $.ajax({
-                url: '/api/reservations',
-                method: 'GET',
-                data: {
-                    from: encodeURIComponent(startInterval),
-                    to: encodeURIComponent(endInterval)
-                },
-                complete: function() {
+            var data = {
+                from: encodeURIComponent(startInterval),
+                to: encodeURIComponent(endInterval)
+            };
 
-                },
-                success: function(res) {
-                    var tmp = res.reservations,
-                        reservations = [];
-                    for (var i = 0; i < tmp.length; i++) {
-                        if (tmp[i].id in addedReservations) {
-                            continue;
-                        }
-                        tmp[i].from = moment(tmp[i].from).add(calendar.month.local().utcOffset(), 'm').format();
-                        tmp[i].to = moment(tmp[i].to).subtract(calendar.month.local().utcOffset(), 'm').format();
-                        
-                        addedReservations[tmp[i].id] = tmp[i];
-                        reservations.push(tmp[i]);
+            makeRequest('/api/reservation', 'GET', data, function(res) {
+                var tmp = res.reservations,
+                    reservations = [];
+                for (var i = 0; i < tmp.length; i++) {
+                    if (tmp[i].id in addedReservations || ['confirmed', 'finished'].indexOf(tmp[i].state) === -1) {
+                        continue;
                     }
-                    loadedMonths[month] = true;
-                    loadedMonths[moment(startInterval).month()] = true;
-                    loadedMonths[moment(endInterval).month()] = true;
-                    calendar.addEvents(reservations);
-                },
-                error: function(res) {
-                    console.log(res);
+                    tmp[i].from = moment(tmp[i].from).add(calendar.month.local().utcOffset(), 'm').format();
+                    tmp[i].to = moment(tmp[i].to).subtract(calendar.month.local().utcOffset(), 'm').format();
+                    
+                    addedReservations[tmp[i].id] = tmp[i];
+                    reservations.push(tmp[i]);
                 }
+                loadedMonths[month] = true;
+                loadedMonths[moment(startInterval).month()] = true;
+                loadedMonths[moment(endInterval).month()] = true;
+                calendar.addEvents(reservations);
             });
         }
 
@@ -147,5 +176,62 @@ block scripts
             });
 
             loadReservations(calendar);
+
+            var $date, date;
+
+            if (parseInt('#{reservationLength}') > 1) {
+                var $dateTo = $('#date-to').pickadate({
+                    min: true,
+                    max: parseInt('#{reservationUpfront}')
+                });
+                var dateTo = $dateTo.pickadate('picker');
+
+                $date = $('#date').pickadate({
+                    onSet: function(thing) {
+                        dateTo.set('min', new Date(thing.select));
+                    }
+                });
+            } else {
+                $date = $('#date').pickadate();
+            }
+            
+            date = $date.pickadate('picker');
+            date.set({
+                min: true,
+                max: parseInt('#{reservationUpfront}')
+            });
+
+            $('#pickup').pickatime({
+                format: 'HH:i',
+                min: [parseInt('#{keyPickupFrom}'.split(':')[0]), parseInt('#{keyPickupFrom}'.split(':')[1])],
+                max: [parseInt('#{keyPickupTo}'.split(':')[0]), parseInt('#{keyPickupTo}'.split(':')[1])],
+                interval: parseInt('#{keyPickupInterval}')
+            });
+
+            $('#create-reservation').validate({
+                errorPlacement: function() {
+                    return false;
+                },
+                submitHandler: function(form) {
+                    var data = {
+                            accessories: []
+                        },
+                        start = $('[name="date"]').pickadate('picker').get('select').pick,
+                        end;
+                    start = moment(new Date(start)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
+                    end = start;
+
+                    if (parseInt('#{reservationLength}') > 1) {
+                        end = $('[name="date-to"]').pickadate('picker').get('select').pick;
+                        end = moment(new Date(end)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
+                    }
+                    data.from = start;
+                    data.to = end;
+                    $('[name="accessory[]"]:checked').each(function(i, element) {
+                        data.accessories.push($(element).val());
+                    });
+                    console.log(data);
+                }
+            });
 
         });

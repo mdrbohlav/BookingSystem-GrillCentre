@@ -8,12 +8,12 @@ block content
                     h1.text__title Gril centrum Login
                 .box__body
                     li.listLogin__item
-                        button#loginIs.btn.btn__orange--full.btn--block(type='button') Login pomocí ISu
+                        button#loginIs.btn.btn__orange--full.btn--block(type='button') Přihlásit pomocí ISu
                     li.listLogin__item.margin--top-25.expandable__container
-                        button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') Login pomocí emailu
+                        button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') Přihlásit pomocí emailu
                         form#login.form.form__login.expandable__content(method='POST', action='/auth/login/native')
                             .separator__text.text--center
-                                span.text--grey-1 login pomocí emailu
+                                span.text--grey-1 přihlášení pomocí emailu
                             .fieldset
                                 .field__container
                                     label.text__label(for='email') Email
@@ -24,4 +24,4 @@ block content
                                     .field
                                         input#password(type='password', name='password', required)
                             .form__footer.text--right
-                                button.btn.btn__orange(type='submit') Login
+                                button.btn.btn__orange(type='submit') Přihlásit

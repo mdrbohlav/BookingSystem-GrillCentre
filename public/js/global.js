@@ -124,7 +124,7 @@ function showMainMenu($trigger) {
                 translateY: 0,
                 opacity: 1
             });
-        }, delay * i);
+        }, delay *  i);
     });
 }
 
@@ -140,7 +140,32 @@ function hideMainMenu($trigger) {
     });
 }
 
+function makeRequest(url, method, data, cb) {
+    $.ajax({
+        url: url,
+        method: method,
+        data: data,
+        complete: function() {
+
+        },
+        success: function(res) {
+            if (typeof(cb) !== 'undefined') {
+                cb(res);
+            }
+        },
+        error: function(res) {
+            console.log(res);
+        }
+    });
+}
+
 $(document).ready(function() {
+
+    $window.on('load resize orientationchange', function() {
+        $('.hero').each(function(i, element) {
+            $(element).css('height', $(element).height());
+        });
+    });
 
     $window.on('resize orientationchange', function() {
         if (!$mainNavTrigger.hasClass('is-active')) {
@@ -176,6 +201,30 @@ $(document).ready(function() {
 
         $this.velocity('slideUp');
         $content.velocity('slideDown');
+    });
+
+    //=================================================================
+    // Checkbox functionality
+    //=================================================================
+    $('input[type="checkbox"]').on('change', function() {
+        var $this = $(this),
+            $checkbox = $this.parent();
+        $checkbox.velocity({
+            scale: "0"
+        }, {
+            duration: 100,
+            complete: function() {
+                $checkbox.toggleClass('active');
+            }
+        }).velocity({
+            scale: "1.2"
+        }, {
+            duration: 150
+        }).velocity({
+            scale: "1"
+        }, {
+            duration: 50
+        });
     });
 
     //=================================================================

@@ -11,3 +11,6 @@ exports.MAX_RESERVATIONS_USER = 10;
 exports.MAX_RESERVATION_LENGTH = 2;
 exports.MAX_RESERVATION_UPFRONT = 31;
 exports.SEND_EMAILS = false;
+exports.KEY_PICKUP_FROM = '8:30';
+exports.KEY_PICKUP_TO = '15:30';
+exports.KEY_PICKUP_INTERVAL_MINS = '30';
