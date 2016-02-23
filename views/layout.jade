@@ -27,4 +27,19 @@ html
 
         script(src="/js/app.min.js")
         script(src="/js/global.js")
+        if success
+            script.
+                $(document).ready(function() {
+                    addNotification('success', '#{success}')
+                });
+        if notice
+            script.
+                $(document).ready(function() {
+                    addNotification('notice', '#{notice}')
+                });
+        if error
+            script.
+                $(document).ready(function() {
+                    addNotification('error', '#{error}')
+                });
         block scripts

@@ -2,37 +2,26 @@ extends layout
 
 block content
     .table.table--fullsize
-        if success
-            .table__row
-                .note.note__success.text--center
-                    p.text__paragraph= success
-        if notice
-            .table__row
-                .note.note__notice.text--center
-                    p.text__paragraph= notice
-        if error
-            .table__row
-                .note.note__error.text--center
-                    p.text__paragraph= error
-        .table__row
-            .table__cell.table--middle
-                ul.listLogin.box.box--biggerShadow
-                    .box__header.box__header--border
-                        h1.text__title Gril centrum Login
-                    .box__body
-                        li.listLogin__item
-                            button#loginIs.btn.btn__orange--full.btn--block(type='button') Login using IS
-                        li.listLogin__item.margin--top-25.expandable__container
-                            button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') Native Login
-                            form#login.form.form__login.expandable__content(method='POST', action='/auth/login/native')
-                                .fieldset
-                                    .field__container
-                                        label.text__label(for='email') Email
-                                        .field
-                                            input#email(type='email', name='email', required)
-                                    .field__container
-                                        label.text__label(for='password') Password
-                                        .field
-                                            input#password(type='password', name='password', required)
-                                .form__footer.text--right
-                                    button.btn.btn__orange(type='submit') Log in
+        .table__cell.table--middle
+            ul.listLogin.box.box--biggerShadow
+                .box__header.box__header--border
+                    h1.text__title Gril centrum Login
+                .box__body
+                    li.listLogin__item
+                        button#loginIs.btn.btn__orange--full.btn--block(type='button') Login pomocí ISu
+                    li.listLogin__item.margin--top-25.expandable__container
+                        button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') Login pomocí emailu
+                        form#login.form.form__login.expandable__content(method='POST', action='/auth/login/native')
+                            .separator__text.text--center
+                                span.text--grey-1 login pomocí emailu
+                            .fieldset
+                                .field__container
+                                    label.text__label(for='email') Email
+                                    .field
+                                        input#email(type='email', name='email', required)
+                                .field__container
+                                    label.text__label(for='password') Heslo
+                                    .field
+                                        input#password(type='password', name='password', required)
+                            .form__footer.text--right
+                                button.btn.btn__orange(type='submit') Login

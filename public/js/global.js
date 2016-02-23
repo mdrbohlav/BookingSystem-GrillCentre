@@ -4,6 +4,74 @@ var $window = $(window),
     $mainNavTrigger = $('.nav__trigger'),
     firstLoad = false;
 
+function Timer(callback, delay) {
+    var timerId, start, remaining = delay;
+
+    this.pause = function() {
+        clearTimeout(timerId);
+        remaining -= new Date() - start;
+    };
+
+    this.resume = function() {
+        start = new Date();
+        clearTimeout(timerId);
+        timerId = setTimeout(callback, remaining);
+    };
+
+    this.clear = function() {
+        clearTimeout(timerId);
+    };
+
+    this.resume();
+}
+
+function removeNotification($notification) {
+    $notification.velocity('fadeOut', {
+        complete: function() {
+            $notification.replaceWith('');
+        }
+    });
+}
+
+function addNotification(type, text, attr) {
+    var $notificationWrapper = $();
+
+    if ($('.notification__wrapper').length > 0) {
+        $notificationWrapper = $($('.notification__wrapper')[0]);
+    } else {
+        $notificationWrapper = $('<div class="notification__wrapper"></div>');
+        $('body').append($notificationWrapper);
+    }
+
+    var $notification = $('<div class="notification notification__' + type + '" data-name="' + attr + '"></div>'),
+        $notificationText = $('<p class="notification__text lambda">' + text + '</p>'),
+        $notificationClose = $('<div class="notification__close icon icon-cross" title="close notification"></div>');
+
+    $notification.append($notificationText).append($notificationClose);
+    $notificationWrapper.append($notification);
+
+    $notification.velocity('fadeIn', {
+        display: 'table'
+    });
+
+    var notificationTimer = new Timer(function() {
+        removeNotification($notification);
+    }, 6000);
+
+    $notification.on('mouseenter', function() {
+        notificationTimer.pause();
+    });
+
+    $notification.on('mouseleave', function() {
+        notificationTimer.resume();
+    });
+
+    $notificationClose.click(function() {
+        notificationTimer.clear();
+        removeNotification($notification);
+    });
+}
+
 function setBodyOverflowHidden() {
     var overflowHiddenCnt = typeof($body.attr('data-overflow-hidden')) !== 'undefined' ? parseInt($body.attr('data-overflow-hidden')) + 1 : 1;
     $body.attr('data-overflow-hidden', overflowHiddenCnt);
