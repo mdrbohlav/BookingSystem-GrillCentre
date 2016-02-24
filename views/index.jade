@@ -138,50 +138,6 @@ block scripts
 
         $(document).ready(function() {
 
-            moment.locale('cs');
-            var calendar = $('.calendar').clndr({
-                multiDayEvents: {
-                    endDate: 'to',
-                    startDate: 'from'
-                },
-                targets: {
-                    day: 'day',
-                    empty: 'empty',
-                    nextButton: 'calendar__next',
-                    todayButton: 'calendar__today',
-                    previousButton: 'calendar__prev'
-                },
-                clickEvents: {
-                    click: function (target) {
-                        console.log('Calendar clicked: ', target);
-                    },
-                    nextInterval: function () {
-                        console.log('Calendar next interval');
-                    },
-                    previousInterval: function () {
-                        console.log('Calendar previous interval');
-                    },
-                    onIntervalChange: function () {
-                        console.log('Calendar interval changed');
-                    },
-                    onMonthChange: function() {
-                        console.log('Calendar month changed');
-                        loadReservations(this);
-                    }
-                },
-                doneRendering: function() {
-                    console.log('Calendar done rendering');
-                    if ($('.calendar .spinner--absolute').length) {
-                        $('.calendar .spinner--absolute').remove();
-                    }
-                },
-                template: $('#calendar-template').html(),
-                showAdjacentMonths: true,
-                adjacentDaysChangeMonth: true
-            });
-
-            loadReservations(calendar);
-
             var $date, date, dateTo = null;
 
             if (#{reservationLength} > 1) {
@@ -256,6 +212,54 @@ block scripts
             $pickup.on('change', function() {
                 $pickup.valid();
             });
+
+            moment.locale('cs');
+            var calendar = $('.calendar').clndr({
+                multiDayEvents: {
+                    endDate: 'to',
+                    startDate: 'from'
+                },
+                targets: {
+                    day: 'day',
+                    empty: 'empty',
+                    nextButton: 'calendar__next',
+                    todayButton: 'calendar__today',
+                    previousButton: 'calendar__prev'
+                },
+                clickEvents: {
+                    click: function (target) {
+                        if (target.events.length) {
+
+                        } else {
+                            date.set('select', new Date(target.date.format()));
+                        }
+                    },
+                    nextInterval: function () {
+                        console.log('Calendar next interval');
+                    },
+                    previousInterval: function () {
+                        console.log('Calendar previous interval');
+                    },
+                    onIntervalChange: function () {
+                        console.log('Calendar interval changed');
+                    },
+                    onMonthChange: function() {
+                        console.log('Calendar month changed');
+                        loadReservations(this);
+                    }
+                },
+                doneRendering: function() {
+                    console.log('Calendar done rendering');
+                    if ($('.calendar .spinner--absolute').length) {
+                        $('.calendar .spinner--absolute').remove();
+                    }
+                },
+                template: $('#calendar-template').html(),
+                showAdjacentMonths: true,
+                adjacentDaysChangeMonth: true
+            });
+
+            loadReservations(calendar);
 
             $('#separateGrill').on('change', function() {
                 var $this = $(this);
