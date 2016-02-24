@@ -5,12 +5,12 @@ function MaxReservationsError(perUser) {
     Error.captureStackTrace(this, this.constructor);
 
     this.name = this.constructor.name;
-    this.status = 401;
+    this.status = 400;
 
     this.customType = "MaxReservations";
     this.customMessage = "Number of maximum pre-reservations per day exceeded!";
     if (perUser) {
-        this.customMessage = "Number of maximum pre-reservations per user per day exceeded!";
+        this.customMessage = "Number of maximum reservations per user exceeded!";
     }
 }
 

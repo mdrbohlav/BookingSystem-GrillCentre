@@ -20,6 +20,11 @@ module.exports = {
                 }
             }
         }
+        if (req.query.isAdmin) {
+            where = {
+                isAdmin: req.query.isAdmin
+            };
+        }
         User.findAndCountAll({
             where: where,
             offset: offset,

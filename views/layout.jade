@@ -16,10 +16,13 @@ html
             header
                 nav.nav__main
                     ul.text--center
-                        li: a.text__nav(href='#') Přehled mých rezervací
+                        li: a.text__nav(href='/') Domů
+                        li: a.text__nav(href='/history') Moje rezervace
                         if user.isAdmin
-                            li: a(href='/config') Konfigurace
-                        li: a.text__nav(href='/auth/logout') Logout
+                            li: a.text__nav(href='/reservations') Rezervace
+                            li: a.text__nav(href='/statistics') Statistiky
+                            li: a.text__nav(href='/config') Konfigurace
+                        li: a.text__nav(href='/auth/logout') Odhlásit
                 button.nav__trigger(data-trigger-menu='nav__main') Zobrazit menu
                     span.icon.lines
 

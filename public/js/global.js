@@ -108,7 +108,7 @@ function showMainMenu($trigger) {
             }
         }
     });
-    var delay = 200;
+    var delay = 100;
     $mainNav.find('li').each(function(i, element) {
         var $element = $(element);
         setTimeout(function() {
@@ -140,7 +140,7 @@ function hideMainMenu($trigger) {
     });
 }
 
-function makeRequest(url, method, data, cb) {
+function makeRequest(url, method, data, cbSuccess, cbError) {
     $.ajax({
         url: url,
         method: method,
@@ -149,21 +149,24 @@ function makeRequest(url, method, data, cb) {
 
         },
         success: function(res) {
-            if (typeof(cb) !== 'undefined') {
-                cb(res);
+            if (typeof(cbSuccess) !== 'undefined') {
+                cbSuccess(res);
             }
         },
         error: function(res) {
-            console.log(res);
+            if (typeof(cbError) !== 'undefined') {
+                cbError(res);
+            }
         }
     });
 }
 
 $(document).ready(function() {
 
-    $window.on('load resize orientationchange', function() {
+    $window.on('load', function() {
         $('.hero').each(function(i, element) {
-            $(element).css('height', $(element).height());
+            $(element).removeAttr('style');
+            $(element).css('height', $(element).outerHeight());
         });
     });
 

@@ -5,7 +5,7 @@ function RenderingPdfError(message) {
     Error.captureStackTrace(this, this.constructor);
 
     this.name = this.constructor.name;
-    this.status = 401;
+    this.status = 400;
 
     this.customType = "RenderingPdf";
     this.customMessage = message;

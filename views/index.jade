@@ -31,7 +31,11 @@ block content
                                         <div class="day__num"><%= day.day %></div>
                                         <% if (day.events.length) { %>
                                             <div class="day__event <%= day.events[0].state %>">
-                                                <%= day.events[0].id %>
+                                            <% if (day.events[0].name.length > 20) { %>
+                                                <%= day.events[0].name.substr(0, 20) %>…
+                                            <% } else { %>
+                                                <%= day.events[0].name %>
+                                            <% } %>
                                             </div>
                                         <% } %>
                                     </div>
@@ -39,58 +43,51 @@ block content
                                 </div>
                             </div>
                             <button class="calendar__today text__paragraph text--center" type="button">Dnes</button>
-            //<% if (day.events[0].title.length > 20) { %>
-                <%= day.events[0].title.substr(0, 20) %>…
-                <% } else { %>
-                    <%= day.events[0].title %>
-                <% } %>
             .box
                 .box__header.box__header--border
                     h2.text__title Nová rezervace
                 .box__body
                     form#create-reservation.form.form__reservation(method='POST', action='/api/reservation/create')
-                        .separateGrill
-                            .fieldset.row
-                                .field__container.col-xs-12.col-md-6.field__checkbox
-                                    span.checkbox
-                                        input#separateGrill(type='checkbox', name='separateGrill')
-                                    label.t__label(for='separateGrill') Separátní gril
-
-                        .centre
-                            .fieldset.row
-                                if reservationLength === 1
-                                    .field__container.col-xs-12.col-md-6.margin--top-20
-                                        label.text__label(for='date') Datum
-                                        .field
-                                            input#date(type='text', name='date', required)
-                                else
-                                    .field__container.col-xs-12.col-md-6.margin--top-20
-                                        label.text__label(for='date') Od
-                                        .field
-                                            input#date(type='text', name='date', required)
-                                    .field__container.col-xs-12.col-md-6.margin--top-20
-                                        label.text__label(for='date-to') Do
-                                        .field
-                                            input#date-to(type='text', name='date-to', required)
+                        .fieldset.row
+                            .field__container.col-xs-12.col-md-6.field__checkbox
+                                span.checkbox
+                                    input#separateGrill(type='checkbox', name='separateGrill')
+                                label.t__label(for='separateGrill') Pouze separátní gril
+                        .fieldset.row
+                            if reservationLength === 1
                                 .field__container.col-xs-12.col-md-6.margin--top-20
-                                    label.text__label(for='pickup') Vyzvednutí klíčů
+                                    label.text__label(for='date') Datum
                                     .field
-                                        input#pickup(type='text', name='pickup', required)
-                            if accessories.length > 0
-                                h2.text__subtitle.margin--top-35.text--default Příslušenství
-                                .fieldset
-                                    each accessory, index in accessories
-                                        if accessory.available
-                                            .field__checkbox
-                                                span.checkbox
-                                                    input(id='accessory-#{index}', type='checkbox', name='accessory[]', value= accessory.id)
-                                                label.t__label(for='accessory-#{index}')= accessory.name
+                                        input#date(type='text', name='date', required)
+                            else
+                                .field__container.col-xs-12.col-md-6.margin--top-20
+                                    label.text__label(for='date') Od
+                                    .field
+                                        input#date(type='text', name='date', required)
+                                .field__container.col-xs-12.col-md-6.margin--top-20
+                                    label.text__label(for='date-to') Do
+                                    .field
+                                        input#date-to(type='text', name='date-to', required)
+                            .field__container.col-xs-12.col-md-6.margin--top-20
+                                label.text__label(for='pickup') Vyzvednutí
+                                .field
+                                    input#pickup(type='text', name='pickup', required)
+                        if accessories.length > 0
+                            .fieldset.accessories
+                                h3.text__subtitle.text--default Příslušenství
+                                each accessory, index in accessories
+                                    if accessory.available
+                                        .field__checkbox
+                                            span.checkbox
+                                                input(id='accessory-#{index}', type='checkbox', name='accessory[]', value= accessory.id)
+                                            label.t__label(for='accessory-#{index}')= accessory.name
                         .form__footer.text--center.margin--top-45
                             button.btn.btn__orange(type='submit') Vytvořit
 
 block scripts
     script.
-        var addedReservations = {},
+        var reservations = {},
+            users = {},
             loadedMonths = {};
 
         function loadReservations(calendar) {
@@ -112,22 +109,30 @@ block scripts
             };
 
             makeRequest('/api/reservation', 'GET', data, function(res) {
-                var tmp = res.reservations,
-                    reservations = [];
-                for (var i = 0; i < tmp.length; i++) {
-                    if (tmp[i].id in addedReservations || ['confirmed', 'finished'].indexOf(tmp[i].state) === -1) {
+                console.log(res);
+                var reservationsObj = res.reservations,
+                    usersObj = res.users,
+                    reservationsArr = [];
+                for (var i in usersObj) {
+                    if (i in users) {
                         continue;
                     }
-                    tmp[i].from = moment(tmp[i].from).add(calendar.month.local().utcOffset(), 'm').format();
-                    tmp[i].to = moment(tmp[i].to).subtract(calendar.month.local().utcOffset(), 'm').format();
-                    
-                    addedReservations[tmp[i].id] = tmp[i];
-                    reservations.push(tmp[i]);
+                    users[i] = usersObj[i];
+                }
+                for (var i = 0; i < reservationsObj.length; i++) {
+                    if (reservationsObj[i].id in reservations || ['confirmed', 'finished'].indexOf(reservationsObj[i].state) === -1) {
+                        continue;
+                    }
+                    reservationsObj[i].from = moment(reservationsObj[i].from).add(calendar.month.local().utcOffset(), 'm').format();
+                    reservationsObj[i].to = moment(reservationsObj[i].to).subtract(calendar.month.local().utcOffset(), 'm').format();
+                    reservationsObj[i].name = users[reservationsObj[i].userId].fullName;
+                    reservations[reservationsObj[i].id] = reservationsObj[i];
+                    reservationsArr.push(reservationsObj[i]);
                 }
                 loadedMonths[month] = true;
                 loadedMonths[moment(startInterval).month()] = true;
                 loadedMonths[moment(endInterval).month()] = true;
-                calendar.addEvents(reservations);
+                calendar.addEvents(reservationsArr);
             });
         }
 
@@ -177,18 +182,50 @@ block scripts
 
             loadReservations(calendar);
 
-            var $date, date;
+            var $date, date, dateTo = null;
 
-            if (parseInt('#{reservationLength}') > 1) {
+            if (#{reservationLength} > 1) {
                 var $dateTo = $('#date-to').pickadate({
                     min: true,
-                    max: parseInt('#{reservationUpfront}')
+                    max: #{reservationUpfront},
+                    onSet: function(event) {
+                        if (event.select) {
+                            var dat = new Date(event.select),
+                                MS_PER_DAY = 1000 * 60 * 60 * 24,
+                                today = new Date();
+                            today = today.setHours(0, 0, 0, 0);
+                            today = new Date(today).getTime();
+                            date.set('max', dat);
+                            dat = event.select - #{reservationUpfront} * MS_PER_DAY <= today ? true : new Date(event.select);
+                            date.set('min', dat);
+                        } else if ('clear' in event) {
+                            date.set('min', true);
+                            date.set('max', #{reservationUpfront});
+                        }
+                    }
                 });
-                var dateTo = $dateTo.pickadate('picker');
+                dateTo = $dateTo.pickadate('picker');
+
+                $dateTo.on('change', function() {
+                    $dateTo.valid();
+                });
 
                 $date = $('#date').pickadate({
-                    onSet: function(thing) {
-                        dateTo.set('min', new Date(thing.select));
+                    onSet: function(event) {
+                        if (event.select) {
+                            var dat = new Date(event.select),
+                                MS_PER_DAY = 1000 * 60 * 60 * 24,
+                                today = new Date();
+                            today = today.setHours(0, 0, 0, 0);
+                            today = new Date(today).getTime();
+                            dateTo.set('min', dat);
+                            dat = event.select + (#{reservationLength} - 1) * MS_PER_DAY >= today + #{reservationUpfront} * MS_PER_DAY ? today + #{reservationUpfront} * MS_PER_DAY : event.select + (#{reservationLength} - 1) * MS_PER_DAY;
+                            dat = new Date(dat);
+                            dateTo.set('max', dat);
+                        } else if ('clear' in event) {
+                            dateTo.set('min', true);
+                            dateTo.set('max', #{reservationUpfront});
+                        }
                     }
                 });
             } else {
@@ -198,39 +235,120 @@ block scripts
             date = $date.pickadate('picker');
             date.set({
                 min: true,
-                max: parseInt('#{reservationUpfront}')
+                max: #{reservationUpfront}
             });
 
-            $('#pickup').pickatime({
+            var $pickup = $('#pickup').pickatime({
                 format: 'HH:i',
-                min: [parseInt('#{keyPickupFrom}'.split(':')[0]), parseInt('#{keyPickupFrom}'.split(':')[1])],
-                max: [parseInt('#{keyPickupTo}'.split(':')[0]), parseInt('#{keyPickupTo}'.split(':')[1])],
-                interval: parseInt('#{keyPickupInterval}')
+                min: [Math.floor(#{keyPickupFrom} / 60), #{keyPickupFrom} % 60],
+                max: [Math.floor(#{keyPickupTo} / 60), #{keyPickupTo} % 60],
+                interval: #{keyPickupInterval}
+            });
+
+            /* / syntax highlight fix */
+
+            pickup = $pickup.pickatime('picker');
+
+            $date.on('change', function() {
+                $date.valid();
+            });
+
+            $pickup.on('change', function() {
+                $pickup.valid();
+            });
+
+            $('#separateGrill').on('change', function() {
+                var $this = $(this);
+                if ($('.accessories').length === 0) {
+                    return;
+                }
+                if ($this.prop('checked')) {
+                    $('.accessories').velocity('slideUp');
+                } else {
+                    $('.accessories').velocity('slideDown');
+                }
             });
 
             $('#create-reservation').validate({
+                rules: {
+                    date: {
+                        required: true
+                    },
+                    'date-to': {
+                        required: function() {
+                            return $('#date-to').length > 0 ? true: false;
+                        }
+                    },
+                    pickup: {
+                        required: true
+                    }
+                },
                 errorPlacement: function() {
                     return false;
                 },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).parent().addClass('error');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).parent().removeClass('error');
+                },
                 submitHandler: function(form) {
-                    var data = {
-                            accessories: []
-                        },
-                        start = $('[name="date"]').pickadate('picker').get('select').pick,
+                    var data = {};
+                    if ($('#separateGrill').prop('checked')) {
+                        data.separateGrill = true;
+                    } else {
+                        data.accessories = [];
+                        $('[name="accessory[]"]:checked').each(function(i, element) {
+                            data.accessories.push($(element).val());
+                        });
+                    }
+                    var start = $('[name="date"]').pickadate('picker').get('select').pick,
                         end;
                     start = moment(new Date(start)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
                     end = start;
 
-                    if (parseInt('#{reservationLength}') > 1) {
+                    if (#{reservationLength} > 1) {
                         end = $('[name="date-to"]').pickadate('picker').get('select').pick;
                         end = moment(new Date(end)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
                     }
                     data.from = start;
                     data.to = end;
-                    $('[name="accessory[]"]:checked').each(function(i, element) {
-                        data.accessories.push($(element).val());
-                    });
+                    data.pickup = $('#pickup').pickatime('picker').get('select').pick;
+                    
                     console.log(data);
+                    var url = $(form).attr('action'),
+                        method = $(form).attr('method');
+                    makeRequest(url, method, data, function(res) {
+                        console.log(res);
+                        date.clear();
+                        $date.parent().removeClass('error');
+                        pickup.clear();
+                        $pickup.parent().removeClass('error');
+                        if (dateTo) {
+                            dateTo.clear();
+                            $dateTo.parent().removeClass('error');
+                        }
+                        if ($('#separateGrill').prop('checked')) {
+                            $('#separateGrill').trigger('click');
+                        }
+                        $('.accessories input[type="checkbox"]').each(function(i, element) {
+                            if ($(element).prop('checked')) {
+                                $(element).trigger('click');
+                            }
+                        });
+                        addNotification('success', 'Pre-reservation successfully created.');
+                    }, function(res) {
+                        console.log(res);
+                        var msg = res.responseJSON.error.message;
+                        if (res.responseJSON.error.type === 'MaxReservationLength') {
+                            msg += ' (maximum is #{reservationLength} ';
+                            msg += #{reservationLength} > 1 ? 'days)' : 'day)';
+                        } else if (res.responseJSON.error.type === 'MaxReservationUpfront') {
+                            msg += ' (maximum is #{reservationUpfront} ';
+                            msg += #{reservationUpfront} > 1 ? 'days)' : 'day)';
+                        }
+                        addNotification('error', msg);
+                    });
                 }
             });
 

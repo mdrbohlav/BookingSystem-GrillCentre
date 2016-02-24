@@ -25,3 +25,41 @@ block content
                                         input#password(type='password', name='password', required)
                             .form__footer.text--right
                                 button.btn.btn__orange(type='submit') Přihlásit
+
+block scripts
+    script.
+        $(document).ready(function() {
+            
+            $('#login').validate({
+                rules: {
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        required: true
+                    }
+                },
+                errorPlacement: function() {
+                    return false;
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).parent().addClass('error');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).parent().removeClass('error');
+                },
+                submitHandler: function(form) {
+                    var data = {
+                            email: $('#email').val(),
+                            password: $('#password').val()
+                        },
+                        url = $(form).attr('action'),
+                        method = $(form).attr('method');
+                    makeRequest(url, method, data, function(res) {
+                        window.location.pathname = '/';
+                    });
+                }
+            })
+
+        });

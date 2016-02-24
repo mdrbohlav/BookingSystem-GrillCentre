@@ -1,3 +1,4 @@
+var sequelize = require('../../../models/index').sequelize;
 var config = require('../../../config');
 
 var PdfHelper = require('../../../helpers/PdfHelper'),
@@ -11,6 +12,7 @@ var MaxReservationsError = require('../../../errors/MaxReservationsError');
 var MaxReservationLengthError = require('../../../errors/MaxReservationLengthError');
 
 var Reservation = require('../../../models').Reservation;
+var User = require('../../../models').User;
 var Rating = require('../../../models').Rating;
 var Accessory = require('../../../models').Accessory;
 
@@ -21,15 +23,18 @@ module.exports = {
         }
 
         var dateUpfront = new Date(),
+            today = new Date(),
             dateStart = new Date(req.body.from),
             dateEnd = new Date(req.body.to),
             MS_PER_DAY = 1000 * 60 * 60 *  24;
 
         dateUpfront.setDate(dateUpfront.getDate() + config.MAX_RESERVATION_UPFRONT);
 
+        today.setUTCHours(0, 0, 0, 0);
         dateStart.setUTCHours(0, 0, 0, 0);
         dateEnd.setUTCHours(23, 59, 59, 999);
 
+        today = today.toISOString();
         dateStartString = dateStart.toISOString();
         dateEndString = dateEnd.toISOString();
 
@@ -46,99 +51,125 @@ module.exports = {
 
         var options = {
             where: {
-                state: 'confirmed',
+                state: 'draft',
                 $and: [
-                    { from: { gt: dateStartString } },
+                    { from: { gte: dateStartString } },
                     { from: { lte: dateEndString } }
                 ]
             }
         };
 
         Reservation.count(options).then(function(countReservations) {
-            if (countReservations >= config.MAX_RESERVATIONS) {
+            if (countReservations >= config.MAX_PRERESERVATIONS_DAY) {
                 return next(new MaxReservationsError());
             }
 
-            options.where.state = 'draft';
+            delete options.where.$and;
+            options.where.from = { gte: today };
+            options.where.state = 'confirmed';
             options.where.userId = req.user.id;
 
-            Reservation.count(options).then(function(countUserReservations) {
+            console.log(options);
+
+            return Reservation.count(options).then(function(countUserReservations) {
+                console.log(countUserReservations);
                 if (countUserReservations >= config.MAX_RESERVATIONS_USER) {
                     return next(new MaxReservationsError(true));
                 }
 
-                console.log(req.user);
-
                 var data = {
                         from: dateStartString,
                         to: dateEndString,
+                        pickup: parseInt(req.body.pickup),
                         userId: req.user.id,
                         priority: req.user.priority
                     },
-                    accessories = req.body.accessories;
+                    accessories = typeof(req.body['accessories[]']) !== 'undefined' ? req.body['accessories[]'] : [];
 
                 if (req.body.separateGrill) {
                     data.separateGrill = true;
                 }
 
-                Reservation.create(data).then(function(reservation) {
-                    var unsavedAccessories = accessories.length,
-                        result = reservation.get({
-                            plain: true
-                        });
-                    result.accessory = [];
-                    if (unsavedAccessories === 0) {
-                        pdf_helper.getFile(req).then(function(pdfFile) {
-                            if (config.SEND_EMAILS) {
-                                mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
-                                    result.mailSent = true;
-                                    res.json(result);
-                                }).catch(function(err) {
-                                    return next(err);
-                                });
-                            } else {
-                                res.json(result);
-                            }
-                        }).catch(function(err) {
-                            return next(err);
-                        });
-                    } else {
-                        Accessory.findAll({ 
-                            where: {
-                                id: {
-                                    $any: accessories
-                                }
-                            }
-                        }).then(function(data) {
-                            for (var i = 0; i < data.length; i++) {
-                                result.accessory.push(data[i].get({
-                                    plain: true
-                                }));
-                            }
-                            reservation.addAccessory(data).then(function(response) {
-                                pdf_helper.getFile(req).then(function(pdfFile) {
-                                    if (config.SEND_EMAILS) {
-                                        mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
-                                            result.mailSent = true;
-                                            res.json(result);
-                                        }).catch(function(err) {
-                                            return next(err);
-                                        });
-                                    } else {
-                                        res.json(result);
-                                    }
-                                }).catch(function(err) {
-                                    return next(err);
-                                });
-                            }).catch(function(data) {
-                                return next(new InvalidRequestError('Cannot set associations between reservation and accessories.'));
+                return sequelize.transaction(function(t) {
+                    return Reservation.create(data, { transaction: t }).then(function(reservation) {
+                        var unsavedAccessories = accessories.length,
+                            result = reservation.get({
+                                plain: true
                             });
-                        }).catch(function(data) {
-                            return next(new InvalidRequestError('Cannot find specified accessories.'));
-                        });
-                    }
-                }).catch(function(data) {
-                    return next(new InvalidRequestError(data.errors));
+
+                        result.accessory = [];
+                        if (unsavedAccessories === 0) {
+                            return pdf_helper.getFile(req).then(function(pdfFile) {
+                                if (config.SEND_EMAILS) {
+                                    return mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
+                                        result.mailSent = true;
+                                        return result;
+                                    }).catch(function(err) {
+                                        throw err;
+                                    });
+                                } else {
+                                    return result;
+                                }
+                            }).catch(function(err) {
+                                throw err;
+                            });
+                        } else {
+                            for (var i = 0; i < accessories.length; i++) {
+                                accessories[i] = parseInt(accessories[i]);
+                            }
+                            return Accessory.findAll({ 
+                                where: {
+                                    id: {
+                                        $any: accessories
+                                    }
+                                }
+                            }).then(function(data) {
+                                for (var i = 0; i < data.length; i++) {
+                                    result.accessory.push(data[i].get({
+                                        plain: true
+                                    }));
+                                }
+                                return reservation.addAccessory(data, { transaction: t }).then(function(response) {
+                                    return pdf_helper.getFile(req).then(function(pdfFile) {
+                                        if (config.SEND_EMAILS) {
+                                            return mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
+                                                result.mailSent = true;
+                                                return result;
+                                            }).catch(function(err) {
+                                                throw err;
+                                            });
+                                        } else {
+                                            return result;
+                                        }
+                                    })
+                                }).catch(function(err) {
+                                    if ('status' in err) {
+                                        throw err;
+                                    } else {
+                                        throw new InvalidRequestError('Cannot set associations between reservation and accessories.');
+                                    }
+                                });
+                            }).catch(function(err) {
+                                if ('status' in err) {
+                                    throw err;
+                                } else {
+                                    throw new InvalidRequestError('Cannot find specified accessories.');
+                                }
+                            });
+                        }
+                    }).catch(function(err) {
+                        console.log(err);
+                        if ('status' in err) {
+                            throw err;
+                        } else {
+                            throw new InvalidRequestError(err.errors);
+                        }
+                    });
+
+                }).then(function(result) {
+                    res.json(result);
+                }).catch(function(err) {
+                    return next(err);
                 });
             }).catch(function(data) {
                 return next(new InvalidRequestError(data.errors));
@@ -148,15 +179,15 @@ module.exports = {
         });
     },
 
-    get(req, res, next) {
+    get(req, res, next, cb) {
         var where = {},
             startInterval,
             endInterval;
 
         try {
             startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date(),
-            endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
-        } catch(err) {
+                endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
+        } catch (err) {
             return next(new InvalidRequestError('Invalid date format!'));
         }
 
@@ -172,17 +203,59 @@ module.exports = {
         Reservation.findAndCountAll({
             where: where
         }).then(function(data) {
-            var reservations = [];
-            for (var i = 0; i < data.rows.length; i++) {
-                reservations.push(data.rows[i].get({
-                    plain: true
-                }));
+            if (data.rows.length === 0) {
+                return {
+                    reservations: [],
+                    users: {},
+                    total: 0
+                };
             }
-            res.json({
-                reservations: reservations,
-                total: data.count
+            var reservations = [],
+                users = {},
+                usersArr = [];
+            for (var i = 0; i < data.rows.length; i++) {
+                var tmp = data.rows[i].get({
+                    plain: true
+                });
+                reservations.push(tmp);
+                if (tmp.userId in users) {
+                    continue;
+                }
+                users[tmp.userId] = {};
+                usersArr.push(tmp.userId);
+            }
+
+            var promiseFor = function(condition, action, value) {
+                if (!condition(value)) return value;
+                return action(value).then(promiseFor.bind(null, condition, action));
+            };
+
+            return promiseFor(function(count) {
+                return count < usersArr.length;
+            }, function(count) {
+                return User.findById(usersArr[count]).then(function(res) {
+                    var tmp = res.get({
+                        plain: true
+                    });
+                    users[tmp.id] = tmp;
+                    return ++count;
+                });
+            }, 0).then(function() {
+                return {
+                    reservations: reservations,
+                    users: users,
+                    total: data.rows.length
+                };
             });
-        }).catch(function(data) {
+
+        }).then(function(result) {
+            if (typeof(cb) !== 'undefined') {
+                cb(result);
+            } else {
+                res.json(result);
+            }
+        }).catch(function(err) {
+            console.log(err);
             return next(new InvalidRequestError('Something went wrong, please try again.'));
         });
     },

@@ -6,6 +6,8 @@ var AuthHelper = require('../../../helpers/AuthHelper');
 var EmailExistsError = require('../../../errors/EmailExistsError');
 var InvalidRequestError = require('../../../errors/InvalidRequestError');
 
+var User = require('../../../models').User;
+
 function processUserUpdate(req, res, next, id, passwordHash) {
     passwordHash = typeof(passwordHash) === 'undefined' ? null : passwordHash;
     var data = {};

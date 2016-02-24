@@ -1,6 +1,6 @@
 "use strict";
 
-var moment      = require('moment');
+var moment = require('moment');
 
 module.exports = function(sequelize, DataTypes) {
     var Reservation = sequelize.define("Reservation", {
@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.DATE,
             allowNull: false,
             validate: {
-                isDate: function (val) {
+                isDate: function(val) {
                     var val = new Date(val).toISOString();
                     if (!moment(val, moment.ISO_8601, true).isValid()) {
                         throw new Error('Invalid date format.');
@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.DATE,
             allowNull: false,
             validate: {
-                isDate: function (val) {
+                isDate: function(val) {
                     var val = new Date(val).toISOString();
                     if (!moment(val, moment.ISO_8601, true).isValid()) {
                         throw new Error('Invalid date format.');
@@ -42,6 +42,17 @@ module.exports = function(sequelize, DataTypes) {
                     val.setUTCHours(23, 59, 59, 999);
                     if (start > val) {
                         throw new Error('Ending date must be after the starting date.');
+                    }
+                }
+            }
+        },
+        pickup: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isTime: function(val) {
+                    if (val < 0 || val > 23 * 60 + 59) {
+                        throw new Error('Invalid pickup time.');
                     }
                 }
             }

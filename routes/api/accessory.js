@@ -6,11 +6,11 @@ var Accessory = require('./controllers/accessory');
 
 // POST /api/accessory/create
 router.post('/create', function(req, res, next) {
-    //AuthHelper.isAuthenticated(req, res, next, true).then(function() {
+    AuthHelper.isAuthenticated(req, res, next, true).then(function() {
         Accessory.create(req, res, next);
-    //}).catch(function(err) {
-    //    return next(err);
-    //});
+    }).catch(function(err) {
+        return next(err);
+    });
 });
 
 // GET /api/accessory

@@ -17,6 +17,10 @@ input[type="password"]
     &:focus
         background-color transparent
         outline none
+        
+    &:-webkit-autofill
+        -webkit-box-shadow 0 0 0px 1000px $color-input inset
+        -webkit-text-fill-color $color-text-default !important
 
 .error
     input[type="text"],
@@ -25,3 +29,4 @@ input[type="password"]
     input[type="password"]
         background-color rgba(255, 80, 80, .5)
         border-color $color-red
+        color $color-white

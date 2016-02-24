@@ -1,0 +1,78 @@
+extends layout
+
+block content
+    section.content
+        .container__md
+            .box
+                .box__header.box__header--border
+                    h2.text__title Rezervace na schválení
+                .box__body
+                    if reservations.length === 0
+                        p.text__paragraph.text--center Žádné rezervace čekající na schválení
+                    else
+                        - function pad(n) { 
+                        -     return n < 10 ? '0' + n : n; 
+                        - }
+                        .table__wrapper
+                            ul.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
+                                li.table__row.table__heading
+                                    .table__cell Jméno
+                                    .table__cell(title='Priorita') Pr.
+                                    .table__cell(title='Separátní gril') SG
+                                    .table__cell Od
+                                    .table__cell Do
+                                    .table__cell Vyzvednutí
+                                    .table__cell Akce
+                                each reservation, index in reservations
+                                    - var user = users[reservation.userId]
+                                    li.table__row
+                                        .table__cell= user.fullName
+                                        .table__cell= user.priority
+                                        .table__cell= reservation.separateGrill
+                                        .table__cell(data-date='#{reservation.from}')
+                                        .table__cell(data-date='#{reservation.to}')
+                                        .table__cell #{Math.floor(reservation.pickup / 60)}:#{pad(reservation.pickup%60)}
+                                        .table__cell
+                                            button.btn__confirm(type='button', data-id= reservation.id) Confirm
+                                            button.btn__reject(type='button', data-id= reservation.id) Reject
+
+
+
+block scripts
+    script.
+        $(document).ready(function() {
+
+            $('[data-date]').each(function(i, element) {
+                var date = moment($(element).attr('data-date')).format('LL');
+                $(element).text(date);
+            });
+
+            $('.btn__confirm').on('click', function() {
+                var $this = $(this),
+                    $row = $this.closest('.table__row'),
+                    id = $this.attr('data-id');
+
+                makeRequest('/api/reservation/' + id + '/confirm', 'PUT', {}, function(res) {
+                    addNotification('success', 'Reservation successfully confirmed.');
+                    $row.remove();
+                    if ($('.listReservations li:not(.table__heading)').length === 0) {
+                        $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
+                    }
+                });
+            });
+
+            $('.btn__reject').on('click', function() {
+                var $this = $(this),
+                    $row = $this.closest('.table__row'),
+                    id = $this.attr('data-id');
+
+                makeRequest('/api/reservation/' + id + '/reject', 'PUT', {}, function(res) {
+                    addNotification('success', 'Reservation successfully rejected.');
+                    $row.remove();
+                    if ($('.listReservations li:not(.table__heading)').length === 0) {
+                        $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
+                    }
+                });
+            });
+
+        });

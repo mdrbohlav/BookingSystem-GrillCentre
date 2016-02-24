@@ -75,7 +75,7 @@
         padding 30px 5px 5px
         text-align left
         
-    &.event
+    &.event:not(.next-month):not(.last-month)
         cursor pointer
         
         &:hover
@@ -93,7 +93,7 @@
             position absolute
             right 10px
             top 10px
-        
+    
     &__event
         background-color $color-red
         border-radius 50%
@@ -108,6 +108,11 @@
             padding 5px
             set-font-size 12px
             size(auto)
+            
+    &.last-month,
+    &.next-month
+        .day__event
+            background-color lighten($color-red, 75%)
     
     &__header
         & + .day__header

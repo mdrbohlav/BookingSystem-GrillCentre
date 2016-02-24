@@ -6,11 +6,11 @@ var User = require('./controllers/user');
 
 // POST /api/user/create
 router.post('/create', function(req, res, next) {
-    //AuthHelper.isAuthenticated(req, res, next, true).then(function() {
+    AuthHelper.isAuthenticated(req, res, next, true).then(function() {
         User.create(req, res, next);
-    //}).catch(function(err) {
-    //    return next(err);
-    //});
+    }).catch(function(err) {
+        return next(err);
+    });
 });
 
 // GET /api/user

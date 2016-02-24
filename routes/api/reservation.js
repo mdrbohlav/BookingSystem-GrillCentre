@@ -31,8 +31,8 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
-// POST /api/reservation/:id/confirm
-router.post('/:id/confirm', function(req, res, next) {
+// PUT /api/reservation/:id/confirm
+router.put('/:id/confirm', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, true).then(function() {
         Reservation.confirm(req, res, next);
     }).catch(function(err) {
@@ -40,8 +40,8 @@ router.post('/:id/confirm', function(req, res, next) {
     });
 });
 
-// POST /api/reservation/:id/reject
-router.post('/:id/reject', function(req, res, next) {
+// PUT /api/reservation/:id/reject
+router.put('/:id/reject', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, true).then(function() {
         Reservation.reject(req, res, next);
     }).catch(function(err) {
