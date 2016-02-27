@@ -9,17 +9,18 @@ var Reservation = require('./api/controllers/reservation');
 // GET /
 router.get('/', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, false).then(function() {
-        Accessory.get(req, res, next, function(result) {
-            res.render('index', {
-                page: 'index',
-                reservationLength: config.MAX_RESERVATION_LENGTH,
-                reservationUpfront: config.MAX_RESERVATION_UPFRONT,
-                accessories: result.accessories,
-                keyPickupFrom: config.KEY_PICKUP_FROM,
-                keyPickupTo: config.KEY_PICKUP_TO,
-                keyPickupInterval: config.KEY_PICKUP_INTERVAL_MINS
-            });
-        });
+        res.json({ success: true });
+        //Accessory.get(req, res, next, function(result) {
+        //    res.render('index', {
+        //        page: 'index',
+        //        reservationLength: config.MAX_RESERVATION_LENGTH,
+        //        reservationUpfront: config.MAX_RESERVATION_UPFRONT,
+        //        accessories: result.accessories,
+        //        keyPickupFrom: config.KEY_PICKUP_FROM,
+        //        keyPickupTo: config.KEY_PICKUP_TO,
+        //        keyPickupInterval: config.KEY_PICKUP_INTERVAL_MINS
+        //    });
+        //});
     }).catch(function() {
         res.redirect('/login');
     });

@@ -109,7 +109,6 @@ block scripts
             };
 
             makeRequest('/api/reservation', 'GET', data, function(res) {
-                console.log(res);
                 var reservationsObj = res.reservations,
                     usersObj = res.users,
                     reservationsArr = [];
@@ -319,11 +318,9 @@ block scripts
                     data.to = end;
                     data.pickup = $('#pickup').pickatime('picker').get('select').pick;
                     
-                    console.log(data);
                     var url = $(form).attr('action'),
                         method = $(form).attr('method');
                     makeRequest(url, method, data, function(res) {
-                        console.log(res);
                         date.clear();
                         $date.parent().removeClass('error');
                         pickup.clear();

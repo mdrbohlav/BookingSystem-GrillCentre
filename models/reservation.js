@@ -67,14 +67,17 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false,
             defaultValue: false
         },
+        onlySeparateGrill: {
+            type: DataTypes.BOOLEAN
+        },
         state: {
             type: DataTypes.ENUM,
-            values: ['draft', 'confirmed', 'rejected', 'finished'],
+            values: ['draft', 'confirmed', 'rejected', 'canceled', 'finished'],
             allowNull: false,
             defaultValue: 'draft',
             validate: {
                 isIn: function(val) {
-                    if (['draft', 'confirmed', 'rejected', 'finished'].indexOf(val) === -1) {
+                    if (['draft', 'confirmed', 'rejected', 'canceled', 'finished'].indexOf(val) === -1) {
                         throw new Error('Invalid reservation state.');
                     }
                 }

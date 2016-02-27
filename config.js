@@ -6,8 +6,8 @@ exports.REDIS_PASS = "";
 
 exports.CONFIRM_RESERVATION_HEADING = 'Reservation confirmed.';
 exports.DRAFT_RESERVATION_HEADING = 'Reservation created.';
-exports.MAX_PRERESERVATIONS_DAY = 3;
-exports.MAX_RESERVATIONS_USER = 1;
+exports.MAX_PRERESERVATIONS_DAY = 10;
+exports.MAX_RESERVATIONS_USER = 10;
 exports.MAX_RESERVATION_LENGTH = 1;
 exports.MAX_RESERVATION_UPFRONT = 40;
 exports.SEND_EMAILS = false;

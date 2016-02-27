@@ -21,6 +21,11 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false
         },
+        banned: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
         firstname: {
             type: DataTypes.STRING,
             allowNull: false
@@ -32,7 +37,7 @@ module.exports = function(sequelize, DataTypes) {
         priority: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: 1
         },
         block: {
             type: DataTypes.INTEGER,
