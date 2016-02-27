@@ -3,6 +3,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 var InvalidPasswordError = require('../errors/InvalidPasswordError');
 var InvalidRequestError = require('../errors/InvalidRequestError');
+var UnauthorizedError = require('../errors/UnauthorizedError');
 var UserDoesnotExistError = require('../errors/UserDoesnotExistError');
 var UserBannedError = require('../errors/UserBannedError');
 
@@ -34,7 +35,7 @@ module.exports.hashPassword = function(password) {
 
 // is authenticated middleware
 module.exports.isAuthenticated = function(req, res, next) {
-    if ((req.hostname.indexOf('localhost') > -1 && !req.user) || req.user.email === 'm.drbohlav1@gmail.com') {
+    if ((req.hostname.indexOf('localhost') > -1 && !req.user) || (req.user && req.user.email === 'm.drbohlav1@gmail.com')) {
         return new Promise(function(resolve, reject) {
             resolve();
         });
@@ -60,6 +61,9 @@ module.exports.localAuth = function(email, password) {
         }).then(function(user) {
             if (!user) {
                 reject(new UserDoesnotExistError());
+            }
+            if (user.banned) {
+                reject(new UserBannedError());
             }
             user = user.get({ plain: true });
             verifyPassword(password, user.password).then(function(result) {

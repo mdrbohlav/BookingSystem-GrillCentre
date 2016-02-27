@@ -23,8 +23,10 @@ var stylus = require('stylus'),
 
 var nodemon = require('nodemon');
 
-var routes = require('./routes/index'),
+var index = require('./routes/index'),
     auth = require('./routes/auth'),
+    user = require('./routes/user'),
+    admin = require('./routes/admin'),
     apiUser = require('./routes/api/user'),
     apiReservation = require('./routes/api/reservation'),
     apiAccessory = require('./routes/api/accessory'),
@@ -176,7 +178,7 @@ passport.use('login-native', new LocalStrategy({
         }
     }).catch(function(err) {
         req.session.error = err.customMessage;
-        done (null, false);
+        done(null, false);
     });
 }));
 
@@ -223,8 +225,36 @@ app.use(function(req, res, next) {
 // routes require login
 var UnauthorizedError = require('./errors/UnauthorizedError');
 
+app.get('/', function(req, res, next) {
+    AuthHelper.isAuthenticated(req, res, next).then(function() {
+        next();
+    }).catch(function(err) {
+        res.redirect('/login');
+    });
+});
+
+app.get('/user*', function(req, res, next) {
+    AuthHelper.isAuthenticated(req, res, next).then(function() {
+        next();
+    }).catch(function(err) {
+        res.redirect('/login');
+    });
+});
+
 app.get('/admin*', function(req, res, next) {
-    AuthHelper.isAuthenticated(req, res, next, false).then(function() {
+    AuthHelper.isAuthenticated(req, res, next).then(function() {
+        if (req.user.isAdmin) {
+            next();
+        } else {
+            next(new UnauthorizedError());
+        }
+    }).catch(function(err) {
+        res.redirect('/login');
+    });
+});
+
+app.get('/api*', function(req, res, next) {
+    AuthHelper.isAuthenticated(req, res, next).then(function() {
         next();
     }).catch(function(err) {
         next(err);
@@ -233,15 +263,17 @@ app.get('/admin*', function(req, res, next) {
 
 app.get('/api/admin*', function(req, res, next) {
     if (req.user.isAdmin) {
-        next();    
+        next();
     } else {
         next(new UnauthorizedError());
     }
 });
 
 // routing
-app.use('/', routes);
+app.use('/', index);
 app.use('/auth', auth);
+app.use('/user', user);
+app.use('/admin', admin);
 app.use('/api/user', apiUser);
 app.use('/api/reservation', apiReservation);
 app.use('/api/accessory', apiAccessory);
