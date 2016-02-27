@@ -49,32 +49,42 @@ block content
                 .box__body
                     form#create-reservation.form.form__reservation(method='POST', action='/api/reservation/create')
                         .fieldset.row
-                            .field__container.col-xs-12.col-md-6.field__checkbox
-                                span.checkbox
-                                    input#separateGrill(type='checkbox', name='separateGrill')
-                                label.t__label(for='separateGrill') Pouze separátní gril
-                        .fieldset.row
                             if reservationLength === 1
-                                .field__container.col-xs-12.col-md-6.margin--top-20
+                                .field__container.col-xs-12.col-sm-6.margin--top-20
                                     label.text__label(for='date') Datum
                                     .field
                                         input#date(type='text', name='date', required)
                             else
-                                .field__container.col-xs-12.col-md-6.margin--top-20
+                                .field__container.col-xs-12.col-sm-6.margin--top-20
                                     label.text__label(for='date') Od
                                     .field
                                         input#date(type='text', name='date', required)
-                                .field__container.col-xs-12.col-md-6.margin--top-20
+                                .field__container.col-xs-12.col-sm-6.margin--top-20
                                     label.text__label(for='date-to') Do
                                     .field
                                         input#date-to(type='text', name='date-to', required)
-                            .field__container.col-xs-12.col-md-6.margin--top-20
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
                                 label.text__label(for='pickup') Vyzvednutí
                                 .field
                                     input#pickup(type='text', name='pickup', required)
-                        if accessories.length > 0
+                        .switch__container
+                            .fieldset
+                                .text--center.margin--top-35
+                                    ul.switch__list
+                                        li.active(data-res-type='centre')
+                                            span.radio.active
+                                                input#grillcentreTrigger(type='radio', name='reservationType', checked='checked')
+                                            label.t__label(for='grillcentreTrigger') Gril centrum
+                                        li(data-res-type='grill')
+                                            span.radio
+                                                input#separateGrillTrigger(type='radio', name='reservationType')
+                                            label.t__label(for='separateGrillTrigger') Pouze separátní gril
                             .fieldset.accessories
                                 h3.text__subtitle.text--default Příslušenství
+                                .field__checkbox
+                                    span.checkbox
+                                        input#separateGrill(type='checkbox', name='separateGrill')
+                                    label.t__label(for='separateGrill') Separátní gril
                                 each accessory, index in accessories
                                     if accessory.available
                                         .field__checkbox
@@ -260,16 +270,24 @@ block scripts
 
             loadReservations(calendar);
 
-            $('#separateGrill').on('change', function() {
+            $('[data-res-type="centre"]').on('click', function() {
                 var $this = $(this);
-                if ($('.accessories').length === 0) {
+                if ($this.hasClass('active')) {
                     return;
                 }
-                if ($this.prop('checked')) {
-                    $('.accessories').velocity('slideUp');
-                } else {
-                    $('.accessories').velocity('slideDown');
+                $('[data-res-type="grill"]').removeClass('active');
+                $this.addClass('active');
+                $('.accessories').velocity('finish').velocity('slideDown');
+            });
+
+            $('[data-res-type="grill"]').on('click', function() {
+                var $this = $(this);
+                if ($this.hasClass('active')) {
+                    return;
                 }
+                $('[data-res-type="centre"]').removeClass('active');
+                $this.addClass('active');
+                $('.accessories').velocity('finish').velocity('slideUp');
             });
 
             $('#create-reservation').validate({
@@ -297,14 +315,6 @@ block scripts
                 },
                 submitHandler: function(form) {
                     var data = {};
-                    if ($('#separateGrill').prop('checked')) {
-                        data.separateGrill = true;
-                    } else {
-                        data.accessories = [];
-                        $('[name="accessory[]"]:checked').each(function(i, element) {
-                            data.accessories.push($(element).val());
-                        });
-                    }
                     var start = $('[name="date"]').pickadate('picker').get('select').pick,
                         end;
                     start = moment(new Date(start)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
@@ -317,6 +327,17 @@ block scripts
                     data.from = start;
                     data.to = end;
                     data.pickup = $('#pickup').pickatime('picker').get('select').pick;
+                    data.separateGrill = $('#separateGrill').prop('checked');
+
+                    if ($('#separateGrillTrigger').prop('checked')) {
+                        data.onlySeparateGrill = true;
+                        data.separateGrill = true;
+                    } else {
+                        data.accessories = [];
+                        $('[name="accessory"]:checked').each(function(i, element) {
+                            data.accessories.push($(element).val());
+                        });
+                    }
                     
                     var url = $(form).attr('action'),
                         method = $(form).attr('method');

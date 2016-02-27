@@ -68,7 +68,9 @@ module.exports = function(sequelize, DataTypes) {
             defaultValue: false
         },
         onlySeparateGrill: {
-            type: DataTypes.BOOLEAN
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         },
         state: {
             type: DataTypes.ENUM,

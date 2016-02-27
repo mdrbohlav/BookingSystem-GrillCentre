@@ -161,6 +161,25 @@ function makeRequest(url, method, data, cbSuccess, cbError) {
     });
 }
 
+function animateScale($element) {
+    $element.velocity({
+        scale: "0"
+    }, {
+        duration: 100,
+        complete: function() {
+            $element.toggleClass('active');
+        }
+    }).velocity({
+        scale: "1.2"
+    }, {
+        duration: 150
+    }).velocity({
+        scale: "1"
+    }, {
+        duration: 50
+    });
+}
+
 $(document).ready(function() {
 
     $window.on('load', function() {
@@ -212,22 +231,21 @@ $(document).ready(function() {
     $('input[type="checkbox"]').on('change', function() {
         var $this = $(this),
             $checkbox = $this.parent();
-        $checkbox.velocity({
-            scale: "0"
-        }, {
-            duration: 100,
-            complete: function() {
-                $checkbox.toggleClass('active');
-            }
-        }).velocity({
-            scale: "1.2"
-        }, {
-            duration: 150
-        }).velocity({
-            scale: "1"
-        }, {
-            duration: 50
-        });
+        animateScale($checkbox);
+    });
+
+    //=================================================================
+    // Radio functionality
+    //=================================================================
+    $('input[type="radio"]').on('change', function() {
+        var $this = $(this),
+            $radio = $this.parent(),
+            group = $this.attr('name'),
+            $prev = $('input[name="' + group + '"][type="radio"]:not(:checked)');
+        if ($prev.length) {
+            $prev.parent().removeClass('active');
+        }
+        animateScale($radio);
     });
 
     //=================================================================

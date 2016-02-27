@@ -11,7 +11,7 @@ var MaxReservationLengthError = require('../../errors/MaxReservationLengthError'
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {
-    if (req.body.accessories && req.body.separateGrill) {
+    if (req.body['accessories[]'] && req.body.separateGrill) {
         next(new InvalidRequestError('Cannot add accessories when booking separate grill!'));
     }
 
@@ -76,13 +76,15 @@ router.post('/create', function(req, res, next) {
                 },
                 accessories = [];
 
+            console.log(req.body);
+
             if (req.body.separateGrill) {
                 data.separateGrill = true;
             }
             if (req.body.onlySeparateGrill) {
                 data.onlySeparateGrill = req.body.onlySeparateGrill;
-            } else if (req.body.accessories) {
-                accessories = req.body.accessories;
+            } else if (req.body['accessories[]']) {
+                accessories = req.body['accessories[]'];
 
                 for (var i = 0; i < accessories.length; i++) {
                     accessories[i] = parseInt(accessories[i]);

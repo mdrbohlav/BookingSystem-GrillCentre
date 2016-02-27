@@ -1,0 +1,38 @@
+.switch
+    &__list
+        border 1px solid $color-grey-1
+        border-radius 36px
+        display inline-block
+        overflow hidden
+        reset-list()
+        
+        li
+            display block
+            position relative
+            
+            @media $sm-up
+                display inline-block
+            
+            & + li
+                border-left 1px solid $color-grey-1
+                
+        .radio
+            bottom 3px
+            left 23px
+            margin auto
+            position absolute
+            top 0
+            
+            @media $sm-up
+                left 15px
+            
+            &.active + label
+                background-color $color-grey-1
+                
+        label
+            padding 5px 20px 5px 40px !important
+            transition background-color .2s linear
+            min-width 205px
+            
+            @media $sm-up
+                padding 10px 20px 10px 40px !important

@@ -92,8 +92,8 @@ router.get('/reservations/:state?', function(req, res, next) {
     if (req.params.state) {
         where.state = req.params.state;
     }
-    User.getReservations(id, where).then(function(reservations) {
-        res.json(reservations);
+    User.getReservations(id, where).then(function(result) {
+        res.json(result);
     }).catch(function(data) {
         if ('status' in data) {
             next(data);
