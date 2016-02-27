@@ -1,8 +1,8 @@
-var AuthHelper = require('../../../helpers/AuthHelper');
-var User = require('../../../models').User;
+var AuthHelper = require('../helpers/AuthHelper');
+var User = require('../models').User;
 
-var EmailExistsError = require('../../../errors/EmailExistsError');
-var UserDoesnotExistError = require('../../../errors/UserDoesnotExistError');
+var EmailExistsError = require('../errors/EmailExistsError');
+var UserDoesnotExistError = require('../errors/UserDoesnotExistError');
 
 function processUserUpdate(data) {
     return User.update(data, {
@@ -118,7 +118,7 @@ module.exports = {
                                 return accessories;
                             }).then(function(accessories) {
                                 var plain = reservation.get({ plain: true });
-                                result.reservations[plain.id].rating = rating.get({ plain: true });
+                                result.reservations[plain.id].rating = rating ? rating.get({ plain: true }) : rating;
                                 result.reservations[plain.id].accessories = accessories;
                             });
                         });

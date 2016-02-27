@@ -1,4 +1,4 @@
-var Accessory = require('../../../models').Accessory;
+var Accessory = require('../models').Accessory;
 
 module.exports = {
     create(data) {
@@ -12,6 +12,20 @@ module.exports = {
             var accessories = [];
             for (var i = 0; i < data.rows.length; i++) {
                 accessories.push(data.rows[i].get({ plain: true }));
+            }
+
+            return {
+                accessories: accessories,
+                total: data.count
+            };
+        });
+    },
+
+    getObj(where) {
+        return Accessory.findAndCountAll({ where: where }).then(function(data) {
+            var accessories = [];
+            for (var i = 0; i < data.rows.length; i++) {
+                accessories.push(data.rows[i]);
             }
 
             return {

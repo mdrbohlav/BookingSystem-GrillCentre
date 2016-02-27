@@ -3,7 +3,6 @@ var bcrypt = require('bcrypt-nodejs');
 
 var InvalidPasswordError = require('../errors/InvalidPasswordError');
 var InvalidRequestError = require('../errors/InvalidRequestError');
-var UnauthorizedError = require('../errors/UnauthorizedError');
 var UserDoesnotExistError = require('../errors/UserDoesnotExistError');
 var UserBannedError = require('../errors/UserBannedError');
 
@@ -34,7 +33,7 @@ module.exports.hashPassword = function(password) {
 };
 
 // is authenticated middleware
-module.exports.isAuthenticated = function(req, res, next, isAdmin) {
+module.exports.isAuthenticated = function(req, res, next) {
     if ((req.hostname.indexOf('localhost') > -1 && !req.user) || req.user.email === 'm.drbohlav1@gmail.com') {
         return new Promise(function(resolve, reject) {
             resolve();
@@ -42,12 +41,7 @@ module.exports.isAuthenticated = function(req, res, next, isAdmin) {
     }
     return new Promise(function(resolve, reject) {
         if (req.user) {
-            if (!isAdmin ||  req.user.isAdmin) {
-                resolve();
-            } else {
-                req.session.error = 'You are not authorized for this action!';
-                reject(new UnauthorizedError());
-            }
+            resolve();
         }
         reject(new UnauthorizedError());
     });

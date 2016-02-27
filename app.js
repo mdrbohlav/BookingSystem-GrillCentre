@@ -26,9 +26,12 @@ var nodemon = require('nodemon');
 var routes = require('./routes/index'),
     auth = require('./routes/auth'),
     apiUser = require('./routes/api/user'),
-    apiUsers = require('./routes/api/users'),
     apiReservation = require('./routes/api/reservation'),
-    apiAccessory = require('./routes/api/accessory');
+    apiAccessory = require('./routes/api/accessory'),
+    apiAdminUser = require('./routes/api/admin/user'),
+    apiAdminUsers = require('./routes/api/admin/users'),
+    apiAdminReservation = require('./routes/api/admin/reservation'),
+    apiAdminAccessory = require('./routes/api/admin/accessory');
 
 var app = express();
 
@@ -217,13 +220,35 @@ app.use(function(req, res, next) {
     next();
 });
 
+// routes require login
+var UnauthorizedError = require('./errors/UnauthorizedError');
+
+app.get('/admin*', function(req, res, next) {
+    AuthHelper.isAuthenticated(req, res, next, false).then(function() {
+        next();
+    }).catch(function(err) {
+        next(err);
+    });
+});
+
+app.get('/api/admin*', function(req, res, next) {
+    if (req.user.isAdmin) {
+        next();    
+    } else {
+        next(new UnauthorizedError());
+    }
+});
+
 // routing
 app.use('/', routes);
 app.use('/auth', auth);
 app.use('/api/user', apiUser);
-app.use('/api/users', apiUsers);
 app.use('/api/reservation', apiReservation);
 app.use('/api/accessory', apiAccessory);
+app.use('/api/admin/user', apiAdminUser);
+app.use('/api/admin/users', apiAdminUsers);
+app.use('/api/admin/reservation', apiAdminReservation);
+app.use('/api/admin/accessory', apiAdminAccessory);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

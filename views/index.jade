@@ -79,7 +79,7 @@ block content
                                     if accessory.available
                                         .field__checkbox
                                             span.checkbox
-                                                input(id='accessory-#{index}', type='checkbox', name='accessory[]', value= accessory.id)
+                                                input(id='accessory-#{index}', type='checkbox', name='accessory', value= accessory.id)
                                             label.t__label(for='accessory-#{index}')= accessory.name
                         .form__footer.text--center.margin--top-45
                             button.btn.btn__orange(type='submit') Vytvořit

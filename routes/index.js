@@ -3,24 +3,25 @@ var router = express.Router();
 var config = require('../config');
 
 var AuthHelper = require('../helpers/AuthHelper');
-var Accessory = require('./api/controllers/accessory');
-var Reservation = require('./api/controllers/reservation');
+var Accessory = require('../api/accessory');
+var Reservation = require('../api/reservation');
 
 // GET /
 router.get('/', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, false).then(function() {
-        res.json({ success: true });
-        //Accessory.get(req, res, next, function(result) {
-        //    res.render('index', {
-        //        page: 'index',
-        //        reservationLength: config.MAX_RESERVATION_LENGTH,
-        //        reservationUpfront: config.MAX_RESERVATION_UPFRONT,
-        //        accessories: result.accessories,
-        //        keyPickupFrom: config.KEY_PICKUP_FROM,
-        //        keyPickupTo: config.KEY_PICKUP_TO,
-        //        keyPickupInterval: config.KEY_PICKUP_INTERVAL_MINS
-        //    });
-        //});
+        Accessory.get({}).then(function(result) {
+            res.render('index', {
+                page: 'index',
+                reservationLength: config.MAX_RESERVATION_LENGTH,
+                reservationUpfront: config.MAX_RESERVATION_UPFRONT,
+                accessories: result.accessories,
+                keyPickupFrom: config.KEY_PICKUP_FROM,
+                keyPickupTo: config.KEY_PICKUP_TO,
+                keyPickupInterval: config.KEY_PICKUP_INTERVAL_MINS
+            });
+        }).catch(function(err) {
+            res.json(err);
+        });
     }).catch(function() {
         res.redirect('/login');
     });

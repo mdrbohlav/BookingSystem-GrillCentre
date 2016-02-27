@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-var User = require('../../api/user');
+var AuthHelper = require('../../../helpers/AuthHelper');
+var User = require('../../../api/user');
 
-var InvalidRequestError = require('../../errors/InvalidRequestError');
+var InvalidRequestError = require('../../../errors/InvalidRequestError');
 
 function getData(req, data) {
     if (req.body.password) {
@@ -39,9 +40,30 @@ function getData(req, data) {
     return data;
 }
 
-// GET /api/user
-router.get('/', function(req, res, next) {
-    var id = req.user.id;
+// POST /api/admin/user/create
+router.post('/create', function(req, res, next) {
+    var data = {
+        password: req.body.password,
+        email: req.body.email,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        block: req.body.block,
+        room: req.body.room
+    };
+    User.create(data).then(function(user) {
+        res.json(user);
+    }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
+    });
+});
+
+// GET /api/admin/user/:id
+router.get('/:id', function(req, res, next) {
+    var id = req.params.id;
     User.getById(id).then(function(user) {
         res.json(user);
     }).catch(function(data) {
@@ -53,15 +75,15 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// PUT /api/user
-router.put('/', function(req, res, next) {
+// PUT /api/admin/user/:id
+router.put('/:id', function(req, res, next) {
     var data = {
-        id: req.user.id
+        id: req.params.id
     };
     data = getData(req, data);
 
-    User.update(data).then(function(user) {
-        res.json(user);
+    User.update(data).then(function(count) {
+        res.json(count);
     }).catch(function(data) {
         if ('status' in data) {
             next(data);
@@ -71,9 +93,9 @@ router.put('/', function(req, res, next) {
     });
 });
 
-// DELETE /api/user
-router.delete('/', function(req, res, next) {
-    var id = req.user.id;
+// DELETE /api/admin/user/:id
+router.delete('/:id', function(req, res, next) {
+    var id = req.params.id;
     User.delete(id).then(function(count) {
         res.json(count);
     }).catch(function(data) {
@@ -85,9 +107,9 @@ router.delete('/', function(req, res, next) {
     });
 });
 
-// GET /api/user/reservations/:state?
-router.get('/reservations/:state?', function(req, res, next) {
-    var id = req.user.id,
+// GET /api/admin/user/:id/reservations/:state?
+router.get('/:id/reservations/:state?', function(req, res, next) {
+    var id = req.params.id,
         where = {};
     if (req.params.state) {
         where.state = req.params.state;
