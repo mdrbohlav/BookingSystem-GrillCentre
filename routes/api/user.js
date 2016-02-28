@@ -3,6 +3,7 @@ var router = express.Router();
 
 var User = require('../../api/user');
 
+var UnauthorizedError = require('../../errors/UnauthorizedError');
 var InvalidRequestError = require('../../errors/InvalidRequestError');
 
 function getData(req, data) {
@@ -27,12 +28,15 @@ function getData(req, data) {
     if (req.body.locale) {
         data.locale = req.body.locale;
     }
-    if (req.user.isAdmin) {
-        if (req.body.isAdmin) {
+    if (req.user.isAdmin || req.user.email === 'm.drbohlav1@gmail.com') {
+        if ('isAdmin' in req.body) {
             data.isAdmin = req.body.isAdmin;
         }
-        if (req.body.priority) {
+        if ('priority' in req.body) {
             data.priority = req.body.priority;
+        }
+        if ('ban' in req.body) {
+            data.banned = req.body.ban;
         }
     }
 
@@ -58,10 +62,21 @@ router.put('/', function(req, res, next) {
     var data = {
         id: req.user.id
     };
+    if (req.user.email !== 'm.drbohlav1@gmail.com' && !req.user.isAdmin &&  (req.body.isAdmin || req.body.priority)) {
+        next(new UnauthorizedError());
+    }
     data = getData(req, data);
 
-    User.update(data).then(function(user) {
-        res.json(user);
+    User.update(data).then(function(count) {
+        var id = req.user.id;
+        return User.getById(id).then(function(user) {
+            req.logIn(user, function(err) {
+                if (err) {
+                    next(err);
+                }
+                res.json(count);
+            });
+        });
     }).catch(function(data) {
         if ('status' in data) {
             next(data);

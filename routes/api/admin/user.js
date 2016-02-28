@@ -83,7 +83,18 @@ router.put('/:id', function(req, res, next) {
     data = getData(req, data);
 
     User.update(data).then(function(count) {
-        res.json(count);
+        if (req.user.id === id) {
+            return User.getById(id).then(function(user) {
+                req.logIn(user, function(err) {
+                    if (err) {
+                        next(err);
+                    }
+                    res.json(count);
+                });
+            });
+        } else {
+            res.json(count);
+        }
     }).catch(function(data) {
         if ('status' in data) {
             next(data);
