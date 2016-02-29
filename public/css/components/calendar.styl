@@ -81,6 +81,14 @@
         &:hover
             .day__num
                 color $color-red
+                
+    &.today
+        .day__num
+            color $color-blue
+                
+    &.past,
+    &.inactive
+        color $color-grey-1
             
     &.adjacent-month
         background-color $color-grey-2

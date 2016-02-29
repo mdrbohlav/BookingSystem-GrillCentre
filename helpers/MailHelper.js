@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer'),
     fs = require('fs'),
-    config = require('../config');
+    configCustom = require('../config-custom').custom;
 
 var MailError = require('../errors/MailError');
 
@@ -44,8 +44,8 @@ module.exports = MailHelper;
 
 function getOptions(email, type) {
     return {
-        from: config.SENDER_NAME + ' <' + config.SNDER_EMAIL + '>',
+        from: configCustom.SENDER_NAME + ' <' + configCustom.SNDER_EMAIL + '>',
         to: email,
-        subject: type === 'draft' ? config.DRAFT_RESERVATION_HEADING : config.CONFIRM_RESERVATION_HEADING
+        subject: type === 'draft' ? configCustom.DRAFT_RESERVATION_HEADING : configCustom.CONFIRM_RESERVATION_HEADING
     };
 }

@@ -215,12 +215,12 @@ passport.deserializeUser(function(obj, done) {
 });
 
 // enable CORS
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", /*config.AdminUrl*/ "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
-    next();
-});
+//app.use(function(req, res, next) {
+//    res.header("Access-Control-Allow-Origin", /*config.AdminUrl*/ "*");
+//    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//    res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
+//    next();
+//});
 
 // routes require login
 var UnauthorizedError = require('./errors/UnauthorizedError');

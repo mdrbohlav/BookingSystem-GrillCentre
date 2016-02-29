@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../../config');
+var configCustom = require('../../config-custom').custom;
 
 var Reservation = require('../../api/reservation');
 
@@ -21,7 +21,7 @@ router.post('/create', function(req, res, next) {
         dateEnd = new Date(req.body.to),
         MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-    dateUpfront.setDate(dateUpfront.getDate() + config.MAX_RESERVATION_UPFRONT);
+    dateUpfront.setDate(dateUpfront.getDate() + configCustom.MAX_RESERVATION_UPFRONT);
 
     today.setUTCHours(0, 0, 0, 0);
     dateStart.setUTCHours(0, 0, 0, 0);
@@ -38,7 +38,7 @@ router.post('/create', function(req, res, next) {
         next(new MaxReservationUpfrontError());
     }
 
-    if (dateEndMs - dateStartMs > config.MAX_RESERVATION_LENGTH * MS_PER_DAY) {
+    if (dateEndMs - dateStartMs > configCustom.MAX_RESERVATION_LENGTH * MS_PER_DAY) {
         next(new MaxReservationLengthError());
     }
 
@@ -46,14 +46,14 @@ router.post('/create', function(req, res, next) {
         where: {
             state: 'draft',
             $and: [
-                { from: { gte: dateStartString } },
-                { from: { lte: dateEndString } }
+                { from: { $gte: dateStartString } },
+                { from: { $lte: dateEndString } }
             ]
         }
     };
 
     Reservation.count(options).then(function(countReservations) {
-        if (countReservations >= config.MAX_PRERESERVATIONS_DAY) {
+        if (countReservations >= configCustom.MAX_PRERESERVATIONS_DAY) {
             next(new MaxReservationsError());
         }
 
@@ -63,7 +63,7 @@ router.post('/create', function(req, res, next) {
         options.where.userId = req.user.id;
 
         return Reservation.count(options).then(function(countUserReservations) {
-            if (countUserReservations >= config.MAX_RESERVATIONS_USER) {
+            if (countUserReservations >= configCustom.MAX_RESERVATIONS_USER) {
                 next(new MaxReservationsError(true));
             }
 
@@ -75,8 +75,6 @@ router.post('/create', function(req, res, next) {
                     priority: req.user.priority
                 },
                 accessories = [];
-
-            console.log(req.body);
 
             if (req.body.separateGrill) {
                 data.separateGrill = true;
@@ -111,7 +109,7 @@ router.get('/', function(req, res, next) {
         endInterval;
 
     startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date(),
-        endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
+    endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
 
     if (startInterval.toString() === 'Invalid Date' || endInterval.toString() === 'Invalid Date') {
         next(new InvalidRequestError('Invalid date format!'));
@@ -120,8 +118,8 @@ router.get('/', function(req, res, next) {
     startInterval.setUTCHours(0, 0, 0, 0);
     endInterval.setUTCHours(23, 59, 59, 999);
     where.$and = [
-        { from: { gte: startInterval } },
-        { from: { lte: endInterval } }
+        { from: { $gte: startInterval } },
+        { from: { $lte: endInterval } }
     ];
     if (req.params.state) {
         where.state = req.params.state;

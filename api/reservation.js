@@ -1,5 +1,5 @@
 var sequelize = require('../models/index').sequelize;
-var config = require('../config');
+var configCustom = require('../config-custom');
 
 var PdfHelper = require('../helpers/PdfHelper'),
     pdf_helper = new PdfHelper();
@@ -13,7 +13,7 @@ var Accessory = require('./accessory');
 
 function processPdfMail(req, plain) {
     return pdf_helper.getFile(req).then(function(pdfFile) {
-        if (config.SEND_EMAILS) {
+        if (configCustom.SEND_EMAILS) {
             return mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
                 plain.mailSent = true;
                 return plain;

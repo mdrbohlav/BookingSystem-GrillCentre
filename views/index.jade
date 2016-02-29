@@ -26,8 +26,19 @@ block content
                                     <% }); %>
                                 </div>
                                 <div class="calendar__days clearfix">
+                                <% 
+                                    var lastDay = new Date();
+                                    lastDay.setDate(lastDay.getDate() + #{reservationUpfront});
+                                    lastDay.setHours(23, 59, 59, 999);
+                                %>
                                 <% _.each(days, function(day) { %>
-                                    <div class="calendar__cell <%= day.classes %>">
+                                    <%
+                                        var dayClass = '';
+                                        if (#{!user.isAdmin} && new Date(day.date.format()) > lastDay) {
+                                            dayClass = 'inactive';
+                                        } 
+                                    %>
+                                    <div class="calendar__cell <%= day.classes %> <%= dayClass %>">
                                         <div class="day__num"><%= day.day %></div>
                                         <% if (day.events.length) { %>
                                             <div class="day__event <%= day.events[0].state %>">
@@ -42,14 +53,14 @@ block content
                                 <% }); %>
                                 </div>
                             </div>
-                            <button class="calendar__today text__paragraph text--center" type="button">Dnes</button>
+                            <button class="calendar__today text__paragraph text--center" type="button">dnes</button>
             .box
                 .box__header.box__header--border
                     h2.text__title Nová rezervace
                 .box__body
                     form#create-reservation.form.form__reservation(method='POST', action='/api/reservation/create')
                         .fieldset.row
-                            if reservationLength === 1
+                            if reservationLength === 1 && !user.isAdmin
                                 .field__container.col-xs-12.col-sm-6.margin--top-20
                                     label.text__label(for='date') Datum
                                     .field
@@ -91,7 +102,7 @@ block content
                                             span.checkbox
                                                 input(id='accessory-#{index}', type='checkbox', name='accessory', value= accessory.id)
                                             label.t__label(for='accessory-#{index}')= accessory.name
-                        .form__footer.text--center.margin--top-45
+                        .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') Vytvořit
 
 block scripts
@@ -146,14 +157,21 @@ block scripts
         }
 
         $(document).ready(function() {
-
             var $date, date, dateTo = null;
 
-            if (#{reservationLength} > 1) {
-                var $dateTo = $('#date-to').pickadate({
-                    min: true,
-                    max: #{reservationUpfront},
-                    onSet: function(event) {
+            if (#{reservationLength} > 1 || #{user.isAdmin}) {
+                var $dateTo = $('#date-to').pickadate();
+                dateTo = $dateTo.pickadate('picker');
+
+                if (!#{user.isAdmin}) {
+                    dateTo.set({
+                        min: true,
+                        max: #{reservationUpfront}
+                    });
+                }
+                
+                dateTo.on({
+                    set: function(event) {
                         if (event.select) {
                             var dat = new Date(event.select),
                                 MS_PER_DAY = 1000 * 60 * 60 * 24,
@@ -161,15 +179,20 @@ block scripts
                             today = today.setHours(0, 0, 0, 0);
                             today = new Date(today).getTime();
                             date.set('max', dat);
-                            dat = event.select - #{reservationUpfront} * MS_PER_DAY <= today ? true : new Date(event.select);
-                            date.set('min', dat);
+                            if (!#{user.isAdmin}) {
+                                dat = event.select - #{reservationUpfront} * MS_PER_DAY <= today ? true : new Date(event.select);
+                                date.set('min', dat);
+                            }
                         } else if ('clear' in event) {
-                            date.set('min', true);
-                            date.set('max', #{reservationUpfront});
+                            if (!#{user.isAdmin}) {
+                                date.set('min', true);
+                                date.set('max', #{reservationUpfront});
+                            } else {
+                                date.set('max', false);
+                            }
                         }
                     }
                 });
-                dateTo = $dateTo.pickadate('picker');
 
                 $dateTo.on('change', function() {
                     $dateTo.valid();
@@ -184,12 +207,18 @@ block scripts
                             today = today.setHours(0, 0, 0, 0);
                             today = new Date(today).getTime();
                             dateTo.set('min', dat);
-                            dat = event.select + (#{reservationLength} - 1) * MS_PER_DAY >= today + #{reservationUpfront} * MS_PER_DAY ? today + #{reservationUpfront} * MS_PER_DAY : event.select + (#{reservationLength} - 1) * MS_PER_DAY;
-                            dat = new Date(dat);
-                            dateTo.set('max', dat);
+                            if (!#{user.isAdmin}) {
+                                dat = event.select + (#{reservationLength} - 1) * MS_PER_DAY >= today + #{reservationUpfront} * MS_PER_DAY ? today + #{reservationUpfront} * MS_PER_DAY : event.select + (#{reservationLength} - 1) * MS_PER_DAY;
+                                dat = new Date(dat);
+                                dateTo.set('max', dat);
+                            }
                         } else if ('clear' in event) {
-                            dateTo.set('min', true);
-                            dateTo.set('max', #{reservationUpfront});
+                            if (!#{user.isAdmin}) {
+                                dateTo.set('min', true);
+                                dateTo.set('max', #{reservationUpfront});
+                            } else {
+                                dateTo.set('min', false);
+                            }
                         }
                     }
                 });
@@ -198,21 +227,26 @@ block scripts
             }
             
             date = $date.pickadate('picker');
-            date.set({
-                min: true,
-                max: #{reservationUpfront}
-            });
+            if (!#{user.isAdmin}) {
+                date.set({
+                    min: true,
+                    max: #{reservationUpfront}
+                });
+            }
 
             var $pickup = $('#pickup').pickatime({
                 format: 'HH:i',
-                min: [Math.floor(#{keyPickupFrom} / 60), #{keyPickupFrom} % 60],
-                max: [Math.floor(#{keyPickupTo} / 60), #{keyPickupTo} % 60],
                 interval: #{keyPickupInterval}
             });
 
-            /* / syntax highlight fix */
-
             pickup = $pickup.pickatime('picker');
+            if (!#{user.isAdmin}) {
+                pickup.set({
+                    min: [Math.floor(#{keyPickupFrom} / 60), #{keyPickupFrom} % 60],
+                    max: [Math.floor(#{keyPickupTo} / 60), #{keyPickupTo} % 60]
+                });
+                /* / syntax highlight fix */
+            }
 
             $date.on('change', function() {
                 $date.valid();
@@ -222,7 +256,7 @@ block scripts
                 $pickup.valid();
             });
 
-            moment.locale('cs');
+            moment.locale('#{user.locale}');
             var calendar = $('.calendar').clndr({
                 multiDayEvents: {
                     endDate: 'to',
@@ -237,9 +271,18 @@ block scripts
                 },
                 clickEvents: {
                     click: function (target) {
+                        console.log(target);
+                        var d = new Date(target.date.format()),
+                            today = new Date(),
+                            lastDay = new Date();
+                        
+                        today.setHours(0, 0, 0, 0);
+                        lastDay.setDate(lastDay.getDate() + #{reservationUpfront});
+                        lastDay.setHours(23, 59, 59, 999);
+
                         if (target.events.length) {
 
-                        } else {
+                        } else if (#{user.isAdmin} || (d >= today && d <= lastDay)) {
                             date.set('select', new Date(target.date.format()));
                         }
                     },
@@ -373,5 +416,4 @@ block scripts
                     });
                 }
             });
-
         });

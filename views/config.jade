@@ -1,4 +1,126 @@
 extends layout
 
 block content
-    p Welcome to config
+    section.content
+        .container__md
+            .box
+                .box__header.box__header--border
+                    h2.text__title Konfigurace
+                .box__body
+                    form#config.form.form__config(method='POST', action='/admin/config')
+                        - var cnt = 0
+                        each category, key in configKeys
+                            .fieldset.row
+                                h3.col-xs-12(class= cnt > 0 ? 'margin--top-35' : '')= category.name
+                                each value, key in category.fields
+                                    if value.type === 'checkbox'
+                                        .field__checkbox.col-xs-12.col-sm-6.margin--top-20
+                                            span.checkbox
+                                                input(id= key, type= value.type, name= key, data-val='#{fileData.custom[key]}')
+                                            label.t__label(for= key)= value.name
+                                    else
+                                        .field__container.col-xs-12.col-sm-6.margin--top-20
+                                            label.text__label(for= key)= value.name
+                                            .field
+                                                input(id= key, type= value.type, name= key, data-val= fileData.custom[key], required)
+                            - cnt++
+                        .form__footer.text--center.margin--top-40
+                            button.btn.btn__orange(type='submit') Uložit
+                            button#configDefault.btn.btn__orange--full(type='button') Nastavit defaultní hodnoty
+
+block scripts
+    script.
+        var configDefault = JSON.parse('#{JSON.stringify(fileData.default)}'.replace(/&quot;/g, '\"'));
+
+        $(document).ready(function() {
+            moment.locale('#{user.locale}');
+
+            $('input[type="time"]').each(function(i, element) {
+                var $element = $(element);
+                $element.attr('type', 'text').pickatime({
+                    format: 'HH:i',
+                    interval: 5
+                });
+                var picker = $element.pickatime('picker');
+                picker.set('select', parseInt($element.attr('data-val')));
+            });
+
+            $('input[type="text"]').each(function(i, element) {
+                var $element = $(element);
+                $element.val($element.attr('data-val'));
+            });
+
+            $('input[type="tel"]').each(function(i, element) {
+                var $element = $(element);
+                $element.val(parseInt($element.attr('data-val')));
+            });
+
+            $('input[type="checkbox"]').each(function(i, element) {
+                var $element = $(element);
+                if ($element.attr('data-val') === 'true') {
+                    $element.trigger('click');
+                }
+            });
+
+            $('#configDefault').on('click', function() {
+                if (confirm('Opravdu chcete nastavit defaultní hodnoty?')) {
+                    for (var key in configDefault) {
+                        if (configDefault[key].type === 'time') {
+                            var picker = $('#' + key).pickatime('picker');
+                            picker.set('select', configDefault[key].value);
+                        } else if (configDefault[key].type === 'text') {
+                            $('#' + key).val(configDefault[key].value);
+                        } else if (configDefault[key].type === 'tel') {
+                            $('#' + key).val(parseInt(configDefault[key].value));
+                        } else if (configDefault[key].type === 'checkbox') {
+                            if ($('#' + key).prop('checked') !== configDefault[key].value) {
+                                $('#' + key).trigger('click');
+                            }
+                        }
+                    }
+                }
+            });
+
+            var rules = {};
+            for (var key in configDefault) {
+                if (configDefault[key].type === 'checkbox') {
+                    continue;
+                }
+                rules[key] = {
+                    required: true
+                };
+                if (configDefault[key].type === 'tel') {
+                    rules[key].digits = true;
+                    rules[key].min = 1;
+                    rules[key].max = 60;
+                }
+            }
+
+            $('#config').validate({
+                rules: rules,
+                errorPlacement: function() {
+                    return false;
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).parent().addClass('error');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).parent().removeClass('error');
+                },
+                submitHandler: function(form) {
+                    var data = {};
+                    for (var key in configDefault) {
+                        if (configDefault[key].type === 'time') {
+                            data[key] = $('#' + key).pickatime('picker').get('select').pick;
+                        } else if (configDefault[key].type === 'text') {
+                            data[key] = $('#' + key).val();
+                        } else if (configDefault[key].type === 'tel') {
+                            data[key] = parseInt($('#' + key).val());
+                        } else if (configDefault[key].type === 'checkbox') {
+                            data[key] = $('#' + key).prop('checked');
+                        }
+                    }
+                    console.log(data);
+                }
+            });
+        });

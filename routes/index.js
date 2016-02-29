@@ -1,23 +1,30 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
+var configCustom = require('../config-custom').custom;
 
 var Accessory = require('../api/accessory');
 
+var InvalidRequestError = require('../errors/InvalidRequestError');
+
 // GET /
 router.get('/', function(req, res, next) {
+    console.log(configCustom);
     Accessory.get({}).then(function(result) {
         res.render('index', {
             page: 'index',
-            reservationLength: config.MAX_RESERVATION_LENGTH,
-            reservationUpfront: config.MAX_RESERVATION_UPFRONT,
+            reservationLength: configCustom.MAX_RESERVATION_LENGTH,
+            reservationUpfront: configCustom.MAX_RESERVATION_UPFRONT,
             accessories: result.accessories,
-            keyPickupFrom: config.KEY_PICKUP_FROM,
-            keyPickupTo: config.KEY_PICKUP_TO,
-            keyPickupInterval: config.KEY_PICKUP_INTERVAL_MINS
+            keyPickupFrom: configCustom.KEY_PICKUP_FROM,
+            keyPickupTo: configCustom.KEY_PICKUP_TO,
+            keyPickupInterval: configCustom.KEY_PICKUP_INTERVAL_MINS
         });
-    }).catch(function(err) {
-        res.json(err);
+    }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
     });
 });
 

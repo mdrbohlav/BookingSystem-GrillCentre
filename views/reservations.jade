@@ -2,49 +2,162 @@ extends layout
 
 block content
     section.content
+        - function capitalizeFirstLetter(string) {
+        -     return string.charAt(0).toUpperCase() + string.slice(1);
+        - }
+        - function pad(n) { 
+        -     return n < 10 ? '0' + n : n; 
+        - }
         .container__md
             .box
+                - var draftCnt = 0
+                - var today = new Date()
+                - today.setUTCHours(0, 0, 0, 0)
                 .box__header.box__header--border
                     h2.text__title Rezervace na schválení
                 .box__body
-                    if reservations.length === 0
-                        p.text__paragraph.text--center Žádné rezervace čekající na schválení
-                    else
-                        - function pad(n) { 
-                        -     return n < 10 ? '0' + n : n; 
-                        - }
-                        .table__wrapper
-                            ul.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
-                                li.table__row.table__heading
-                                    .table__cell Jméno
-                                    .table__cell(title='Priorita') Pr.
-                                    .table__cell(title='Separátní gril') SG
-                                    .table__cell Od
-                                    .table__cell Do
-                                    .table__cell Vyzvednutí
-                                    .table__cell Akce
-                                each reservation, index in reservations
-                                    - var user = users[reservation.userId]
-                                    li.table__row
-                                        .table__cell= user.fullName
-                                        .table__cell= user.priority
-                                        .table__cell= reservation.separateGrill
+                    .table__wrapper
+                        ul.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
+                            each reservation in data.reservations
+                                if reservation.state === 'draft' && new Date(reservation.from) >= today
+                                    - var resUser = data.users[reservation.userId]
+                                    if draftCnt === 0
+                                        li.table__row.table__heading
+                                            .table__cell Jméno
+                                            .table__cell(title='Priorita') Pr
+                                            .table__cell(title='Celé grilcentrum') GC
+                                            .table__cell Od
+                                            .table__cell Do
+                                            .table__cell Vyzvednutí
+                                            .table__cell Akce
+                                    li.reservation.table__row(data-id= reservation.id)
+                                        .table__cell= resUser.fullName
+                                        .table__cell= resUser.priority
+                                        .table__cell= !reservation.onlySeparateGrill
                                         .table__cell(data-date='#{reservation.from}')
                                         .table__cell(data-date='#{reservation.to}')
                                         .table__cell #{Math.floor(reservation.pickup / 60)}:#{pad(reservation.pickup%60)}
-                                        .table__cell
-                                            button.btn__confirm(type='button', data-id= reservation.id) Confirm
-                                            button.btn__reject(type='button', data-id= reservation.id) Reject
-
-
+                                        .reservation__action.table__cell
+                                            button.btn__confirm(type='button', data-id= reservation.id, title='Confirm')
+                                            button.btn__reject(type='button', data-id= reservation.id, title='Reject')
+                                    - draftCnt++
+                            if draftCnt === 0
+                                li.table__row.table__noborder
+                                    .table__cell
+                                        p.text__paragraph.text--center Žádné rezervace čekající na schválení
+            .box
+                - var resCnt = 0
+                - var date = new Date()
+                - var y = date.getFullYear()
+                - var m = date.getMonth()
+                - var lastDay = new Date(y, m + 1, 0)
+                .box__header.box__header--border
+                    h2.text__title Všechny rezervace (
+                        span.month__selected
+                        | )
+                .box__body
+                    .table__wrapper
+                        ul#listAllReservations.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
+                            each reservation in data.reservations
+                                if new Date(reservation.from) <= lastDay
+                                    - var resUser = data.users[reservation.userId]
+                                    if resCnt === 0
+                                        li.table__row.table__heading
+                                            .table__cell Jméno
+                                            .table__cell(title='Priorita') Pr
+                                            .table__cell(title='Celé grilcentrum') GC
+                                            .table__cell Stav
+                                            .table__cell Od
+                                            .table__cell Do
+                                    li.reservation.table__row(data-id= reservation.id)
+                                        .table__cell= resUser.fullName
+                                        .table__cell= resUser.priority
+                                        .table__cell= !reservation.onlySeparateGrill
+                                        .reservation__state.table__cell= capitalizeFirstLetter(reservation.state)
+                                        .table__cell(data-date='#{reservation.from}')
+                                        .table__cell(data-date='#{reservation.to}')
+                                    - resCnt++
+                            if resCnt === 0
+                                li.table__row.table__noborder
+                                    .table__cell
+                                        p.text__paragraph.text--center Žádné rezervace
+                    .text--center.margin--top-35
+                        ol.pagination
+                            li.pagination__prev
+                                | ❮&nbsp;
+                                span.month__prev
+                            li.pagination__item
+                                span.month__current dnes
+                            li.pagination__next
+                                span.month__next
+                                | &nbsp;❯
 
 block scripts
     script.
+        function getTableHeading() {
+            return $('<li class="table__row table__heading">')
+                .append('<div class="table__cell">Jméno')
+                .append('<div class="table__cell" title="Priorita">Pr')
+                .append('<div class="table__cell" title="Celé grilcentrum">GC')
+                .append('<div class="table__cell">Stav')
+                .append('<div class="table__cell">Od')
+                .append('<div class="table__cell">Do');
+        }
+
+        function getReservationRow(reservation, user) {
+            return $('<li class="reservation table__row" data-id="' + reservation.id + '">')
+                .append('<div class="table__cell">' + user.fullName)
+                .append('<div class="table__cell">' + user.priority)
+                .append('<div class="table__cell">' + !reservation.onlySeparateGrill)
+                .append('<div class="table__cell">' + capitalizeFirstLetter(reservation.state))
+                .append('<div class="table__cell" data-date="' + reservation.from + '">' + moment(reservation.from).format('LL'))
+                .append('<div class="table__cell" data-date="' + reservation.to + '">' + moment(reservation.to).format('LL'));
+        }
+
+        function getEmptyRow() {
+            return $('<li class="table__row table__noborder">')
+                .append($('<div class="table__cell">')
+                    .append('<p class="text__paragraph text--center">Žádné rezervace'));
+        }
+
         $(document).ready(function() {
+            moment.locale('#{user.locale}');
 
             $('[data-date]').each(function(i, element) {
                 var date = moment($(element).attr('data-date')).format('LL');
                 $(element).text(date);
+            });
+
+            var month = moment();
+            $('.month__current').attr('data-month', month.valueOf());
+            $('.month__selected').text(month.format('MMMM')).attr('data-month', month.valueOf());
+            $('.month__prev').text(month.subtract(1, 'months').format('MMMM')).attr('data-month', month.valueOf());
+            $('.month__next').text(month.add(2, 'months').format('MMMM')).attr('data-month', month.valueOf());
+
+            $('.pagination li').on('click', function() {
+                var $this = $(this),
+                    $children = $this.find('[class^="month__"]'),
+                    val = $children.attr('data-month'),
+                    $list = $('#listAllReservations'),
+                    $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
+
+                $list.append($spinner);
+
+                makeRequest('/admin/reservations?accept=json&month=' + val, 'GET', {}, function(res) {
+                    var month = moment(parseInt(val));
+                    $('.month__selected').text(month.format('MMMM')).attr('data-month', month.valueOf());
+                    $('.month__prev').text(month.subtract(1, 'months').format('MMMM')).attr('data-month', month.valueOf());
+                    $('.month__next').text(month.add(2, 'months').format('MMMM')).attr('data-month', month.valueOf());
+
+                    if (res.total > 0) {
+                        $list.html(getTableHeading());
+                        for (var key in res.reservations) {
+                            $list.append(getReservationRow(res.reservations[key], res.users[res.reservations[key].userId]));
+                        }
+                    } else {
+                        $list.html(getEmptyRow());
+                    }
+                });
             });
 
             $('.btn__confirm').on('click', function() {
@@ -52,11 +165,16 @@ block scripts
                     $row = $this.closest('.table__row'),
                     id = $this.attr('data-id');
 
-                makeRequest('/api/reservation/' + id + '/confirm', 'PUT', {}, function(res) {
+                makeRequest('/api/admin/reservation/' + id + '/confirm', 'PUT', {}, function(res) {
                     addNotification('success', 'Reservation successfully confirmed.');
                     $row.remove();
                     if ($('.listReservations li:not(.table__heading)').length === 0) {
                         $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
+                    }
+
+                    var $reservationRow = $('.reservation[data-id="' + id + '"]');
+                    if ($reservationRow.length) {
+                        $reservationRow.find('.reservation__state').text('Confirmed');
                     }
                 });
             });
@@ -66,13 +184,17 @@ block scripts
                     $row = $this.closest('.table__row'),
                     id = $this.attr('data-id');
 
-                makeRequest('/api/reservation/' + id + '/reject', 'PUT', {}, function(res) {
+                makeRequest('/api/admin/reservation/' + id + '/reject', 'PUT', {}, function(res) {
                     addNotification('success', 'Reservation successfully rejected.');
                     $row.remove();
                     if ($('.listReservations li:not(.table__heading)').length === 0) {
                         $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
                     }
+
+                    var $reservationRow = $('.reservation[data-id="' + id + '"]');
+                    if ($reservationRow.length) {
+                        $reservationRow.find('.reservation__state').text('Rejected');
+                    }
                 });
             });
-
         });

@@ -1,0 +1,18 @@
+.pagination
+    border 1px solid $color-grey-1
+    border-radius 3px
+    display inline-block
+    overflow hidden
+    reset-list()
+    
+    li
+        cursor pointer
+        display inline-block
+        padding 5px 20px
+        transition background-color .2s linear
+        
+        & + li
+            border-left 1px solid $color-grey-1
+            
+        &:hover
+            background-color $color-grey-1

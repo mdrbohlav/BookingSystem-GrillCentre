@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../../../config');
 
 var AuthHelper = require('../../../helpers/AuthHelper');
 var Reservation = require('../../../api/reservation');
