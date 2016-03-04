@@ -4,20 +4,6 @@ var InvalidRequestError = require('../errors/InvalidRequestError');
 
 var Reservation = require('../models').Reservation;
 
-module.exports.scheduleFinishReservations = function() {
-    checkUnfinishedReservations().then(function() {
-    }).catch(function(err) {
-        console.log(err);
-    });
-
-    schedule.scheduleJob('05 00 * * *', function() {
-        checkUnfinishedReservations().then(function() {
-        }).catch(function(err) {
-            console.log(err);
-        });
-    });
-};
-
 function checkUnfinishedReservations() {
     return new Promise(function(resolve, reject) {
         var today = new Date();
@@ -59,3 +45,17 @@ function checkUnfinishedReservations() {
         });
     });
 }
+
+module.exports.scheduleFinishReservations = function() {
+    checkUnfinishedReservations().then(function() {
+    }).catch(function(err) {
+        console.log(err);
+    });
+
+    schedule.scheduleJob('05 00 * * *', function() {
+        checkUnfinishedReservations().then(function() {
+        }).catch(function(err) {
+            console.log(err);
+        });
+    });
+};

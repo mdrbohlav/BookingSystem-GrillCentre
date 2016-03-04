@@ -6,29 +6,6 @@ var RenderingPdfError = require('../errors/RenderingPdfError');
 var session,
     jadeTemplate = jade.compileFile('public/templates/pdf-template.jade');
 
-var PdfHelper = function() {
-    var helper = {};
-
-    helper.getFile = function(req) {
-        return new Promise(function(resolve, reject) {
-            createPhantomSession().then(function(session) {
-                renderPdf(session, req).then(function(filePath, fileName) {
-                    resolve({
-                        success: true,
-                        file: filePath + fileName
-                    });
-                }).catch(function(err) {
-                    reject(err);
-                });
-            });
-        });
-    }
-
-    return helper;
-};
-
-module.exports = PdfHelper;
-
 function renderPdf(_session, req) {
     return new Promise(function(resolve, reject) {
         var page;
@@ -125,3 +102,26 @@ process.on('SIGINT', exitHandler.bind(null, { exit: true }));
 
 //catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
+
+var PdfHelper = function() {
+    var helper = {};
+
+    helper.getFile = function(req) {
+        return new Promise(function(resolve, reject) {
+            createPhantomSession().then(function(session) {
+                renderPdf(session, req).then(function(filePath, fileName) {
+                    resolve({
+                        success: true,
+                        file: filePath + fileName
+                    });
+                }).catch(function(err) {
+                    reject(err);
+                });
+            });
+        });
+    }
+
+    return helper;
+};
+
+module.exports = PdfHelper;

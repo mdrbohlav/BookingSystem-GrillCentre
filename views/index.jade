@@ -5,7 +5,7 @@ block content
         .table__cell
             .hero__content
                 h1.text__mainTitle.separator__after Grilovací centrum
-                h2.text__subtitle.text--white SiliconHill
+                h2.shlogo.text__subtitle.text--white SiliconHill
     section.content
         .container__md
             .box
@@ -82,15 +82,9 @@ block content
                             .fieldset
                                 .text--center.margin--top-35
                                     ul.switch__list
-                                        li.active(data-res-type='centre')
-                                            span.radio.active
-                                                input#grillcentreTrigger(type='radio', name='reservationType', checked='checked')
-                                            label.t__label(for='grillcentreTrigger') Gril centrum
-                                        li(data-res-type='grill')
-                                            span.radio
-                                                input#mobileGrillTrigger(type='radio', name='reservationType')
-                                            label.t__label(for='mobileGrillTrigger') Pouze mobilní gril
-                            .fieldset.accessories
+                                        li: button.switch__trigger.active(type='button', data-res-type='centre') Gril centrum
+                                        li: button.switch__trigger(type='button', data-res-type='grill') Pouze malý gril
+                            .switch__content.fieldset.accessories
                                 h3.text__subtitle.text--default Příslušenství
                                 .field__checkbox
                                     span.checkbox
@@ -372,7 +366,7 @@ block scripts
                     data.pickup = $('#pickup').pickatime('picker').get('select').pick;
                     data.mobileGrill = $('#mobileGrill').prop('checked');
 
-                    if ($('#mobileGrillTrigger').prop('checked')) {
+                    if ($('[data-res-type="grill"]').hasClass('active')) {
                         data.onlymobileGrill = true;
                         data.mobileGrill = true;
                     } else {

@@ -25,7 +25,7 @@ block content
                                         .table__cell Do
                                         .table__cell Akce
                                 li.reservation.table__row(data-id= reservation.id)
-                                    .table__cell= !reservation.onlySeparateGrill
+                                    .table__cell= !reservation.onlyMobileGrill
                                     .reservation__state.table__cell= capitalizeFirstLetter(reservation.state)
                                     .table__cell(data-date='#{reservation.from}')
                                     .table__cell(data-date='#{reservation.to}')

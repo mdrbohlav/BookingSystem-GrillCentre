@@ -6,6 +6,14 @@ var MailError = require('../errors/MailError');
 
 var transporter = nodemailer.createTransport();
 
+function getOptions(email, type) {
+    return {
+        from: configCustom.SENDER_NAME + ' <' + configCustom.SNDER_EMAIL + '>',
+        to: email,
+        subject: type === 'draft' ? configCustom.DRAFT_RESERVATION_HEADING : configCustom.CONFIRM_RESERVATION_HEADING
+    };
+}
+
 var MailHelper = function() {
     var helper = {};
 
@@ -41,11 +49,3 @@ var MailHelper = function() {
 };
 
 module.exports = MailHelper;
-
-function getOptions(email, type) {
-    return {
-        from: configCustom.SENDER_NAME + ' <' + configCustom.SNDER_EMAIL + '>',
-        to: email,
-        subject: type === 'draft' ? configCustom.DRAFT_RESERVATION_HEADING : configCustom.CONFIRM_RESERVATION_HEADING
-    };
-}

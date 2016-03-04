@@ -33,7 +33,7 @@ block content
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
                                         .table__cell= resUser.priority
-                                        .table__cell= !reservation.onlySeparateGrill
+                                        .table__cell= !reservation.onlyMobileGrill
                                         .table__cell(data-date='#{reservation.from}')
                                         .table__cell(data-date='#{reservation.to}')
                                         .table__cell #{Math.floor(reservation.pickup / 60)}:#{pad(reservation.pickup%60)}
@@ -72,7 +72,7 @@ block content
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
                                         .table__cell= resUser.priority
-                                        .table__cell= !reservation.onlySeparateGrill
+                                        .table__cell= !reservation.onlyMobileGrill
                                         .reservation__state.table__cell= capitalizeFirstLetter(reservation.state)
                                         .table__cell(data-date='#{reservation.from}')
                                         .table__cell(data-date='#{reservation.to}')
@@ -108,7 +108,7 @@ block scripts
             return $('<li class="reservation table__row" data-id="' + reservation.id + '">')
                 .append('<div class="table__cell">' + user.fullName)
                 .append('<div class="table__cell">' + user.priority)
-                .append('<div class="table__cell">' + !reservation.onlySeparateGrill)
+                .append('<div class="table__cell">' + !reservation.onlyMobileGrill)
                 .append('<div class="table__cell">' + capitalizeFirstLetter(reservation.state))
                 .append('<div class="table__cell" data-date="' + reservation.from + '">' + moment(reservation.from).format('LL'))
                 .append('<div class="table__cell" data-date="' + reservation.to + '">' + moment(reservation.to).format('LL'));
