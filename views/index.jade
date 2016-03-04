@@ -88,14 +88,14 @@ block content
                                             label.t__label(for='grillcentreTrigger') Gril centrum
                                         li(data-res-type='grill')
                                             span.radio
-                                                input#separateGrillTrigger(type='radio', name='reservationType')
-                                            label.t__label(for='separateGrillTrigger') Pouze separátní gril
+                                                input#mobileGrillTrigger(type='radio', name='reservationType')
+                                            label.t__label(for='mobileGrillTrigger') Pouze mobilní gril
                             .fieldset.accessories
                                 h3.text__subtitle.text--default Příslušenství
                                 .field__checkbox
                                     span.checkbox
-                                        input#separateGrill(type='checkbox', name='separateGrill')
-                                    label.t__label(for='separateGrill') Separátní gril
+                                        input#mobileGrill(type='checkbox', name='mobileGrill')
+                                    label.t__label(for='mobileGrill') Mobilní gril
                                 each accessory, index in accessories
                                     if accessory.available
                                         .field__checkbox
@@ -370,11 +370,11 @@ block scripts
                     data.from = start;
                     data.to = end;
                     data.pickup = $('#pickup').pickatime('picker').get('select').pick;
-                    data.separateGrill = $('#separateGrill').prop('checked');
+                    data.mobileGrill = $('#mobileGrill').prop('checked');
 
-                    if ($('#separateGrillTrigger').prop('checked')) {
-                        data.onlySeparateGrill = true;
-                        data.separateGrill = true;
+                    if ($('#mobileGrillTrigger').prop('checked')) {
+                        data.onlymobileGrill = true;
+                        data.mobileGrill = true;
                     } else {
                         data.accessories = [];
                         $('[name="accessory"]:checked').each(function(i, element) {
@@ -393,8 +393,8 @@ block scripts
                             dateTo.clear();
                             $dateTo.parent().removeClass('error');
                         }
-                        if ($('#separateGrill').prop('checked')) {
-                            $('#separateGrill').trigger('click');
+                        if ($('#mobileGrill').prop('checked')) {
+                            $('#mobileGrill').trigger('click');
                         }
                         $('.accessories input[type="checkbox"]').each(function(i, element) {
                             if ($(element).prop('checked')) {

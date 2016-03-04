@@ -62,12 +62,12 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false,
             defaultValue: 0
         },
-        separateGrill: {
+        mobileGrill: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
         },
-        onlySeparateGrill: {
+        onlyMobileGrill: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false

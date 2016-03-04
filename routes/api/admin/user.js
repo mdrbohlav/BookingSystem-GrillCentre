@@ -121,11 +121,13 @@ router.delete('/:id', function(req, res, next) {
 // GET /api/admin/user/:id/reservations/:state?
 router.get('/:id/reservations/:state?', function(req, res, next) {
     var id = req.params.id,
-        where = {};
+        options = {
+            where: {}
+        };
     if (req.params.state) {
-        where.state = req.params.state;
+        options.where.state = req.params.state;
     }
-    User.getReservations(id, where).then(function(reservations) {
+    User.getReservations(id, options).then(function(reservations) {
         res.json(reservations);
     }).catch(function(data) {
         if ('status' in data) {

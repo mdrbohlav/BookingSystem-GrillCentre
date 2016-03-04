@@ -1,11 +1,11 @@
-var crypto = require('crypto');
-var bcrypt = require('bcrypt-nodejs');
+var crypto = require('crypto'),
+    bcrypt = require('bcrypt-nodejs');
 
-var InvalidPasswordError = require('../errors/InvalidPasswordError');
-var InvalidRequestError = require('../errors/InvalidRequestError');
-var UnauthorizedError = require('../errors/UnauthorizedError');
-var UserDoesnotExistError = require('../errors/UserDoesnotExistError');
-var UserBannedError = require('../errors/UserBannedError');
+var InvalidPasswordError = require('../errors/InvalidPasswordError'),
+    InvalidRequestError = require('../errors/InvalidRequestError'),
+    UnauthorizedError = require('../errors/UnauthorizedError'),
+    UserDoesnotExistError = require('../errors/UserDoesnotExistError'),
+    UserBannedError = require('../errors/UserBannedError');
 
 var User = require('../models').User;
 

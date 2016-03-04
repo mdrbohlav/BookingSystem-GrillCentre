@@ -11,8 +11,8 @@ var MaxReservationLengthError = require('../../errors/MaxReservationLengthError'
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {
-    if (req.body['accessories[]'] && req.body.separateGrill) {
-        next(new InvalidRequestError('Cannot add accessories when booking separate grill!'));
+    if (req.body['accessories[]'] && req.body.onlyMobileGrill) {
+        next(new InvalidRequestError('Cannot add accessories when booking standalone mobile grill!'));
     }
 
     var dateUpfront = new Date(),
@@ -34,11 +34,11 @@ router.post('/create', function(req, res, next) {
     dateStartMs = dateStart.getTime();
     dateEndMs = dateEnd.getTime();
 
-    if (dateStart > dateUpfront) {
+    if (dateStart > dateUpfront && !req.user.isAdmin) {
         next(new MaxReservationUpfrontError());
     }
 
-    if (dateEndMs - dateStartMs > configCustom.MAX_RESERVATION_LENGTH * MS_PER_DAY) {
+    if (dateEndMs - dateStartMs > configCustom.MAX_RESERVATION_LENGTH * MS_PER_DAY && !req.user.isAdmin) {
         next(new MaxReservationLengthError());
     }
 
@@ -53,7 +53,7 @@ router.post('/create', function(req, res, next) {
     };
 
     Reservation.count(options).then(function(countReservations) {
-        if (countReservations >= configCustom.MAX_PRERESERVATIONS_DAY) {
+        if (countReservations >= configCustom.MAX_PRERESERVATIONS_DAY && !req.user.isAdmin) {
             next(new MaxReservationsError());
         }
 
@@ -63,7 +63,7 @@ router.post('/create', function(req, res, next) {
         options.where.userId = req.user.id;
 
         return Reservation.count(options).then(function(countUserReservations) {
-            if (countUserReservations >= configCustom.MAX_RESERVATIONS_USER) {
+            if (countUserReservations >= configCustom.MAX_RESERVATIONS_USER && !req.user.isAdmin) {
                 next(new MaxReservationsError(true));
             }
 
@@ -76,11 +76,11 @@ router.post('/create', function(req, res, next) {
                 },
                 accessories = [];
 
-            if (req.body.separateGrill) {
-                data.separateGrill = true;
+            if (req.body.mobileGrill) {
+                data.mobileGrill = true;
             }
-            if (req.body.onlySeparateGrill) {
-                data.onlySeparateGrill = req.body.onlySeparateGrill;
+            if (req.body.onlyMobileGrill) {
+                data.onlyMobileGrill = req.body.onlyMobileGrill;
             } else if (req.body['accessories[]']) {
                 accessories = req.body['accessories[]'];
 
@@ -104,7 +104,9 @@ router.post('/create', function(req, res, next) {
 
 // GET /api/reservation
 router.get('/', function(req, res, next) {
-    var where = {},
+    var options = {
+            where: {}
+        },
         startInterval,
         endInterval;
 
@@ -117,17 +119,22 @@ router.get('/', function(req, res, next) {
 
     startInterval.setUTCHours(0, 0, 0, 0);
     endInterval.setUTCHours(23, 59, 59, 999);
-    where.$and = [
+    options.where.$and = [
         { from: { $gte: startInterval } },
         { from: { $lte: endInterval } }
     ];
-    if (req.params.state) {
-        where.state = req.params.state;
+    if (req.query.state) {
+        options.where.state = req.query.state;
     }
 
-    Reservation.get(where).then(function(result) {
+    if (req.query.orderBy && req.query.order) {
+        options.order = [ [ req.query.orderBy, req.query.order ] ];
+    }
+
+    Reservation.get(options).then(function(result) {
         res.json(result);
     }).catch(function(data) {
+        console.log(data);
         if ('status' in data) {
             next(data);
         } else {

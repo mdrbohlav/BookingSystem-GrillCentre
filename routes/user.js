@@ -13,9 +13,11 @@ router.get('/history', function(req, res, next) {
     to.setDate(to.getDate() + configCustom.MAX_RESERVATION_UPFRONT);
     req.query.to = to;
     var id = req.user.id,
-        where = {};
+        options = {
+            order: [ 'from' ]
+        };
 
-    User.getReservations(id, where).then(function(result) {
+    User.getReservations(id, options).then(function(result) {
         res.render('history', {
             page: 'history',
             data: result

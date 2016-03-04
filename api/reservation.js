@@ -6,10 +6,10 @@ var PdfHelper = require('../helpers/PdfHelper'),
 var MailHelper = require('../helpers/MailHelper'),
     mail_helper = new MailHelper();
 
-var Reservation = require('../models').Reservation;
-var Rating = require('../models').Rating;
-var User = require('./user');
-var Accessory = require('./accessory');
+var Reservation = require('../models').Reservation,
+    Rating = require('../models').Rating,
+    User = require('./user'),
+    Accessory = require('./accessory');
 
 function processPdfMail(req, plain) {
     return pdf_helper.getFile(req).then(function(pdfFile) {
@@ -58,18 +58,17 @@ module.exports = {
         });
     },
 
-    get(where) {
+    get(options) {
         var result = {
-                reservations: {},
+                reservations: [],
                 users: {},
                 total: 0
             },
             reservationsArr = [];
 
-        return Reservation.findAndCountAll({ where: where }).then(function(data) {
+        return Reservation.findAndCountAll(options).then(function(data) {
             for (var i = 0; i < data.rows.length; i++) {
                 var plain = data.rows[i].get({ plain: true });
-                result.reservations[plain.id] = plain;
                 reservationsArr.push(data.rows[i]);
             }
             result.total = data.count;
@@ -86,8 +85,9 @@ module.exports = {
                         }
 
                         var plain = reservation.get({ plain: true });
-                        result.reservations[plain.id].rating = rating ? rating.get({ plain: true }) : rating;
-                        result.reservations[plain.id].accessories = accessories;
+                        plain.rating = rating ? rating.get({ plain: true }) : rating;
+                        plain.accessories = accessories;
+                        result.reservations.push(plain);
                     });
                 });
             }, Promise.resolve());

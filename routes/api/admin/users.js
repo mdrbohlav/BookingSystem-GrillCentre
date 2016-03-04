@@ -8,20 +8,25 @@ var InvalidRequestError = require('../../../errors/InvalidRequestError');
 
 // GET /api/admin/users
 router.get('/', function(req, res, next) {
-    var where = {},
-        offset = req.query.offset ? req.query.offset : 0,
-        limit = req.query.limit ? req.query.limit : 20;
+    var options = {
+        where: {},
+        offset: req.query.offset ? req.query.offset : 0,
+        limit: req.query.limit ? req.query.limit : 20
+    };
 
     if (req.query.provider === 'native') {
-        where.isId = null;
+        options.where.isId = null;
     } else if (req.query.provider === 'is') {
-        where.isId = { $ne: null };
+        options.where.isId = { $ne: null };
     }
     if (req.query.isAdmin) {
-        where.isAdmin = req.query.isAdmin;
+        options.where.isAdmin = req.query.isAdmin;
+    }
+    if (req.query.orderBy && req.query.order) {
+        options.order = [ [ req.query.orderBy, req.query.order ] ];
     }
 
-    User.get(where, offset, limit).then(function(result) {
+    User.get(options).then(function(result) {
         res.json(result);
     }).catch(function(data) {
         if ('status' in data) {

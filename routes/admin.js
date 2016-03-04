@@ -16,7 +16,7 @@ function getFile(filename) {
 
 // GET /admin/reservations
 router.get('/reservations', function(req, res, next) {
-    var where;
+    var options = {};
 
     if (req.query.month) {
         var date = new Date(parseInt(req.query.month)),
@@ -28,7 +28,7 @@ router.get('/reservations', function(req, res, next) {
         firstDay.setUTCHours(0, 0, 0, 0);
         lastDay.setUTCHours(23, 59, 59, 999);
 
-        where = {
+        options.where = {
             $and: [
                 { from: { $gte: firstDay } },
                 { from: { $lte: lastDay } }
@@ -45,7 +45,7 @@ router.get('/reservations', function(req, res, next) {
 
         var today = new Date();
         today.setUTCHours(0, 0, 0, 0);
-        where = {
+        options.where = {
             $or: [{
                 $and: [
                     { from: { $gte: firstDay } },
@@ -58,7 +58,7 @@ router.get('/reservations', function(req, res, next) {
         };
     }
 
-    Reservation.get(where).then(function(result) {
+    Reservation.get(options).then(function(result) {
         if (req.query.accept &&  req.query.accept === 'json') {
             res.json(result);
         } else {

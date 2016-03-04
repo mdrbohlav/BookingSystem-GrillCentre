@@ -1,8 +1,9 @@
 var AuthHelper = require('../helpers/AuthHelper');
-var User = require('../models').User;
 
-var EmailExistsError = require('../errors/EmailExistsError');
-var UserDoesnotExistError = require('../errors/UserDoesnotExistError');
+var EmailExistsError = require('../errors/EmailExistsError'),
+    UserDoesnotExistError = require('../errors/UserDoesnotExistError');
+
+var User = require('../models').User;
 
 function processUserUpdate(data) {
     return User.update(data, {
@@ -31,11 +32,11 @@ module.exports = {
         });
     },
 
-    get(where, offset, limit) {
-        offset = typeof(offset) === 'undefined' ? 0 : offset;
-        limit = typeof(limit) === 'undefined' ? 20 : limit;
+    get(options) {
+        options.offset = typeof(offset) === 'undefined' ? 0 : options.offset;
+        options.limit = typeof(limit) === 'undefined' ? 20 : options.limit;
 
-        return User.findAndCountAll({ where: where, offset: offset, limit: limit }).then(function(data) {
+        return User.findAndCountAll(options).then(function(data) {
             var users = [];
             for (var i = 0; i < data.rows.length; i++) {
                 users.push(data.rows[i].get({ plain: true }));
@@ -88,19 +89,16 @@ module.exports = {
         });
     },
 
-    getReservations(id, where) {
+    getReservations(id, options) {
         return User.findById(id).then(function(user) {
             var result = {
-                    reservations: {}
+                    reservations: []
                 },
                 reservationsArr = [];
 
-            return user.getReservations({
-                where: where
-            }).then(function(data) {
+            return user.getReservations(options).then(function(data) {
                 for (var i = 0; i < data.length; i++) {
                     var plain = data[i].get({ plain: true });
-                    result.reservations[plain.id] = plain;
                     reservationsArr.push(data[i]);
                 }
                 result.total = data.length;
@@ -118,8 +116,9 @@ module.exports = {
                                 return accessories;
                             }).then(function(accessories) {
                                 var plain = reservation.get({ plain: true });
-                                result.reservations[plain.id].rating = rating ? rating.get({ plain: true }) : rating;
-                                result.reservations[plain.id].accessories = accessories;
+                                plain.rating = rating ? rating.get({ plain: true }) : rating;
+                                plain.accessories = accessories;
+                                result.reservations.push(plain);
                             });
                         });
                     });
