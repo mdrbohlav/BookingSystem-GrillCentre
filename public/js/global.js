@@ -4,6 +4,38 @@ var $window = $(window),
     $mainNavTrigger = $('.nav__trigger'),
     firstLoad = false;
 
+function urlParam(name) {
+    var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results === null) {
+        return null;
+    } else {
+        return results[1] || 0;
+    }
+}
+
+function createCookie(name, value, expires) {
+    var cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; path=/";
+    if (typeof(expires) !== 'undefined') {
+        cookie += '; expires=' + new Date(expires).toUTCString();
+    }
+    document.cookie = cookie;
+}
+
+function readCookie(name) {
+    var nameEQ = encodeURIComponent(name) + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    createCookie(name, "", -1);
+}
+
 function Timer(callback, delay) {
     var timerId, start, remaining = delay;
 
@@ -99,6 +131,51 @@ function getSpinner(white) {
 
 function getBtnSpinner() {
     return $('<div class="btn__spinner"></div>').append(getSpinner(true));
+}
+
+function showModal() {
+    var $modal = $('.modal'),
+        $modalContent = $modal.find('.modal__content');
+
+    if (!$modal.is(':visible')) {
+
+        function updateAfterHide() {
+            setBodyOverflowHidden();
+        }
+
+        $modal.velocity('fadeIn', {
+            display: 'table',
+            complete: function() {
+                updateAfterHide();
+            }
+        });
+
+        $.Velocity.hook($modalContent, "translateY", "200px");
+        $modalContent.velocity({
+            opacity: '1',
+            translateY: '0',
+            translateZ: '0'
+        });
+    }
+}
+
+function hideModal() {
+    var $modal = $('.modal'),
+        $modalContent = $modal.find('.modal__content');
+
+    if ($modal.is(':visible')) {
+
+        function updateAfterHide() {
+            removeBodyOverflowHidden();
+            $modalContent.removeAttr('style');
+        }
+
+        $modal.velocity('fadeOut', {
+            complete: function() {
+                updateAfterHide();
+            }
+        });
+    }
 }
 
 function showMainMenu($trigger) {
@@ -218,6 +295,13 @@ $(document).ready(function() {
     });
 
     //=================================================================
+    // Modal close button
+    //=================================================================
+    $('.modal__close').on('click', function() {
+        hideModal();
+    });
+
+    //=================================================================
     // Expandable container functionality
     //=================================================================
     $('.expandable__trigger').on('click', function() {
@@ -262,6 +346,7 @@ $(document).ready(function() {
         if ($mainNavTrigger.hasClass('is-active')) {
             hideMainMenu($mainNavTrigger);
         }
+        hideModal();
     });
 
     //=================================================================

@@ -45,10 +45,17 @@ router.post('/create', function(req, res, next) {
     var options = {
         where: {
             state: 'draft',
-            $and: [
-                { from: { $gte: dateStartString } },
-                { from: { $lte: dateEndString } }
-            ]
+            $or: [{
+                $and: [
+                    { from: { $gte: dateStartString } },
+                    { from: { $lte: dateEndString } }
+                ]
+            }, {
+                $and: [
+                    { to: { $gte: dateStartString } },
+                    { to: { $lte: dateEndString } }
+                ]
+            }]
         }
     };
 
@@ -111,7 +118,7 @@ router.get('/', function(req, res, next) {
         endInterval;
 
     startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date(),
-    endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
+        endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
 
     if (startInterval.toString() === 'Invalid Date' || endInterval.toString() === 'Invalid Date') {
         next(new InvalidRequestError('Invalid date format!'));
@@ -128,7 +135,9 @@ router.get('/', function(req, res, next) {
     }
 
     if (req.query.orderBy && req.query.order) {
-        options.order = [ [ req.query.orderBy, req.query.order ] ];
+        options.order = [
+            [req.query.orderBy, req.query.order]
+        ];
     }
 
     Reservation.get(options).then(function(result) {

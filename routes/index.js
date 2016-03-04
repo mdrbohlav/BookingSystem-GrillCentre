@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var configCustom = require('../config-custom').custom;
+var ICalHelper = require('../helpers/ICalHelper');
 
 var Accessory = require('../api/accessory');
 
@@ -8,7 +9,6 @@ var InvalidRequestError = require('../errors/InvalidRequestError');
 
 // GET /
 router.get('/', function(req, res, next) {
-    console.log(configCustom);
     Accessory.get({}).then(function(result) {
         res.render('index', {
             page: 'index',
@@ -36,6 +36,11 @@ router.get('/login', function(req, res, next) {
     res.render('login', {
         page: 'login'
     });
+});
+
+// GET /reservations.ical
+router.get('/reservations.ical', function(req, res, next) {
+    ICalHelper.calendar.serve(res);
 });
 
 module.exports = router;

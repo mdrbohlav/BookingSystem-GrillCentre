@@ -36,16 +36,25 @@ block content
                                         var dayClass = '';
                                         if (#{!user.isAdmin} && new Date(day.date.format()) > lastDay) {
                                             dayClass = 'inactive';
-                                        } 
+                                        }
+                                        for (var i in day.events) {
+                                            if (day.events[i].onlyMobileGrill) {
+                                                day.events[i].class = 'grill';
+                                            } else if (!day.events[i].mobileGrill) {
+                                                day.events[i].class = 'both';
+                                            } else {
+                                                day.events[i].class = 'centre';
+                                            }
+                                        }
                                     %>
                                     <div class="calendar__cell <%= day.classes %> <%= dayClass %>">
                                         <div class="day__num"><%= day.day %></div>
-                                        <% if (day.events.length) { %>
-                                            <div class="day__event <%= day.events[0].state %>">
-                                            <% if (day.events[0].name.length > 20) { %>
-                                                <%= day.events[0].name.substr(0, 20) %>…
+                                        <% for (var i in day.events) { %>
+                                            <div class="day__event <%= day.events[0].class %>">
+                                            <% if (day.events[i].name.length > 20) { %>
+                                                <%= day.events[i].name.substr(0, 20) %>…
                                             <% } else { %>
-                                                <%= day.events[0].name %>
+                                                <%= day.events[i].name %>
                                             <% } %>
                                             </div>
                                         <% } %>
@@ -53,7 +62,7 @@ block content
                                 <% }); %>
                                 </div>
                             </div>
-                            <button class="calendar__today text__paragraph text--center" type="button">dnes</button>
+                            <button class="calendar__today text__paragraph text--center" type="button">současný měsíc</button>
             .box
                 .box__header.box__header--border
                     h2.text__title Nová rezervace
@@ -83,7 +92,7 @@ block content
                                 .text--center.margin--top-35
                                     ul.switch__list
                                         li: button.switch__trigger.active(type='button', data-res-type='centre') Gril centrum
-                                        li: button.switch__trigger(type='button', data-res-type='grill') Pouze malý gril
+                                        li: button.switch__trigger(type='button', data-res-type='grill') Pouze mobilní gril
                             .switch__content.fieldset.accessories
                                 h3.text__subtitle.text--default Příslušenství
                                 .field__checkbox
@@ -98,6 +107,39 @@ block content
                                             label.t__label(for='accessory-#{index}')= accessory.name
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') Vytvořit
+    section.modal.table.table--fullsize
+        button.modal__close.btn__close(type='button')
+        .modal__content.table__cell
+            .container__md
+                .box
+                    h2.text__title.box__header.box__header--border Detail dne
+                    .box__body
+                        .modalReservation__centre
+                            h3.modalReservation__title.text__subtitle.text--default
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalReservation__date.text__paragraph
+                                        span.text--strong Datum
+                                        span.value
+                                    .modalReservation__pickup.text__paragraph
+                                        span.text--strong Čas vyzvednutí
+                                        span.value
+                                    .modalReservation__mobileGrill
+                                        span.text--strong Mobilní gril
+                                        span.value
+                                .col-xs-12.col-sm-6
+                                    h4.text__paragraph Příslušenství
+                                    ul.modalReservation__accessories
+                        .modalReservation__grill
+                            h3.modalReservation__title.text__subtitle.text--default
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalReservation__date.text__paragraph
+                                        span.text--strong Datum
+                                        span.value
+                                    .modalReservation__pickup.text__paragraph
+                                        span.text--strong Čas vyzvednutí
+                                        span.value
 
 block scripts
     script.
@@ -275,7 +317,22 @@ block scripts
                         lastDay.setHours(23, 59, 59, 999);
 
                         if (target.events.length) {
+                            var dayEvents = 0;
+                            for (var i = 0; i < target.events.length; i++) {
+                                if (target.events[i].onlyMobileGrill) {
+                                    dayEvents += 1;
+                                } else if (!target.events[i].mobileGrill) {
+                                    dayEvents += 2;
+                                } else {
+                                    dayEvents = 4;
+                                }
+                            }
 
+                            if (dayEvents < 3) {
+                                date.set('select', new Date(target.date.format()));
+                            }
+
+                            showModal();
                         } else if (#{user.isAdmin} || (d >= today && d <= lastDay)) {
                             date.set('select', new Date(target.date.format()));
                         }
@@ -295,7 +352,6 @@ block scripts
                     }
                 },
                 doneRendering: function() {
-                    console.log('Calendar done rendering');
                     if ($('.calendar .spinner--absolute').length) {
                         $('.calendar .spinner--absolute').remove();
                     }

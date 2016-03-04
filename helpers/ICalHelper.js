@@ -23,3 +23,5 @@ module.exports.createEvent = function(start, summary, description, organizer) {
         allDay: true
     });
 };
+
+module.exports.calendar = calendar;
