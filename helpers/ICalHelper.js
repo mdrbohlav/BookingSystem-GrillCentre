@@ -13,8 +13,9 @@ var options = {
 
 var calendar = ical(options);
 
-module.exports.createEvent = function(start, summary, description, organizer) {
+module.exports.createEvent = function(id, start, summary, description, organizer) {
     calendar.createEvent({
+        id: id,
         start: start,
         timestamp: new Date(),
         summary: summary,

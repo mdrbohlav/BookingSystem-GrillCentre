@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var configCustom = require('../../config-custom').custom;
 
+var ICalHelper = require('../../helpers/ICalHelper');
+
 var Reservation = require('../../api/reservation');
 
 var InvalidRequestError = require('../../errors/InvalidRequestError');
@@ -97,6 +99,12 @@ router.post('/create', function(req, res, next) {
             }
 
             return Reservation.create(req, data, accessories).then(function(result) {
+                var id = result.id,
+                    start = new Date(result.from),
+                    summary = req.user.fullName + ' reservation ' + result.state,
+                    description = 'Key pickup time: ' + Math.floor(result.pickup/60) + ':' + result.pickup%60,
+                    organizer = req.user.fullName + ' <' + req.user.email + '>';
+                ICalHelper.createEvent(id, start, summary, description, organizer);
                 res.json(result);
             });
         });
