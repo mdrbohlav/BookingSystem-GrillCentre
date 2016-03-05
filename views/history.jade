@@ -37,6 +37,11 @@ block content
                                 li.table__row.table__noborder
                                     .table__cell
                                         p.text__paragraph.text--center Žádné rezervace
+                    if data.total / data.pagination.limit > 1
+                        .text--center.margin--top-35
+                            ol.pagination
+                                li: button.pagination__prev(type='button') ❮
+                                li: button.pagination__next(type='button') ❯
 
 block scripts
     script.

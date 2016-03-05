@@ -67,13 +67,9 @@ module.exports = {
             reservationsArr = [];
 
         return Reservation.findAndCountAll(options).then(function(data) {
-            for (var i = 0; i < data.rows.length; i++) {
-                var plain = data.rows[i].get({ plain: true });
-                reservationsArr.push(data.rows[i]);
-            }
             result.total = data.count;
 
-            return reservationsArr.reduce(function(sequence, reservation) {
+            return data.rows.reduce(function(sequence, reservation) {
                 return sequence.then(function() {
                     return reservation.getRating();
                 }).then(function(rating) {

@@ -16,23 +16,31 @@ function getFile(filename) {
 
 // GET /admin/reservations
 router.get('/reservations', function(req, res, next) {
-    var options = {};
+    var options = {
+        order: [ [ 'priority', 'DESC' ], [ 'from', 'DESC' ], [ 'to', 'DESC' ] ],
+    };
 
     if (req.query.month) {
         var date = new Date(parseInt(req.query.month)),
             y = date.getFullYear(),
             m = date.getMonth();
-        console.log(req.query);
         var firstDay = new Date(y, m, 1);
         var lastDay = new Date(y, m + 1, 0);
         firstDay.setUTCHours(0, 0, 0, 0);
         lastDay.setUTCHours(23, 59, 59, 999);
 
         options.where = {
-            $and: [
-                { from: { $gte: firstDay } },
-                { from: { $lte: lastDay } }
-            ]
+            $or: [{
+                $and: [
+                    { from: { $gte: firstDay } },
+                    { from: { $lte: lastDay } }
+                ]
+            }, {
+                $and: [
+                    { to: { $gte: firstDay } },
+                    { to: { $lte: lastDay } }
+                ]
+            }]
         };
     } else {
         var date = new Date(),
@@ -52,6 +60,11 @@ router.get('/reservations', function(req, res, next) {
                     { from: { $lte: lastDay } }
                 ]
             }, {
+                $and: [
+                    { to: { $gte: firstDay } },
+                    { to: { $lte: lastDay } }
+                ]
+            }, {
                 from: { $gte: today },
                 state: 'draft'
             }]
@@ -59,7 +72,7 @@ router.get('/reservations', function(req, res, next) {
     }
 
     Reservation.get(options).then(function(result) {
-        if (req.query.accept &&  req.query.accept === 'json') {
+        if (req.query.accept && req.query.accept === 'json') {
             res.json(result);
         } else {
             res.render('reservations', {
@@ -78,7 +91,9 @@ router.get('/reservations', function(req, res, next) {
 
 // GET /admin/statistics
 router.get('/statistics', function(req, res, next) {
-    var where = {},
+    var options = {
+            where: {}
+        },
         startInterval,
         endInterval;
 
@@ -99,12 +114,21 @@ router.get('/statistics', function(req, res, next) {
 
     startInterval.setUTCHours(0, 0, 0, 0);
     endInterval.setUTCHours(23, 59, 59, 999);
-    where.$and = [
-        { from: { $gte: startInterval } },
-        { from: { $lte: endInterval } }
-    ];
+    options.where = {
+        $or: [{
+            $and: [
+                { from: { $gte: startInterval } },
+                { from: { $lte: endInterval } }
+            ]
+        }, {
+            $and: [
+                { to: { $gte: startInterval } },
+                { to: { $lte: endInterval } }
+            ]
+        }]
+    };
 
-    Reservation.get(where).then(function(result) {
+    Reservation.get(options).then(function(result) {
         res.render('statistics', {
             page: 'statistics',
             data: result

@@ -83,12 +83,12 @@ block content
                                         p.text__paragraph.text--center Žádné rezervace
                     .text--center.margin--top-35
                         ol.pagination
-                            li.pagination__prev
+                            li: button.pagination__prev(type='button')
                                 | ❮&nbsp;
                                 span.month__prev
-                            li.pagination__item
+                            li: button.pagination__item(type='button')
                                 span.month__current dnes
-                            li.pagination__next
+                            li: button.pagination__next(type='button')
                                 span.month__next
                                 | &nbsp;❯
 

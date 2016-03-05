@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
     var options = {
         where: {},
         offset: req.query.offset ? req.query.offset : 0,
-        limit: req.query.limit ? req.query.limit : 20
+        limit: req.query.limit ? req.query.limit : 50
     };
 
     if (req.query.provider === 'native') {

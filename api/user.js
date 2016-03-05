@@ -33,9 +33,6 @@ module.exports = {
     },
 
     get(options) {
-        options.offset = typeof(offset) === 'undefined' ? 0 : options.offset;
-        options.limit = typeof(limit) === 'undefined' ? 20 : options.limit;
-
         return User.findAndCountAll(options).then(function(data) {
             var users = [];
             for (var i = 0; i < data.rows.length; i++) {
@@ -96,35 +93,32 @@ module.exports = {
                 },
                 reservationsArr = [];
 
-            return user.getReservations(options).then(function(data) {
-                for (var i = 0; i < data.length; i++) {
-                    var plain = data[i].get({ plain: true });
-                    reservationsArr.push(data[i]);
-                }
-                result.total = data.length;
+            return user.countReservations().then(function(count) {
+                result.total = count;
+                return user.getReservations(options).then(function(data) {
+                    return data.reduce(function(sequence, reservation) {
+                        return sequence.then(function() {
+                            return reservation.getRating().then(function(rating) {
+                                return reservation.getAccessories().then(function(data) {
+                                    var accessories = [];
 
-                return reservationsArr.reduce(function(sequence, reservation) {
-                    return sequence.then(function() {
-                        return reservation.getRating().then(function(rating) {
-                            return reservation.getAccessories().then(function(data) {
-                                var accessories = [];
+                                    for (var i = 0; i < data.length; i++) {
+                                        accessories.push(data[i].get({ plain: true }));
+                                    }
 
-                                for (var i = 0; i < data.length; i++) {
-                                    accessories.push(data[i].get({ plain: true }));
-                                }
-
-                                return accessories;
-                            }).then(function(accessories) {
-                                var plain = reservation.get({ plain: true });
-                                plain.rating = rating ? rating.get({ plain: true }) : rating;
-                                plain.accessories = accessories;
-                                result.reservations.push(plain);
+                                    return accessories;
+                                }).then(function(accessories) {
+                                    var plain = reservation.get({ plain: true });
+                                    plain.rating = rating ? rating.get({ plain: true }) : rating;
+                                    plain.accessories = accessories;
+                                    result.reservations.push(plain);
+                                });
                             });
                         });
-                    });
-                }, Promise.resolve());
-            }).then(function() {
-                return result;
+                    }, Promise.resolve());
+                }).then(function() {
+                    return result;
+                });
             });
         });
     }

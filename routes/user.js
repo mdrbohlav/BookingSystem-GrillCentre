@@ -14,14 +14,34 @@ router.get('/history', function(req, res, next) {
     req.query.to = to;
     var id = req.user.id,
         options = {
-            order: [ 'from' ]
+            order: [ 
+                ['from', 'DESC'],
+                ['to', 'DESC']
+            ],
+            limit: 10,
+            offset: 0
         };
 
+    if (req.query.limit) {
+        options.limit = req.query.limit;
+    }
+    if (req.query.offset) {
+        options.offset = req.query.offset;
+    }
+
     User.getReservations(id, options).then(function(result) {
-        res.render('history', {
-            page: 'history',
-            data: result
-        });
+        result.pagination = {
+            limit: options.limit,
+            offset: options.offset
+        };
+        if (req.query.accept && req.query.accept === 'json') {
+            res.json(result);
+        } else {
+            res.render('history', {
+                page: 'history',
+                data: result
+            });
+        }
     }).catch(function(data) {
         if ('status' in data) {
             next(data);

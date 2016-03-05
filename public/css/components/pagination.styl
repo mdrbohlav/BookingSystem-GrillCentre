@@ -6,13 +6,19 @@
     reset-list()
     
     li
-        cursor pointer
         display inline-block
-        padding 5px 20px
-        transition background-color .2s linear
+        padding 0
         
         & + li
             border-left 1px solid $color-grey-1
+
+    button
+        appearance none
+        background-color transparent
+        border none
+        cursor pointer
+        padding 5px 20px
+        transition background-color .2s linear
             
         &:hover
             background-color $color-grey-1
