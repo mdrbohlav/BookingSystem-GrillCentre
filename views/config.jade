@@ -34,15 +34,21 @@ block scripts
 
         $(document).ready(function() {
             moment.locale('#{user.locale}');
-
+            
             $('input[type="time"]').each(function(i, element) {
                 var $element = $(element);
-                $element.attr('type', 'text').pickatime({
+                $element.val('');
+                $element.pickatime({
                     format: 'HH:i',
-                    interval: 5
+                    interval: 5,
+                    onStart: function() {
+                        var $this = this;
+                        setTimeout(function() {
+                            var val = parseInt($this.$node.attr('data-val'));
+                            $this.set('select', val);
+                        }, 300);
+                    }
                 });
-                var picker = $element.pickatime('picker');
-                picker.set('select', parseInt($element.attr('data-val')));
             });
 
             $('input[type="text"]').each(function(i, element) {
