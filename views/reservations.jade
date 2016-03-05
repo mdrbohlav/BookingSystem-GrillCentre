@@ -220,7 +220,7 @@ block scripts
 
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
                     if ($reservationRow.length) {
-                        $reservationRow.find('.reservation__state').removeClass('icon__pencil').addClass('icon__check').attr('title', 'Confirmed');
+                        $reservationRow.find('.reservation__state span').removeClass('icon__pencil').addClass('icon__check').attr('title', 'Confirmed');
                     }
                 }, function(res) {
                     console.log(res);
@@ -249,7 +249,7 @@ block scripts
 
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
                     if ($reservationRow.length) {
-                        $reservationRow.find('.reservation__state').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Rejected');
+                        $reservationRow.find('.reservation__state span').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Rejected');
                     }
                 }, function(res) {
                     console.log(res);

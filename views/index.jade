@@ -12,7 +12,11 @@ block content
                 .box__header.box__header--border
                     h2.text__title Kalendář rezervací
                 .box__body
-                    .calendar
+                    .row
+                        .col-xs-12.col-sm-6.text--yellow Rezervace mobilního grilu
+                        .col-xs-12.col-sm-6.text--red Rezervace gril centra
+                        .col-xs-12.col-sm-6.text--orange Rezervace gril centra i mobilního grilu
+                    .calendar.margin--top-15
                         script#calendar-template(type="text/template").
                             <div class="calendar__controls text--center">
                                 <button class="calendar__prev text__paragraph" type="button">&lsaquo;</button>
@@ -42,11 +46,11 @@ block content
                                                 day.events[i].class = 'grill';
                                                 day.events[i].title = 'Rezervace mobilního grilu';
                                             } else if (!day.events[i].mobileGrill) {
-                                                day.events[i].class = 'both';
-                                                day.events[i].title = 'Rezervace gril centra i mobilního grilu';
-                                            } else {
                                                 day.events[i].class = 'centre';
                                                 day.events[i].title = 'Rezervace gril centra';
+                                            } else {
+                                                day.events[i].class = 'both';
+                                                day.events[i].title = 'Rezervace gril centra i mobilního grilu';
                                             }
                                         }
                                     %>
@@ -114,35 +118,36 @@ block content
         button.modal__close.btn__close.icon.icon__cross(type='button')
         .modal__content.table__cell
             .container__md
-                .box
-                    h2.text__title.box__header.box__header--border Detail dne
+                .box.modalReservation__centre
+                    h2.text__title.box__header.box__header--border Rezervace gril centra
                     .box__body
-                        .modalReservation__centre
-                            h3.modalReservation__title.text__subtitle.text--default
-                            .row
-                                .col-xs-12.col-sm-6
-                                    .modalReservation__date.text__paragraph
-                                        span.text--strong Datum
-                                        span.value
-                                    .modalReservation__pickup.text__paragraph
-                                        span.text--strong Čas vyzvednutí
-                                        span.value
-                                    .modalReservation__mobileGrill
-                                        span.text--strong Mobilní gril
-                                        span.value
-                                .col-xs-12.col-sm-6
-                                    h4.text__paragraph Příslušenství
-                                    ul.modalReservation__accessories
-                        .modalReservation__grill
-                            h3.modalReservation__title.text__subtitle.text--default
-                            .row
-                                .col-xs-12.col-sm-6
-                                    .modalReservation__date.text__paragraph
-                                        span.text--strong Datum
-                                        span.value
-                                    .modalReservation__pickup.text__paragraph
-                                        span.text--strong Čas vyzvednutí
-                                        span.value
+                        h3.modalReservation__title.text__subtitle.text--default
+                        .row
+                            .col-xs-12.col-sm-6
+                                .modalReservation__date.text__paragraph
+                                    span.text--strong Datum
+                                    span.value
+                                .modalReservation__pickup.text__paragraph.margin--top-10
+                                    span.text--strong Čas vyzvednutí
+                                    span.value
+                                .modalReservation__mobileGrill.text__paragraph.margin--top-10
+                                    span.text--strong Mobilní gril
+                                    span.value
+                            .col-xs-12.col-sm-6
+                                h4.text__paragraph Příslušenství
+                                ul.modalReservation__accessories
+                .box.modalReservation__grill
+                    h2.text__title.box__header.box__header--border Rezervace mobilního grilu
+                    .box__body
+                        h3.modalReservation__title.text__subtitle.text--default
+                        .row
+                            .col-xs-12.col-sm-6
+                                .modalReservation__date.text__paragraph
+                                    span.text--strong Datum
+                                    span.value
+                                .modalReservation__pickup.text__paragraph.margin--top-10
+                                    span.text--strong Čas vyzvednutí
+                                    span.value
 
 block scripts
     script.
@@ -328,6 +333,20 @@ block scripts
 
                             if (dayEvents < 3) {
                                 date.set('select', new Date(target.date.format()));
+                            }
+
+                            if (dayEvents === 1) {
+                                $('.modalReservation__centre').hide();
+                                $('.modalReservation__grill').show();
+                            } else if (dayEvents === 2) {
+                                $('.modalReservation__centre').show();
+                                $('.modalReservation__grill, .modalReservation__mobileGrill').hide();
+                            } else if (dayEvents === 3) {
+                                $('.modalReservation__centre, .modalReservation__grill').show();
+                                $('.modalReservation__mobileGrill').hide();
+                            } else {
+                                $('.modalReservation__centre, .modalReservation__mobileGrill').show();
+                                $('.modalReservation__grill').hide();
                             }
 
                             showModal();

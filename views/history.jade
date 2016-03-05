@@ -130,7 +130,7 @@ block scripts
                 makeRequest('/api/reservation/' + id + '/cancel', 'PUT', {}, function(res) {
                     addNotification('success', 'Reservation successfully canceled.');
                     $this.remove();
-                    $row.find('.reservation__state').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Canceled');
+                    $row.find('.reservation__state span').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Canceled');
                     if ($('.listReservations li:not(.table__heading)').length === 0) {
                         $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
                     }
