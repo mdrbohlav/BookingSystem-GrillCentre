@@ -79,7 +79,7 @@ block scripts
         function generatePagination(current, pages) {
             $pagination = $('.pagination');
             $pagination.html('');
-            console.log(current, pages);
+
             if (current === 1) {
                 $pagination.append('<li><button class="pagination__prev icon icon__arrow-left" type="button" disabled>');
             } else {
@@ -138,25 +138,41 @@ block scripts
             });
         }
 
+        function loadPage(page, updateHistory) {
+            var limit = #{data.pagination.limit},
+                query = 'offset=' + ((page - 1) * limit) + '&limit=' + limit,
+                $list = $('#listAllReservations'),
+                $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
+
+            $list.append($spinner);
+
+            firstLoad = true;
+            if (updateHistory) {
+                var historyState = {
+                        page: page
+                    },
+                    historyTitle = document.title,
+                    historyUrl = window.location.pathname.replace(/\/$/, '');
+                historyUrl = historyUrl === '' ? '/' : historyUrl;
+                historyUrl += '?' + query;
+                history.pushState(historyState, historyTitle, historyUrl);
+            }
+
+            makeRequest('/user/history?accept=json&' + query, 'GET', {}, function(res) {
+                generatePagination(res.pagination.offset / res.pagination.limit + 1, Math.ceil(res.total / res.pagination.limit));
+                
+                $list.html(getTableHeading());
+                for (var key in res.reservations) {
+                    $list.append(getReservationRow(res.reservations[key]));
+                }
+            });
+        }
+
         function paginationFunctionality() {
             $('.pagination button').on('click', function() {
                 var $this = $(this),
-                    page = parseInt($this.attr('data-page')),
-                    limit = #{data.pagination.limit},
-                    query = '&offset=' + ((page - 1) * limit) + '&limit=' + limit,
-                    $list = $('#listAllReservations'),
-                    $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
-
-                $list.append($spinner);
-
-                makeRequest('/user/history?accept=json' + query, 'GET', {}, function(res) {
-                    generatePagination(res.pagination.offset / res.pagination.limit + 1, Math.ceil(res.total / res.pagination.limit));
-                    
-                    $list.html(getTableHeading());
-                    for (var key in res.reservations) {
-                        $list.append(getReservationRow(res.reservations[key]));
-                    }
-                });
+                    page = parseInt($this.attr('data-page'));
+                loadPage(page, true);
             });
         }
 
@@ -200,4 +216,23 @@ block scripts
             });
 
             paginationFunctionality();
+
+            //=================================================================
+            // Popstate
+            //=================================================================
+            $window.on('popstate', function(e) {
+                if (firstLoad) {
+                    console.log(window.history);
+                    if (window.history.state && Object.keys(window.history.state).length) {
+                        loadPage(window.history.state.page, false);
+                    } else {
+                        var page = 1;
+                        if (urlParam('offset') && urlParam('limit')) {
+                            page = parseInt(urlParam('offset')) / parseInt(urlParam('limit')) + 1;
+                        }
+                        loadPage(page, false);
+                    }
+                }
+                firstLoad = true;
+            });
         });

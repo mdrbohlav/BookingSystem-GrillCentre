@@ -355,6 +355,29 @@ $(document).ready(function() {
     });
 
     //=================================================================
+    // Scroll to id functionality
+    //=================================================================
+    $("a").click(function(e) {
+        var target = $(this).attr('href');
+        if (target[0] === "#") {
+            e.preventDefault();
+            if (target.length === 1 && typeof($(this).attr('data-scroll-up')) !== 'undefined') {
+                $body
+                    .velocity("scroll", {
+                        duration: 1000,
+                        easing: "swing"
+                    });
+            } else {
+                $(target)
+                    .velocity("scroll", {
+                        duration: 1000,
+                        easing: "swing"
+                    });
+            }
+        }
+    });
+
+    //=================================================================
     // Fastclick
     //=================================================================
     FastClick.attach(document.body);
