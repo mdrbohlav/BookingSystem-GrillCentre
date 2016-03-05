@@ -18,7 +18,7 @@ router.get('/history', function(req, res, next) {
                 ['from', 'DESC'],
                 ['to', 'DESC']
             ],
-            limit: 10,
+            limit: 3,
             offset: 0
         };
 

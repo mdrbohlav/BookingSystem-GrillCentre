@@ -12,7 +12,9 @@ router.put('/:id/confirm', function(req, res, next) {
         data = {
             state: 'confirmed'
         };
-    Reservation.update(id, data).then(function(count) {
+    Reservation.get().then(function() {
+        return Reservation.update(id, data);
+    }).then(function(count) {
         res.json(count);
     }).catch(function(data) {
         if ('status' in data) {

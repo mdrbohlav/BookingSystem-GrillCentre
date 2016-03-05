@@ -12,9 +12,7 @@ function checkUnfinishedReservations() {
 
         Reservation.findAll({
             where: {
-                state: {
-                    $ne: 'finished'
-                },
+                state: 'confirmed',
                 to: {
                     $lt: today
                 }

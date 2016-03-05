@@ -1,10 +1,10 @@
 @font-face
     font-family 'icons'
-    src url('../fonts/icons.eot?tjsvzy')
-    src url('../fonts/icons.eot?tjsvzy#iefix') format('eot'),
-        url('../fonts/icons.woff?tjsvzy') format('woff'),
-        url('../fonts/icons.ttf?tjsvzy') format('truetype'),
-        url('../fonts/icons.svg?tjsvzy#icons') format('svg')
+    src url('../fonts/fontello.eot?82371070')
+    src url('../fonts/fontello.eot?82371070#iefix') format('eot'),
+        url('../fonts/fontello.woff?82371070') format('woff'),
+        url('../fonts/fontello.ttf?82371070') format('truetype'),
+        url('../fonts/fontello.svg?82371070#icons') format('svg')
     font-weight normal
     font-style normal
 
@@ -39,6 +39,44 @@ icon()
     transform rotate(90deg)
 
 $icon-arrow-down = '\e900'
+$icon-star = '\e800'
+$icon-star-empty = '\e801'
+$icon-star-half = '\e802'
+$icon-cross = '\e803'
+$icon-plus = '\e804'
+$icon-check = '\e805'
+$icon-pencil = '\e806'
+$icon-arrow-left = '\e807'
+$icon-arrow-right = '\e808'
+$icon-flag = '\e809'
 
-.icon__arrow-down:before
-    content $icon-arrow-down
+.icon__star:before
+    content $icon-star
+    
+.icon__star-empty:before
+    content $icon-star-empty
+    
+.icon__star-half:before
+    content $icon-star-half
+    
+.icon__cross:before
+    content $icon-cross
+    
+.icon__plus:before
+    content $icon-plus
+    
+.icon__check:before
+    content $icon-check
+    
+.icon__pencil:before
+    content $icon-pencil
+    
+.icon__arrow-left:before
+    content $icon-arrow-left
+    
+.icon__arrow-right:before
+    content $icon-arrow-right
+    
+.icon__flag:before
+    content $icon-flag
+    

@@ -21,7 +21,7 @@
         text-align center
         top 14px
         transform translateZ(0)
-        transition border-color .2s linear 0s, color .2s linear 0s
+        transition border-color .2s linear 0s
         vertical-align middle
         z-index 2
         hide-text()
@@ -33,17 +33,17 @@
         
         &:hover
             border-color $color-red
-            color $color-red
             
-            .lines
-                background-color $color-red
-                
-                &:before,
-                &:after
-                    background-color $color-red
+            &:before
+                color $color-red
         
         &:focus
             outline none
+            
+        &:before
+            color $color-text-default
+            set-font-size 20px
+            transition color .1s linear
     
     &__content
         opacity 0

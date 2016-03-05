@@ -295,9 +295,14 @@ $(document).ready(function() {
     });
 
     //=================================================================
-    // Modal close button
+    // Modal close
     //=================================================================
-    $('.modal__close').on('click', function() {
+    $('.modal').on('click', function(event) {
+        var $this = $(this),
+            triggerClose = $('.modal, .modal__close, .modal__content').toArray();
+        if (triggerClose.indexOf(event.target) === -1) {
+            return;
+        }
         hideModal();
     });
 

@@ -17,8 +17,28 @@
         background-color transparent
         border none
         cursor pointer
-        padding 5px 20px
+        padding 5px 10px
         transition background-color .2s linear
+        
+        @media $sm-up
+            padding 5px 20px
             
-        &:hover
+        &:not(:disabled):hover
             background-color $color-grey-1
+            
+        &:focus
+            outline none
+            
+        &:disabled
+            color $color-grey-2
+            cursor default
+            
+            &:not(.icon)
+                color $color-red
+                
+    span
+        display inline-block
+        padding 5px
+        
+        @media $sm-up
+            padding 5px 10px

@@ -16,12 +16,17 @@ html
             header
                 nav.nav__main
                     ul.text--center
-                        li: a.text__nav(href='/') Domů
-                        li: a.text__nav(href='/user/history') Moje rezervace
+                        - var homeLink = page === 'index' ? '#' : '/'
+                        - var historyLink = page === 'history' ? '#' : '/user/history'
+                        li: a.text__nav(href= homeLink, class=(page === 'index' ? 'active' : '')) Domů
+                        li: a.text__nav(href= historyLink, class=(page === 'history' ? 'active' : '')) Moje rezervace
                         if user.isAdmin
-                            li: a.text__nav(href='/admin/reservations') Rezervace
-                            li: a.text__nav(href='/admin/statistics') Statistiky
-                            li: a.text__nav(href='/admin/config') Nastavení
+                            - var reservationsLink = page === 'reservations' ? '#' : '/admin/reservations'
+                            - var statisticsLink = page === 'statistics' ? '#' : '/admin/statistics'
+                            - var configLink = page === 'config' ? '#' : '/admin/config'
+                            li: a.text__nav(href= reservationsLink, class=(page === 'reservations' ? 'active' : '')) Rezervace
+                            li: a.text__nav(href= statisticsLink, class=(page === 'statistics' ? 'active' : '')) Statistiky
+                            li: a.text__nav(href= configLink, class=(page === 'config' ? 'active' : '')) Nastavení
                         li: a.text__nav(href='/auth/logout') Odhlásit
                 button.nav__trigger(data-trigger-menu='nav__main') Zobrazit menu
                     span.icon.lines
