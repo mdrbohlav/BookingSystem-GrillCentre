@@ -1,6 +1,6 @@
-var express = require('express');
-var passport = require('passport');
-var router = express.Router();
+var express = require('express'),
+    passport = require('passport'),
+    router = express.Router();
 
 var AuthHelper = require('../helpers/AuthHelper');
 

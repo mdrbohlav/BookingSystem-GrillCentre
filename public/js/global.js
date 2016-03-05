@@ -77,7 +77,7 @@ function addNotification(type, text, attr) {
 
     var $notification = $('<div class="notification notification__' + type + '" data-name="' + attr + '"></div>'),
         $notificationText = $('<p class="notification__text lambda">' + text + '</p>'),
-        $notificationClose = $('<div class="notification__close icon icon-cross" title="close notification"></div>');
+        $notificationClose = $('<div class="notification__close icon icon__cross" title="close notification"></div>');
 
     $notification.append($notificationText).append($notificationClose);
     $notificationWrapper.append($notification);

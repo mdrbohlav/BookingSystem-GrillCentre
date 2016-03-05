@@ -1,7 +1,7 @@
-var express = require('express');
-var fs = require('fs');
-var router = express.Router();
-var configCustom = require('../config-custom').custom;
+var express = require('express'),
+    fs = require('fs'),
+    router = express.Router(),
+    configCustom = require('../config-custom').custom;
 
 var Reservation = require('../api/reservation');
 

@@ -1,19 +1,49 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express'),
+    router = express.Router();
 
-var AuthHelper = require('../../../helpers/AuthHelper');
-var Reservation = require('../../../api/reservation');
+var AuthHelper = require('../../../helpers/AuthHelper'),
+    Reservation = require('../../../api/reservation');
 
-var InvalidRequestError = require('../../../errors/InvalidRequestError');
+var InvalidRequestError = require('../../../errors/InvalidRequestError'),
+    ReservationExistsError = require('../../../errors/ReservationExistsError');
 
 // PUT /api/admin/reservation/:id/confirm
 router.put('/:id/confirm', function(req, res, next) {
     var id = req.params.id,
         data = {
             state: 'confirmed'
+        },
+        options;
+    Reservation.getById(id).then(function(reservation) {
+        var options = {
+            where: {
+                state: 'confirmed',
+                $or: [{
+                    $and: [
+                        { from: { $lte: reservation.from } },
+                        { to: { $gte: reservation.from } }
+                    ]
+                }, {
+                    $and: [
+                        { from: { $lte: reservation.to } },
+                        { to: { $gte: reservation.to } }
+                    ]
+                }]
+            }
         };
-    Reservation.get().then(function() {
-        return Reservation.update(id, data);
+
+        if (!reservation.onlyMobileGrill) {
+            options.where.onlyMobileGrill = false;
+        } else {
+            options.where.mobileGrill = true;
+        }
+
+        return Reservation.count(options).then(function(count) {
+            if (count > 0) {
+                throw new ReservationExistsError();
+            }
+            return Reservation.update(id, data);
+        });
     }).then(function(count) {
         res.json(count);
     }).catch(function(data) {

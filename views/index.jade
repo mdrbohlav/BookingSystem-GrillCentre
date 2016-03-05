@@ -196,14 +196,13 @@ block scripts
             var $date, date, dateTo = null;
 
             if (#{reservationLength} > 1 || #{user.isAdmin}) {
-                var $dateTo = $('#date-to').pickadate();
+                var $dateTo = $('#date-to').pickadate({
+                    min: true
+                });
                 dateTo = $dateTo.pickadate('picker');
 
                 if (!#{user.isAdmin}) {
-                    dateTo.set({
-                        min: true,
-                        max: #{reservationUpfront}
-                    });
+                    dateTo.set('max', #{reservationUpfront});
                 }
                 
                 dateTo.on({
@@ -220,8 +219,8 @@ block scripts
                                 date.set('min', dat);
                             }
                         } else if ('clear' in event) {
+                            date.set('min', true);
                             if (!#{user.isAdmin}) {
-                                date.set('min', true);
                                 date.set('max', #{reservationUpfront});
                             } else {
                                 date.set('max', false);
@@ -235,6 +234,7 @@ block scripts
                 });
 
                 $date = $('#date').pickadate({
+                    min: true,
                     onSet: function(event) {
                         if (event.select) {
                             var dat = new Date(event.select),
@@ -249,11 +249,9 @@ block scripts
                                 dateTo.set('max', dat);
                             }
                         } else if ('clear' in event) {
+                            dateTo.set('min', true);
                             if (!#{user.isAdmin}) {
-                                dateTo.set('min', true);
                                 dateTo.set('max', #{reservationUpfront});
-                            } else {
-                                dateTo.set('min', false);
                             }
                         }
                     }
@@ -264,10 +262,7 @@ block scripts
             
             date = $date.pickadate('picker');
             if (!#{user.isAdmin}) {
-                date.set({
-                    min: true,
-                    max: #{reservationUpfront}
-                });
+                date.set('max', #{reservationUpfront});
             }
 
             var $pickup = $('#pickup').pickatime({
@@ -333,7 +328,7 @@ block scripts
                             }
 
                             showModal();
-                        } else if (#{user.isAdmin} || (d >= today && d <= lastDay)) {
+                        } else if (d >= today && (#{user.isAdmin} || d <= lastDay)) {
                             date.set('select', new Date(target.date.format()));
                         }
                     },
@@ -454,15 +449,21 @@ block scripts
                         addNotification('success', 'Pre-reservation successfully created.');
                     }, function(res) {
                         console.log(res);
-                        var msg = res.responseJSON.error.message;
-                        if (res.responseJSON.error.type === 'MaxReservationLength') {
-                            msg += ' (maximum is #{reservationLength} ';
-                            msg += #{reservationLength} > 1 ? 'days)' : 'day)';
-                        } else if (res.responseJSON.error.type === 'MaxReservationUpfront') {
-                            msg += ' (maximum is #{reservationUpfront} ';
-                            msg += #{reservationUpfront} > 1 ? 'days)' : 'day)';
+                        if (res instanceof Array) {
+                            for (var i = 0; i < res.length; i++) {
+                                addNotification('error', res[i].message);
+                            }
+                        } else {
+                            var msg = res.responseJSON.error.message;
+                            if (res.responseJSON.error.type === 'MaxReservationLength') {
+                                msg += ' (maximum is #{reservationLength} ';
+                                msg += #{reservationLength} > 1 ? 'days)' : 'day)';
+                            } else if (res.responseJSON.error.type === 'MaxReservationUpfront') {
+                                msg += ' (maximum is #{reservationUpfront} ';
+                                msg += #{reservationUpfront} > 1 ? 'days)' : 'day)';
+                            }
+                            addNotification('error', msg);
                         }
-                        addNotification('error', msg);
                     });
                 }
             });

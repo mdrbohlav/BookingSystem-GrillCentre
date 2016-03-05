@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var configCustom = require('../config-custom').custom;
-var ICalHelper = require('../helpers/ICalHelper');
+var express = require('express'),
+    router = express.Router(),
+    configCustom = require('../config-custom').custom;
 
-var Accessory = require('../api/accessory');
+var ICalHelper = require('../helpers/ICalHelper'),
+    Accessory = require('../api/accessory');
 
 var InvalidRequestError = require('../errors/InvalidRequestError');
 

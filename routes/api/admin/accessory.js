@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-var AuthHelper = require('../../../helpers/AuthHelper');
-var Accessory = require('../../../api/accessory');
+var AuthHelper = require('../../../helpers/AuthHelper'),
+    Accessory = require('../../../api/accessory');
 
 var InvalidRequestError = require('../../../errors/InvalidRequestError');
 

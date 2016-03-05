@@ -1,15 +1,14 @@
-var express = require('express');
-var router = express.Router();
-var configCustom = require('../../config-custom').custom;
+var express = require('express'),
+    router = express.Router(),
+    configCustom = require('../../config-custom').custom;
 
-var ICalHelper = require('../../helpers/ICalHelper');
+var ICalHelper = require('../../helpers/ICalHelper'),
+    Reservation = require('../../api/reservation');
 
-var Reservation = require('../../api/reservation');
-
-var InvalidRequestError = require('../../errors/InvalidRequestError');
-var MaxReservationUpfrontError = require('../../errors/MaxReservationUpfrontError');
-var MaxReservationsError = require('../../errors/MaxReservationsError');
-var MaxReservationLengthError = require('../../errors/MaxReservationLengthError');
+var InvalidRequestError = require('../../errors/InvalidRequestError'),
+    MaxReservationUpfrontError = require('../../errors/MaxReservationUpfrontError'),
+    MaxReservationsError = require('../../errors/MaxReservationsError'),
+    MaxReservationLengthError = require('../../errors/MaxReservationLengthError');
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {
@@ -49,13 +48,13 @@ router.post('/create', function(req, res, next) {
             state: 'draft',
             $or: [{
                 $and: [
-                    { from: { $gte: dateStartString } },
-                    { from: { $lte: dateEndString } }
+                    { from: { $lte: dateStartString } },
+                    { to: { $gte: dateStartString } }
                 ]
             }, {
                 $and: [
-                    { to: { $gte: dateStartString } },
-                    { to: { $lte: dateEndString } }
+                    { from: { $lte: dateEndString } },
+                    { to: { $gte: dateEndString } }
                 ]
             }]
         }
@@ -86,7 +85,7 @@ router.post('/create', function(req, res, next) {
                 accessories = [];
 
             if (req.body.mobileGrill) {
-                data.mobileGrill = true;
+                data.mobileGrill = req.body.mobileGrill;
             }
             if (req.body.onlyMobileGrill) {
                 data.onlyMobileGrill = req.body.onlyMobileGrill;
@@ -102,7 +101,7 @@ router.post('/create', function(req, res, next) {
                 var id = result.id,
                     start = new Date(result.from),
                     summary = req.user.fullName + ' reservation ' + result.state,
-                    description = 'Key pickup time: ' + Math.floor(result.pickup/60) + ':' + result.pickup%60,
+                    description = 'Key pickup time: ' + Math.floor(result.pickup / 60) + ':' + result.pickup % 60,
                     organizer = req.user.fullName + ' <' + req.user.email + '>';
                 ICalHelper.createEvent(id, start, summary, description, organizer);
                 res.json(result);

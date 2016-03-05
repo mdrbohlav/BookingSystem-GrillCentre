@@ -17,7 +17,7 @@ block content
                     h2.text__title Rezervace na schválení
                 .box__body
                     .table__wrapper
-                        ul.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
+                        ul#listWaitingReservations.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
                             each reservation in data.reservations
                                 if reservation.state === 'draft' && new Date(reservation.from) >= today
                                     - var resUser = data.users[reservation.userId]
@@ -176,13 +176,23 @@ block scripts
                 makeRequest('/api/admin/reservation/' + id + '/confirm', 'PUT', {}, function(res) {
                     addNotification('success', 'Reservation successfully confirmed.');
                     $row.remove();
-                    if ($('.listReservations li:not(.table__heading)').length === 0) {
-                        $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
+                    if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {
+                        $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p></div></li>');
                     }
 
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
                     if ($reservationRow.length) {
                         $reservationRow.find('.reservation__state').text('Confirmed');
+                    }
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
                     }
                 });
             });
@@ -195,13 +205,23 @@ block scripts
                 makeRequest('/api/admin/reservation/' + id + '/reject', 'PUT', {}, function(res) {
                     addNotification('success', 'Reservation successfully rejected.');
                     $row.remove();
-                    if ($('.listReservations li:not(.table__heading)').length === 0) {
-                        $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
+                    if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {
+                        $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p></div></li>');
                     }
 
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
                     if ($reservationRow.length) {
                         $reservationRow.find('.reservation__state').text('Rejected');
+                    }
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
                     }
                 });
             });

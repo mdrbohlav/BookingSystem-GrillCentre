@@ -54,7 +54,7 @@ block content
                                 if current > 2 && pages !== 3
                                     li: button(type='button', data-page='1') 1
                                 if current > 3
-                                    li: span …
+                                    li: span.text …
                                 if current === pages && current > 2
                                     li: button(type='button', data-page= (current - 2))= (current - 2)
                                 if current > 1
@@ -65,7 +65,7 @@ block content
                                 if current === 1 && pages > 2
                                     li: button(type='button', data-page= (current + 2))= (current + 2)
                                 if current < pages - 2
-                                    li: span …
+                                    li: span.text …
                                 if current < pages - 1 && pages !== 3
                                     li: button(type='button', data-page= pages)= pages
 
@@ -90,7 +90,7 @@ block scripts
                 $pagination.append('<li><button type="button" data-page="1">1');
             }
             if (current > 3) {
-                $pagination.append('<li><span>…');
+                $pagination.append('<li><span class="text">…');
             }
             if (current === pages && current > 2) {
                 $pagination.append('<li><button type="button" data-page="' + (current - 2) + '">' + (current - 2));
@@ -106,7 +106,7 @@ block scripts
                 $pagination.append('<li><button type="button" data-page="' + (current + 2) + '">' + (current + 2));
             }
             if (current < pages - 2) {
-                $pagination.append('<li><span>…');
+                $pagination.append('<li><span class="text">…');
             }
             if (current < pages - 1 && pages !== 3) {
                 $pagination.append('<li><button type="button" data-page="' + pages + '">' + pages);
