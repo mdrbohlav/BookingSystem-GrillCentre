@@ -7,7 +7,7 @@ block content
                 .box__header.box__header--border
                     h2.text__title Konfigurace
                 .box__body
-                    form#config.form.form__config(method='POST', action='/admin/config')
+                    form#config.form.form__config(method='PUT', action='/admin/config')
                         - var cnt = 0
                         each category, key in configKeys
                             .fieldset.row
@@ -120,7 +120,15 @@ block scripts
                             data[key] = $('#' + key).prop('checked');
                         }
                     }
-                    console.log(data);
+
+                    var url = $(form).attr('action'),
+                        method = $(form).attr('method');
+                    makeRequest(url, method, data, function(res) {
+                        addNotification('success', 'Config successfully changed.');
+                    }, function(res) {
+                        console.log(res);
+                        addNotification('error', 'Something went worng, please try again.');
+                    });
                 }
             });
         });

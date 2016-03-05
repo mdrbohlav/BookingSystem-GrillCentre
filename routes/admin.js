@@ -1,7 +1,8 @@
 var express = require('express'),
     fs = require('fs'),
     router = express.Router(),
-    configCustom = require('../config-custom').custom;
+    configFileName = 'config-custom',
+    configCustom = require('../' + configFileName).custom;
 
 var Reservation = require('../api/reservation');
 
@@ -144,7 +145,7 @@ router.get('/statistics', function(req, res, next) {
 
 // GET /admin/config
 router.get('/config', function(req, res, next) {
-    var fileData = getFile('./config-custom.js'),
+    var fileData = getFile('./' + configFileName + '.js'),
         configKeys = {
             emails: {
                 name: 'Emaily',
@@ -202,12 +203,30 @@ router.get('/config', function(req, res, next) {
                 }
             }
         };
-    fileData = fileData.replace(/^module\.exports = /, '').replace(/;\n$/, '').replace(/\s\s+/g, ' \"').replace(/:/g, "\":").replace(/'/g, "\"").replace(/\"}/g, '}');
+    fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
     res.render('config', {
         page: 'config',
         configKeys: configKeys,
-        fileData: JSON.parse(fileData)
+        fileData: fileData
     });
+});
+
+// PUT /admin/config
+router.put('/config', function(req, res, next) {
+    var fileData = getFile('./' + configFileName + '.js');
+    fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
+    for (var k in req.body) {
+        if ([ 'tel', 'time' ].indexOf(fileData.default[k].type) > -1) {
+            fileData.custom[k] = parseInt(req.body[k]);
+        } else if (fileData.default[k].type === 'checkbox') {
+            fileData.custom[k] = req.body[k] === 'true' ? true : false;
+        } else {
+            fileData.custom[k] = req.body[k];
+        }
+    }
+    fileData = JSON.stringify(fileData, null, 4).replace(/^/, 'module.exports = ').replace(/$/, ';\n');
+    fs.writeFileSync('./' + configFileName + '.js', fileData);
+    res.json({ success: true });
 });
 
 module.exports = router;
