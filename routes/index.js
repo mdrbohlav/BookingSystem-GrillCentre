@@ -7,11 +7,16 @@ var ICalHelper = require('../helpers/ICalHelper'),
 
 var InvalidRequestError = require('../errors/InvalidRequestError');
 
+var title = 'Gril centrum SiliconHill',
+    description = 'Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.';
+
 // GET /
 router.get('/', function(req, res, next) {
     Accessory.get({}).then(function(result) {
         res.render('index', {
             page: 'index',
+            title: title,
+            description: description,
             reservationLength: configCustom.MAX_RESERVATION_LENGTH,
             reservationUpfront: configCustom.MAX_RESERVATION_UPFRONT,
             accessories: result.accessories,
@@ -34,7 +39,9 @@ router.get('/login', function(req, res, next) {
         res.redirect('/');
     }
     res.render('login', {
-        page: 'login'
+        page: 'login',
+        title: 'Přihlášení | ' + title,
+        description: description,
     });
 });
 

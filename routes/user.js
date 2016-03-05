@@ -6,6 +6,9 @@ var User = require('../api/user');
 
 var InvalidRequestError = require('../errors/InvalidRequestError');
 
+var title = 'Gril centrum SiliconHill',
+    description = 'Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.';
+
 // GET /user/history
 router.get('/history', function(req, res, next) {
     req.query.from = new Date();
@@ -39,6 +42,8 @@ router.get('/history', function(req, res, next) {
         } else {
             res.render('history', {
                 page: 'history',
+                title: 'Historie | ' + title,
+                description: description,
                 data: result
             });
         }

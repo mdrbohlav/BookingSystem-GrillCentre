@@ -8,6 +8,9 @@ var Reservation = require('../api/reservation');
 
 var InvalidRequestError = require('../errors/InvalidRequestError');
 
+var title = 'Gril centrum SiliconHill',
+    description = 'Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.';
+
 function getFile(filename) {
     var data = fs.readFileSync(filename, {
         encoding: 'utf8'
@@ -78,6 +81,8 @@ router.get('/reservations', function(req, res, next) {
         } else {
             res.render('reservations', {
                 page: 'reservations',
+                title: 'Rezervace | ' + title,
+                description: description,
                 data: result
             });
         }
@@ -132,6 +137,8 @@ router.get('/statistics', function(req, res, next) {
     Reservation.get(options).then(function(result) {
         res.render('statistics', {
             page: 'statistics',
+            title: 'Statistiky | ' + title,
+            description: description,
             data: result
         });
     }).catch(function(data) {
@@ -206,6 +213,8 @@ router.get('/config', function(req, res, next) {
     fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
     res.render('config', {
         page: 'config',
+        title: 'Nastavení | ' + title,
+        description: description,
         configKeys: configKeys,
         fileData: fileData
     });

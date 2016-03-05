@@ -66,12 +66,14 @@
     border-left 1px solid $color-grey-1
     border-top 1px solid $color-grey-1
     height 47px
+    line-height 0
     padding 10px 5px 5px
     position relative
     text-align center
     
     @media $sm-up
-        height 74px
+        height 84px
+        line-height 1.2
         padding 30px 5px 5px
         text-align left
         
@@ -95,6 +97,7 @@
         color $color-grey-1
         
     &__num
+        line-height 1.2
         transition color .2s linear
         
         @media $sm-up
@@ -104,13 +107,15 @@
     
     &__event
         border-radius 50%
+        display inline-block
         font-size 0
-        margin 5px auto 0
+        margin 5px 0 0
         size(10px)
         
         @media $sm-up
             border-radius 5px
             color $color-white
+            display block
             margin 0 auto
             padding 5px
             set-font-size 12px
