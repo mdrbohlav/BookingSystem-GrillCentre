@@ -47,17 +47,6 @@ block scripts
                 },
                 unhighlight: function(element, errorClass, validClass) {
                     $(element).parent().removeClass('error');
-                },
-                submitHandler: function(form) {
-                    var data = {
-                            email: $('#email').val(),
-                            password: $('#password').val()
-                        },
-                        url = $(form).attr('action'),
-                        method = $(form).attr('method');
-                    makeRequest(url, method, data, function(res) {
-                        window.location.pathname = '/';
-                    });
                 }
             })
         });

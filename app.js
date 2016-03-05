@@ -157,6 +157,8 @@ app.use(function(req, res, next) {
     if (success) res.locals.success = success;
     if (req.user) res.locals.user = req.user;
 
+    console.log(err);
+
     next();
 });
 
