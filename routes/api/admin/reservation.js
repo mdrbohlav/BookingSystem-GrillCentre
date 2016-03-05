@@ -18,6 +18,7 @@ router.put('/:id/confirm', function(req, res, next) {
         var options = {
             where: {
                 state: 'confirmed',
+                stateChangedBy: req.user.id,
                 $or: [{
                     $and: [
                         { from: { $lte: reservation.from } },
@@ -59,7 +60,8 @@ router.put('/:id/confirm', function(req, res, next) {
 router.put('/:id/reject', function(req, res, next) {
     var id = req.params.id,
         data = {
-            state: 'rejected'
+            state: 'rejected',
+            stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {
         res.json(count);
@@ -77,7 +79,8 @@ router.post('/:id/rating', function(req, res, next) {
     var data = {
         reservationId: req.params.id,
         userId: req.body.userId,
-        value: req.body.value
+        value: req.body.value,
+        ratedBy: req.user.id
     };
     if (req.body.comment) {
         data.comment = req.body.comment;

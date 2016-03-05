@@ -84,6 +84,10 @@ module.exports = function(sequelize, DataTypes) {
                     }
                 }
             }
+        },
+        stateChangedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true
         }
     }, {
         classMethods: {

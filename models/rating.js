@@ -9,6 +9,10 @@ module.exports = function(sequelize, DataTypes) {
         comment: {
             type: DataTypes.TEXT,
             allowNull: true
+        },
+        ratedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true
         }
     });
 

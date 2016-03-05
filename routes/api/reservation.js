@@ -180,7 +180,8 @@ router.get('/:id', function(req, res, next) {
 router.put('/:id/cancel', function(req, res, next) {
     var id = req.params.id,
         data = {
-            state: 'canceled'
+            state: 'canceled',
+            stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {
         res.json(count);
