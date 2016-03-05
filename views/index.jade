@@ -40,19 +40,22 @@ block content
                                         for (var i in day.events) {
                                             if (day.events[i].onlyMobileGrill) {
                                                 day.events[i].class = 'grill';
+                                                day.events[i].title = 'Rezervace mobilního grilu';
                                             } else if (!day.events[i].mobileGrill) {
                                                 day.events[i].class = 'both';
+                                                day.events[i].title = 'Rezervace gril centra i mobilního grilu';
                                             } else {
                                                 day.events[i].class = 'centre';
+                                                day.events[i].title = 'Rezervace gril centra';
                                             }
                                         }
                                     %>
                                     <div class="calendar__cell <%= day.classes %> <%= dayClass %>">
                                         <div class="day__num"><%= day.day %></div>
                                         <% for (var i in day.events) { %>
-                                            <div class="day__event <%= day.events[0].class %>">
-                                            <% if (day.events[i].name.length > 20) { %>
-                                                <%= day.events[i].name.substr(0, 20) %>…
+                                            <div class="day__event <%= day.events[i].class %>" title="<%= day.events[i].title %>">
+                                            <% if (day.events[i].name.length > 15) { %>
+                                                <%= day.events[i].name.substr(0, 15) %>…
                                             <% } else { %>
                                                 <%= day.events[i].name %>
                                             <% } %>

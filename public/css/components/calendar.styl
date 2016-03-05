@@ -72,7 +72,7 @@
     text-align center
     
     @media $sm-up
-        height 84px
+        height 86px
         line-height 1.2
         padding 30px 5px 5px
         text-align left
@@ -118,8 +118,15 @@
             display block
             margin 0 auto
             padding 5px
-            set-font-size 12px
+            set-font-size 10px
             size(auto)
+            
+        @media $md-up
+            set-font-size 12px
+        
+        & + .day__event
+            @media $sm-up
+                margin-top 2px
             
         &.centre
             background-color $color-red
