@@ -72,7 +72,7 @@ module.exports = function(sequelize, DataTypes) {
         locale: {
             type: DataTypes.STRING(32),
             allowNull: false,
-            defaultValue: 'cs_CZ',
+            defaultValue: 'cs',
         }
     }, {
         classMethods: {

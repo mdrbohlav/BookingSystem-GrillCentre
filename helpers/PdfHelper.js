@@ -1,7 +1,7 @@
 var phantom = require('phantom'),
     jade = require('jade');
 
-var RenderingPdfError = require('../errors/RenderingPdfError');
+var RenderingPdfError = require(__dirname + '/../errors/RenderingPdfError');
 
 var session,
     jadeTemplate = jade.compileFile('public/templates/pdf-template.jade');

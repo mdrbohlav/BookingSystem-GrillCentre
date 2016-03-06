@@ -1,10 +1,10 @@
 var express = require('express'),
     router = express.Router();
 
-var User = require('../../api/user');
+var User = require(__dirname + '/../../api/user');
 
-var UnauthorizedError = require('../../errors/UnauthorizedError'),
-    InvalidRequestError = require('../../errors/InvalidRequestError');
+var UnauthorizedError = require(__dirname + '/../../errors/UnauthorizedError'),
+    InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError');
 
 function getData(req, data) {
     if (req.body.password) {

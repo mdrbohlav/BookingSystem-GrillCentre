@@ -6,10 +6,10 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false
         },
-        //nameEn: {
-        //    type: DataTypes.STRING,
-        //    allowNull: false
-        //},
+        nameEn: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         available: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

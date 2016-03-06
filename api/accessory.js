@@ -1,4 +1,4 @@
-var Accessory = require('../models').Accessory;
+var Accessory = require(__dirname + '/../models').Accessory;
 
 module.exports = {
     create(data) {

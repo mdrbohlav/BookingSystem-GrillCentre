@@ -5,15 +5,17 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     expressSession = require('express-session'),
-    redisStore = require('connect-redis')(expressSession);
+    redisStore = require('connect-redis')(expressSession),
+    i18n = require('i18n-2'),
+    isoLocales = require(__dirname + '/config/isoLocales');
 
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     OAuth2Strategy = require('passport-oauth2'),
-    AuthHelper = require('./helpers/AuthHelper'),
-    FinishReservationHelper = require('./helpers/FinishReservationHelper');
+    AuthHelper = require(__dirname + '/helpers/AuthHelper'),
+    FinishReservationHelper = require(__dirname + '/helpers/FinishReservationHelper');
 
-var config = require('./config'),
+var config = require(__dirname + '/config/global'),
     expressValidator = require('express-validator');
 
 var stylus = require('stylus'),
@@ -23,22 +25,43 @@ var stylus = require('stylus'),
 
 var nodemon = require('nodemon');
 
-var index = require('./routes/index'),
-    auth = require('./routes/auth'),
-    user = require('./routes/user'),
-    admin = require('./routes/admin'),
-    apiUser = require('./routes/api/user'),
-    apiReservation = require('./routes/api/reservation'),
-    apiAccessory = require('./routes/api/accessory'),
-    apiAdminUser = require('./routes/api/admin/user'),
-    apiAdminUsers = require('./routes/api/admin/users'),
-    apiAdminReservation = require('./routes/api/admin/reservation'),
-    apiAdminAccessory = require('./routes/api/admin/accessory');
+var index = require(__dirname + '/routes/index'),
+    auth = require(__dirname + '/routes/auth'),
+    user = require(__dirname + '/routes/user'),
+    admin = require(__dirname + '/routes/admin'),
+    apiUser = require(__dirname + '/routes/api/user'),
+    apiReservation = require(__dirname + '/routes/api/reservation'),
+    apiAccessory = require(__dirname + '/routes/api/accessory'),
+    apiAdminUser = require(__dirname + '/routes/api/admin/user'),
+    apiAdminUsers = require(__dirname + '/routes/api/admin/users'),
+    apiAdminReservation = require(__dirname + '/routes/api/admin/reservation'),
+    apiAdminAccessory = require(__dirname + '/routes/api/admin/accessory');
 
 var app = express();
 
 // Postgres setup
-var models = require("./models");
+var models = require(__dirname + '/models');
+
+var availableLocales = fs.readdirSync(__dirname + '/locales');
+for (var i = 0; i < availableLocales.length; i++) {
+    availableLocales[i] = availableLocales[i].replace(/\.js/, '');
+}
+
+i18n.expressBind(app, {
+    locales: availableLocales,
+    cookieName: 'locale'
+});
+
+app.use(function(req, res, next) {
+    if (req.user) {
+        req.i18n.setLocale(Object.keys(req.user.locale)[0]);
+    }
+    if (req.query.ln) {
+        var locale = req.query.ln;
+        req.i18n.setLocale(locale);
+    }
+    next();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -157,8 +180,6 @@ app.use(function(req, res, next) {
     if (success) res.locals.success = success;
     if (req.user) res.locals.user = req.user;
 
-    console.log(err);
-
     next();
 });
 
@@ -223,7 +244,7 @@ passport.deserializeUser(function(obj, done) {
 //});
 
 // routes require login
-var UnauthorizedError = require('./errors/UnauthorizedError');
+var UnauthorizedError = require(__dirname + '/errors/UnauthorizedError');
 
 app.get('/', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next).then(function() {

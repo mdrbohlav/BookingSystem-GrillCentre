@@ -1,8 +1,8 @@
 var schedule = require('node-schedule');
 
-var InvalidRequestError = require('../errors/InvalidRequestError');
+var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
-var Reservation = require('../models').Reservation;
+var Reservation = require(__dirname + '/../models').Reservation;
 
 function checkUnfinishedReservations() {
     return new Promise(function(resolve, reject) {

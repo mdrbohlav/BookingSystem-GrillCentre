@@ -2,7 +2,7 @@ var express = require('express'),
     passport = require('passport'),
     router = express.Router();
 
-var AuthHelper = require('../helpers/AuthHelper');
+var AuthHelper = require(__dirname + '/../helpers/AuthHelper');
 
 // POST /auth/login/native
 router.post('/login/native', passport.authenticate('login-native', {

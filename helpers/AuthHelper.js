@@ -1,13 +1,14 @@
 var crypto = require('crypto'),
-    bcrypt = require('bcrypt-nodejs');
+    bcrypt = require('bcrypt-nodejs'),
+    isoLocales = require(__dirname + '/../config/isoLocales');
 
-var InvalidPasswordError = require('../errors/InvalidPasswordError'),
-    InvalidRequestError = require('../errors/InvalidRequestError'),
-    UnauthorizedError = require('../errors/UnauthorizedError'),
-    UserDoesnotExistError = require('../errors/UserDoesnotExistError'),
-    UserBannedError = require('../errors/UserBannedError');
+var InvalidPasswordError = require(__dirname + '/../errors/InvalidPasswordError'),
+    InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError'),
+    UnauthorizedError = require(__dirname + '/../errors/UnauthorizedError'),
+    UserDoesnotExistError = require(__dirname + '/../errors/UserDoesnotExistError'),
+    UserBannedError = require(__dirname + '/../errors/UserBannedError');
 
-var User = require('../models').User;
+var User = require(__dirname + '/../models').User;
 
 // verify password
 function verifyPassword(password, passwordHash) {
@@ -67,6 +68,9 @@ module.exports.localAuth = function(email, password) {
             }
             user = user.get({ plain: true });
             verifyPassword(password, user.password).then(function(result) {
+                var locale = user.locale;
+                user.locale = {};
+                user.locale[locale] = isoLocales[locale];
                 resolve(user);
             }).catch(function(data) {
                 reject(new InvalidPasswordError());

@@ -1,9 +1,11 @@
-var AuthHelper = require('../helpers/AuthHelper');
+var isoLocales = require(__dirname + '/../config/isoLocales');
 
-var EmailExistsError = require('../errors/EmailExistsError'),
-    UserDoesnotExistError = require('../errors/UserDoesnotExistError');
+var AuthHelper = require(__dirname + '/../helpers/AuthHelper');
 
-var User = require('../models').User;
+var EmailExistsError = require(__dirname + '/../errors/EmailExistsError'),
+    UserDoesnotExistError = require(__dirname + '/../errors/UserDoesnotExistError');
+
+var User = require(__dirname + '/../models').User;
 
 function processUserUpdate(data) {
     return User.update(data, {
@@ -27,7 +29,11 @@ module.exports = {
                     throw new EmailExistsError();
                 }
 
-                return user.get({ plain: true });
+                user = user.get({ plain: true });
+                var locale = user.locale;
+                user.locale = {};
+                user.locale[locale] = isoLocales[locale];
+                return user;
             });
         });
     },
@@ -37,6 +43,9 @@ module.exports = {
             var users = [];
             for (var i = 0; i < data.rows.length; i++) {
                 users.push(data.rows[i].get({ plain: true }));
+                var locale = users[i].locale;
+                users[i].locale = {};
+                users[i].locale[locale] = isoLocales[locale];
             }
 
             return {
@@ -48,7 +57,11 @@ module.exports = {
 
     getById(id) {
         return User.findById(id).then(function(user) {
-            return user.get({ plain: true });
+            user = user.get({ plain: true });
+            var locale = user.locale;
+            user.locale = {};
+            user.locale[locale] = isoLocales[locale];
+            return user;
         });
     },
 
@@ -62,7 +75,11 @@ module.exports = {
                 throw new UserDoesnotExistError();
             }
 
-            return user.get({ plain: true });
+            user = user.get({ plain: true });
+            var locale = user.locale;
+            user.locale = {};
+            user.locale[locale] = isoLocales[locale];
+            return user;
         });
     },
 

@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
 
-var AuthHelper = require('../../../helpers/AuthHelper'),
-    Accessory = require('../../../api/accessory');
+var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    Accessory = require(__dirname + '/../../../api/accessory');
 
-var InvalidRequestError = require('../../../errors/InvalidRequestError');
+var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError');
 
 // POST /api/admin/accessory/create
 router.post('/create', function(req, res, next) {
     var data = {
         name: req.body.name,
+        nameEn: req.body.nameEn,
         available: req.body.available ? req.body.available : true
     };
     Accessory.create(data).then(function(accessory) {

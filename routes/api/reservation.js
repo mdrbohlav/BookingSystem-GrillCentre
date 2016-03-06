@@ -1,14 +1,14 @@
 var express = require('express'),
     router = express.Router(),
-    configCustom = require('../../config-custom').custom;
+    configCustom = require(__dirname + '/../../config/app').custom;
 
-var ICalHelper = require('../../helpers/ICalHelper'),
-    Reservation = require('../../api/reservation');
+var ICalHelper = require(__dirname + '/../../helpers/ICalHelper'),
+    Reservation = require(__dirname + '/../../api/reservation');
 
-var InvalidRequestError = require('../../errors/InvalidRequestError'),
-    MaxReservationUpfrontError = require('../../errors/MaxReservationUpfrontError'),
-    MaxReservationsError = require('../../errors/MaxReservationsError'),
-    MaxReservationLengthError = require('../../errors/MaxReservationLengthError');
+var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError'),
+    MaxReservationUpfrontError = require(__dirname + '/../../errors/MaxReservationUpfrontError'),
+    MaxReservationsError = require(__dirname + '/../../errors/MaxReservationsError'),
+    MaxReservationLengthError = require(__dirname + '/../../errors/MaxReservationLengthError');
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {

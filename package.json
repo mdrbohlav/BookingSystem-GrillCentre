@@ -20,6 +20,7 @@
     "express-session": "^1.13.0",
     "express-validator": "^2.19.1",
     "fs": "0.0.2",
+    "i18n-2": "^0.6.3",
     "ical-generator": "^0.2.7",
     "jade": "~1.9.2",
     "moment": "^2.11.2",

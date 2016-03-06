@@ -1,15 +1,15 @@
-var sequelize = require('../models/index').sequelize;
-var configCustom = require('../config-custom');
+var sequelize = require(__dirname + '/../models/index').sequelize,
+    configCustom = require(__dirname + '/../config/app').custom;
 
-var PdfHelper = require('../helpers/PdfHelper'),
+var PdfHelper = require(__dirname + '/../helpers/PdfHelper'),
     pdf_helper = new PdfHelper();
-var MailHelper = require('../helpers/MailHelper'),
+var MailHelper = require(__dirname + '/../helpers/MailHelper'),
     mail_helper = new MailHelper();
 
-var Reservation = require('../models').Reservation,
-    Rating = require('../models').Rating,
-    User = require('./user'),
-    Accessory = require('./accessory');
+var Reservation = require(__dirname + '/../models').Reservation,
+    Rating = require(__dirname + '/../models').Rating,
+    User = require(__dirname + '/user'),
+    Accessory = require(__dirname + '/accessory');
 
 function processPdfMail(req, plain) {
     return pdf_helper.getFile(req).then(function(pdfFile) {

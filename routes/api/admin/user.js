@@ -1,10 +1,10 @@
 var express = require('express'),
     router = express.Router();
 
-var AuthHelper = require('../../../helpers/AuthHelper'),
-    User = require('../../../api/user');
+var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    User = require(__dirname + '/../../../api/user');
 
-var InvalidRequestError = require('../../../errors/InvalidRequestError');
+var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError');
 
 function getData(req, data) {
     if (req.body.password) {

@@ -1,10 +1,10 @@
 var express = require('express'),
     router = express.Router(),
-    configCustom = require('../config-custom').custom;
+    configCustom = require(__dirname + '/../config/app').custom;
 
-var User = require('../api/user');
+var User = require(__dirname + '/../api/user');
 
-var InvalidRequestError = require('../errors/InvalidRequestError');
+var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
 var title = 'Gril centrum SiliconHill',
     description = 'Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.';

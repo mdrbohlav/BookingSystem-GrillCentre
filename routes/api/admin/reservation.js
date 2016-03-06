@@ -1,11 +1,11 @@
 var express = require('express'),
     router = express.Router();
 
-var AuthHelper = require('../../../helpers/AuthHelper'),
-    Reservation = require('../../../api/reservation');
+var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    Reservation = require(__dirname + '/../../../api/reservation');
 
-var InvalidRequestError = require('../../../errors/InvalidRequestError'),
-    ReservationExistsError = require('../../../errors/ReservationExistsError');
+var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError'),
+    ReservationExistsError = require(__dirname + '/../../../errors/ReservationExistsError');
 
 // PUT /api/admin/reservation/:id/confirm
 router.put('/:id/confirm', function(req, res, next) {

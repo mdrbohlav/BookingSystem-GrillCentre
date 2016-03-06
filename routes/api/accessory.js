@@ -1,9 +1,9 @@
 var express = require('express'),
     router = express.Router();
 
-var Accessory = require('../../api/accessory');
+var Accessory = require(__dirname + '/../../api/accessory');
 
-var InvalidRequestError = require('../../errors/InvalidRequestError');
+var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError');
 
 // GET /api/accessory
 router.get('/', function(req, res, next) {

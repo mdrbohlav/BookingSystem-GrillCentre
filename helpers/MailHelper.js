@@ -1,8 +1,8 @@
 var nodemailer = require('nodemailer'),
     fs = require('fs'),
-    configCustom = require('../config-custom').custom;
+    configCustom = require(__dirname + '/../config/app').custom;
 
-var MailError = require('../errors/MailError');
+var MailError = require(__dirname + '/../errors/MailError');
 
 var transporter = nodemailer.createTransport();
 
