@@ -138,5 +138,17 @@ module.exports = {
                 });
             });
         });
+    },
+
+    getRatings(id){
+        return User.findById(id).then(function(user) {
+            return user.getRatings().then(function(data) {
+                var result = [];
+                for (var i = 0; i < data.length; i++) {
+                    result.push(data[i].get({ plain: true }));
+                }
+                return result;
+            });
+        });
     }
 }

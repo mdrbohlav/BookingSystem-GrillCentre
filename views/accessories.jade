@@ -1,0 +1,115 @@
+extends layout
+
+block content
+    section.content
+        .container__md
+            .box
+                .box__header.box__header--border
+                    h2.text__title Příslušenství
+                .box__body
+                    ul#listAccessories.listAccessories.row
+                        each accessory in data.accessories
+                            li.listAccessories__item.col-xs-12.col-sm-6.col-md-4
+                                span.name= accessory.name
+                                button.btn__remove.icon.icon__cross(type='button', data-id= accessory.id, title='Delete')
+
+            .box
+                .box__header.box__header--border
+                    h2.text__title Přidat nové
+                .box__body
+                    form#addAccessory(action='/api/admin/accessory/create', method='POST')
+                        .fieldset.row
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='name') Český název
+                                .field
+                                    input#name(type='text', name='name', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='nameEn') Anglický název
+                                .field
+                                    input#nameEn(type='text', name='nameEn', required)
+                        .form__footer.text--center.margin--top-40
+                            button.btn.btn__orange(type='submit') Vytvořit
+                    
+
+block scripts
+    script.
+        function deleteBtnFunctionality($btn) {
+            $btn.on('click', function() {
+                var $this = $(this),
+                    $item = $this.closest('.listAccessories__item'),
+                    id = $this.attr('data-id');
+
+                makeRequest('/api/admin/accessory/' + id, 'DELETE', {}, function(res) {
+                    $item.remove();
+                    addNotification('success', 'Accessory successfully deleted.');
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
+                    }
+                });
+            });
+        }
+        function getAccessoryItem(accessory) {
+            var $deleteBtn = $('<button class="btn__remove icon icon__cross" type="button" data-id="' + accessory.id + '" title="Delete">');
+            deleteBtnFunctionality($deleteBtn);
+            return $('<li class="listAccessories__item col-xs-12 col-sm-6 col-md-4">')
+                .append('<span class="name">' + accessory.name)
+                .append($deleteBtn);
+        }
+
+        $(document).ready(function() {
+            $('.btn__remove').each(function(i, element) {
+                deleteBtnFunctionality($(element));
+            });
+
+            $('#addAccessory').validate({
+                rules: {
+                    name: {
+                        required: true
+                    },
+                    nameEn: {
+                        required: true
+                    }
+                    },
+                    errorPlacement: function() {
+                        return false;
+                    },
+                    highlight: function(element, errorClass, validClass) {
+                        $(element).parent().addClass('error');
+                    },
+                    unhighlight: function(element, errorClass, validClass) {
+                        $(element).parent().removeClass('error');
+                    },
+                    submitHandler: function(form) {
+                        var data = {
+                            name: $('#name').val(),
+                            nameEn: $('#nameEn').val()
+                        };
+                        var url = $(form).attr('action'),
+                            method = $(form).attr('method');
+                        makeRequest(url, method, data, function(res) {
+                            console.log(res);
+                            $('#name').val('');
+                            $('#nameEn').val('');
+                            $('#listAccessories').append(getAccessoryItem(res));
+                            addNotification('success', 'Accessory successfully added.');
+                        }, function(res) {
+                            console.log(res);
+                            if (res instanceof Array) {
+                                for (var i = 0; i < res.length; i++) {
+                                    addNotification('error', res[i].message);
+                                }
+                            } else {
+                                var msg = res.responseJSON.error.message;
+                                addNotification('error', msg);
+                            }
+                        });
+                    }
+            });
+        });

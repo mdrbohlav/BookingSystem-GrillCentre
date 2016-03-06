@@ -4,7 +4,8 @@ var express = require('express'),
     configFileName = 'config/app',
     configCustom = require(__dirname + '/../config/app').custom;
 
-var Reservation = require(__dirname + '/../api/reservation');
+var Reservation = require(__dirname + '/../api/reservation'),
+    Accessory = require(__dirname + '/../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
@@ -21,7 +22,7 @@ function getFile(filename) {
 // GET /admin/reservations
 router.get('/reservations', function(req, res, next) {
     var options = {
-        order: [ [ 'priority', 'DESC' ], [ 'from', 'DESC' ], [ 'to', 'DESC' ] ],
+        order: [ [ 'createdAt', 'ASC' ] ],
     };
 
     if (req.query.month) {
@@ -86,6 +87,24 @@ router.get('/reservations', function(req, res, next) {
                 data: result
             });
         }
+    }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
+    });
+});
+
+// GET /admin/accessories
+router.get('/accessories', function(req, res, next) {
+    Accessory.get().then(function(result) {
+        res.render('accessories', {
+            page: 'accessories',
+            title: 'Příslušenství | ' + title,
+            description: description,
+            data: result
+        });
     }).catch(function(data) {
         if ('status' in data) {
             next(data);

@@ -77,8 +77,6 @@ router.put('/:id/reject', function(req, res, next) {
 // POST /api/admin/reservation/:id/rating
 router.post('/:id/rating', function(req, res, next) {
     var data = {
-        reservationId: req.params.id,
-        userId: req.body.userId,
         value: req.body.value,
         ratedBy: req.user.id
     };
@@ -86,7 +84,7 @@ router.post('/:id/rating', function(req, res, next) {
         data.comment = req.body.comment;
     }
 
-    Reservation.rate(data).then(function(created) {
+    Reservation.rate(req.params.id, data).then(function(created) {
         res.json(created);
     }).catch(function(data) {
         if ('status' in data) {

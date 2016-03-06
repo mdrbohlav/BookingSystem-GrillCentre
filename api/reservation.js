@@ -139,7 +139,16 @@ module.exports = {
         });
     },
 
-    rate(data) {
-        return Rating.upsert(data);
+    rate(id, data) {
+        return Reservation.findById(id).then(function(reservation) {
+            data.userId = reservation.userId;
+            data.reservationId = reservation.id;
+            return Rating.upsert(data).then(function(created) {
+                if (created) {
+                    return data;
+                }
+                return created;
+            });
+        });
     }
 }

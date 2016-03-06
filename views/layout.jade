@@ -43,10 +43,12 @@ html
                         li: a.text__nav(href= historyLink, class=(page === 'history' ? 'active' : '')) Moje rezervace
                         if user.isAdmin
                             - var reservationsLink = page === 'reservations' ? '#' : '/admin/reservations'
+                            - var accessoriesLink = page === 'accessories' ? '#' : '/admin/accessories'
                             - var statisticsLink = page === 'statistics' ? '#' : '/admin/statistics'
                             - var configLink = page === 'config' ? '#' : '/admin/config'
                             li: a.text__nav(href= reservationsLink, class=(page === 'reservations' ? 'active' : '')) Rezervace
-                            li: a.text__nav(href= statisticsLink, class=(page === 'statistics' ? 'active' : '')) Statistiky
+                            li: a.text__nav(href= accessoriesLink, class=(page === 'accessories' ? 'active' : '')) Příslušenství
+                            //li: a.text__nav(href= statisticsLink, class=(page === 'statistics' ? 'active' : '')) Statistiky
                             li: a.text__nav(href= configLink, class=(page === 'config' ? 'active' : '')) Nastavení
                         li: a.text__nav(href='/auth/logout') Odhlásit
                 button.nav__trigger(data-trigger-menu='nav__main') Zobrazit menu

@@ -30,7 +30,7 @@ function getData(req, data) {
     }
     if (req.user.isAdmin) {
         if (req.body.banned) {
-            data.banned = req.body.banned;
+            data.banned = req.body.banned === 'true' ? true : false;
         }
         if (req.body.isAdmin) {
             data.isAdmin = req.body.isAdmin;
@@ -84,9 +84,8 @@ router.put('/:id', function(req, res, next) {
         id: req.params.id
     };
     data = getData(req, data);
-
     User.update(data).then(function(count) {
-        if (req.user.id === id) {
+        if (req.user.id === req.params.id) {
             return User.getById(id).then(function(user) {
                 req.logIn(user, function(err) {
                     if (err) {
@@ -132,6 +131,20 @@ router.get('/:id/reservations/:state?', function(req, res, next) {
     }
     User.getReservations(id, options).then(function(reservations) {
         res.json(reservations);
+    }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
+    });
+});
+
+// GET /api/admin/user/:id/ratings
+router.get('/:id/ratings', function(req, res, next) {
+    var id = req.params.id;
+    User.getRatings(id).then(function(ratings) {
+        res.json(ratings);
     }).catch(function(data) {
         if ('status' in data) {
             next(data);
