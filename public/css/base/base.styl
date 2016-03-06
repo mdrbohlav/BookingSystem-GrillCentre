@@ -5,11 +5,6 @@
 ::selection
     color $color-white
     background lighten($color-red, 50%)
-
-a:hover,
-a:active
-    color lighten($color-text-default, 20%)
-    outline none
     
 body div:focus
     outline none
@@ -17,22 +12,34 @@ body div:focus
 img
     outline none
 
-a, .link
-    color $color-white
-    cursor pointer
-    transition color .1s linear, border-color .1s linear
-    
-    &:hover
-        border-color $color-red
-        color $color-red
-
 a
+    color $color-red
+    cursor pointer
     display inline-block
     position relative
     text-decoration none
-
-a:focus
-    outline none
+    transition color .1s linear, border-color .1s linear
+    
+    &:hover,
+    &:focus,
+    &:active
+        outline none
+    
+    &:hover
+        color $color-orange
+        
+        &:after
+            background-color $color-orange
+            width 100%
+    
+    &:after
+        background-color $color-text-default
+        content ''
+        position absolute
+        bottom -2px
+        left 0
+        transition background-color .3s linear, width .3s ease-in-out
+        size(0, 1px)
 
 a::-moz-focus-inner
     border 0

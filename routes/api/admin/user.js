@@ -29,6 +29,9 @@ function getData(req, data) {
         data.locale = req.body.locale;
     }
     if (req.user.isAdmin) {
+        if (req.body.banned) {
+            data.banned = req.body.banned;
+        }
         if (req.body.isAdmin) {
             data.isAdmin = req.body.isAdmin;
         }
