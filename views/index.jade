@@ -114,40 +114,41 @@ block content
                                             label.t__label(for='accessory-#{index}')= accessory.name
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') Vytvořit
-    section.modal.table.table--fullsize
-        button.modal__close.btn__close.icon.icon__cross(type='button')
-        .modal__content.table__cell
-            .container__md
-                .box.modalReservation__centre
-                    h2.text__title.box__header.box__header--border Rezervace gril centra
-                    .box__body
-                        h3.modalReservation__title.text__subtitle.text--default
-                        .row
-                            .col-xs-12.col-sm-6
-                                .modalReservation__date.text__paragraph.margin--top-10
-                                    span.text--strong Datum
-                                    span.value
-                                .modalReservation__pickup.text__paragraph.margin--top-10
-                                    span.text--strong Čas vyzvednutí
-                                    span.value
-                                .modalReservation__mobileGrill.text__paragraph.margin--top-10
-                                    span.text--strong Mobilní gril
-                                    span.value
-                            .col-xs-12.col-sm-6.margin--top-10
-                                h4.text__paragraph Příslušenství
-                                ul.modalReservation__accessories.text__paragraph--small
-                .box.modalReservation__grill
-                    h2.text__title.box__header.box__header--border Rezervace mobilního grilu
-                    .box__body
-                        h3.modalReservation__title.text__subtitle.text--default
-                        .row
-                            .col-xs-12.col-sm-6
-                                .modalReservation__date.text__paragraph.margin--top-10
-                                    span.text--strong Datum
-                                    span.value
-                                .modalReservation__pickup.text__paragraph.margin--top-10
-                                    span.text--strong Čas vyzvednutí
-                                    span.value
+    section.modal
+        .table.table--fullsize
+            button.modal__close.btn__close.icon.icon__cross(type='button')
+            .modal__content.table__cell
+                .container__md
+                    .box.modalReservation__centre
+                        h2.text__title.box__header.box__header--border Rezervace gril centra
+                        .box__body
+                            h3.modalReservation__title.text__subtitle.text--default
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalReservation__date.text__paragraph.margin--top-10
+                                        span.text--strong Datum
+                                        span.value
+                                    .modalReservation__pickup.text__paragraph.margin--top-10
+                                        span.text--strong Čas vyzvednutí
+                                        span.value
+                                    .modalReservation__mobileGrill.text__paragraph.margin--top-10
+                                        span.text--strong Mobilní gril
+                                        span.value
+                                .col-xs-12.col-sm-6.margin--top-10
+                                    h4.text__paragraph Příslušenství
+                                    ul.modalReservation__accessories.text__paragraph--small
+                    .box.modalReservation__grill
+                        h2.text__title.box__header.box__header--border Rezervace mobilního grilu
+                        .box__body
+                            h3.modalReservation__title.text__subtitle.text--default
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalReservation__date.text__paragraph.margin--top-10
+                                        span.text--strong Datum
+                                        span.value
+                                    .modalReservation__pickup.text__paragraph.margin--top-10
+                                        span.text--strong Čas vyzvednutí
+                                        span.value
 
 block scripts
     script.
@@ -333,12 +334,12 @@ block scripts
                                     dayEvents += 1;
                                     $('.modalReservation__grill .modalReservation__title').text(users[target.events[i].userId].fullName);
                                     $('.modalReservation__grill .modalReservation__date .value').text(resDate);
-                                    $('.modalReservation__grill .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + (target.events[i].pickup % 60));
+                                    $('.modalReservation__grill .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + pad(target.events[i].pickup % 60));
                                 } else if (!target.events[i].mobileGrill) {
                                     dayEvents += 2;
                                     $('.modalReservation__centre .modalReservation__title').text(users[target.events[i].userId].fullName);
                                     $('.modalReservation__centre .modalReservation__date .value').text(resDate);
-                                    $('.modalReservation__centre .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + (target.events[i].pickup % 60));
+                                    $('.modalReservation__centre .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + pad(target.events[i].pickup % 60));
                                     $('.modalReservation__centre .modalReservation__accessories').html('');
                                     if (target.events[i].accessories.length === 0) {
                                         $('.modalReservation__centre .modalReservation__accessories').append('<li>žádné</li>');

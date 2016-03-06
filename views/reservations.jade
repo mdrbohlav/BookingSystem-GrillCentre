@@ -128,65 +128,88 @@ block content
                                 span.month__next
                                 | &nbsp;
                                 span.icon.icon__arrow-right
-    section.modal.table.table--fullsize
-        button.modal__close.btn__close.icon.icon__cross(type='button')
-        .modal__content.table__cell
-            .container__md
-                .box.modalReservation
-                    h2.text__title.box__header.box__header--border Rezervace
-                    .box__body
-                        .row
-                            .col-xs-12.col-sm-6
-                                .modalReservation__date.text__paragraph.margin--top-10
-                                    span.text--strong Datum
-                                    span.value
-                                .modalReservation__pickup.text__paragraph.margin--top-10
-                                    span.text--strong Čas vyzvednutí
-                                    span.value
-                                .modalReservation__centre.text__paragraph.margin--top-10
-                                    span.text--strong Gril centrum
-                                    span.value
-                                .modalReservation__mobileGrill.text__paragraph.margin--top-10
-                                    span.text--strong Mobilní gril
-                                    span.value
-                            .col-xs-12.col-sm-6.margin--top-10
-                                h4.text__paragraph Příslušenství
-                                ul.modalReservation__accessories.text__paragraph--small
-                .box.modalUser
-                    h2.text__title.box__header.box__header--border Uživatel
-                    .box__body
-                        h3.modalUser__title.text__subtitle.text--default
-                        .row
-                            .col-xs-12.col-sm-6
-                                .modalUser__admin.text__paragraph.margin--top-10
-                                    span.text--strong Admin
-                                    span.value
-                                .modalUser__email.text__paragraph.margin--top-10
-                                    span.text--strong Email
-                                    span.value
-                                .modalUser__cell.text__paragraph.margin--top-10
-                                    span.text--strong Blok/pokoj
-                                    span.value
-                            .col-xs-12.col-sm-6
-                                .modalUser__ban.text__paragraph.margin--top-10
-                                    span.text--strong Ban
-                                    span.value
-                                    button.ban(data-type='button') udělit
-                                    button.unban(data-type='button') odebrat
-                                .modalUser__isid.text__paragraph.margin--top-10
-                                    span.text--strong IS Id
-                                    span.value
-                                .modalUser__locale.text__paragraph.margin--top-10
-                                    span.text--strong Jazyk
-                                    span.value
-                        h4.text__subtitle.margin--top-35 Hodnocení
-                        ul.modalUser__rating.table
-                            li.table__row.table__heading
-                                .table__cell Od
-                                .table__cell Do
-                                .table__cell GC
-                                .table__cell MB
-                                .table__cell Hodnocení
+    section.modal
+        .table.table--fullsize
+            button.modal__close.btn__close.icon.icon__cross(type='button')
+            .modal__content.table__cell
+                .container__md
+                    .box.modalReservation
+                        h2.text__title.box__header.box__header--border Rezervace
+                        .box__body
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalReservation__date.text__paragraph.margin--top-10
+                                        span.text--strong Datum
+                                        span.value
+                                    .modalReservation__pickup.text__paragraph.margin--top-10
+                                        span.text--strong Čas vyzvednutí
+                                        span.value
+                                    .modalReservation__centre.text__paragraph.margin--top-10
+                                        span.text--strong Gril centrum
+                                        span.value
+                                    .modalReservation__mobileGrill.text__paragraph.margin--top-10
+                                        span.text--strong Mobilní gril
+                                        span.value
+                                .col-xs-12.col-sm-6.margin--top-10
+                                    h3.text__paragraph Příslušenství
+                                    ul.modalReservation__accessories.text__paragraph--small
+                            .modalReservation__rate.margin--top-35
+                                form#rate(action='/api/admin/reservation/:id/rating', method='POST')
+                                    h3.text__paragraph Hodnocení
+                                    .fieldset.row
+                                        .field__container.col-xs-12.col-sm-3.margin--top-10
+                                            label.text__label Hodnota
+                                            .field.rating__field
+                                                .rating
+                                                    input#rating-input-1-5.input--default.rating__input(type="radio", name="rating-input-1")
+                                                    label.rating__star(for="rating-input-1-5")
+                                                    input#rating-input-1-4.input--default.rating__input(type="radio", name="rating-input-1")
+                                                    label.rating__star(for="rating-input-1-4")
+                                                    input#rating-input-1-3.input--default.rating__input(type="radio", name="rating-input-1")
+                                                    label.rating__star(for="rating-input-1-3")
+                                                    input#rating-input-1-2.input--default.rating__input(type="radio", name="rating-input-1")
+                                                    label.rating__star(for="rating-input-1-2")
+                                                    input#rating-input-1-1.input--default.rating__input(type="radio", name="rating-input-1")
+                                                    label.rating__star(for="rating-input-1-1")
+                                        .field__container.col-xs-12.col-sm-9.margin--top-10
+                                            label.text__label(for='rateComment') Komentář
+                                            .field
+                                                input#rateComment(type='text', name='rateComment')
+                                    .form__footer.text--center.margin--top-25
+                                        button.btn.btn__orange(type='submit') Hodnotit
+                    .box.modalUser
+                        h2.text__title.box__header.box__header--border Uživatel
+                        .box__body
+                            h3.modalUser__title.text__subtitle.text--default
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalUser__admin.text__paragraph.margin--top-10
+                                        span.text--strong Admin
+                                        span.value
+                                    .modalUser__email.text__paragraph.margin--top-10
+                                        span.text--strong Email
+                                        span.value
+                                    .modalUser__cell.text__paragraph.margin--top-10
+                                        span.text--strong Blok/pokoj
+                                        span.value
+                                .col-xs-12.col-sm-6
+                                    .modalUser__ban.text__paragraph.margin--top-10
+                                        span.text--strong Ban
+                                        span.value
+                                        button.ban.btn.btn__orange.btn--small(data-type='button') udělit
+                                        button.unban.btn.btn__orange.btn--small(data-type='button') odebrat
+                                    .modalUser__isid.text__paragraph.margin--top-10
+                                        span.text--strong IS Id
+                                        span.value
+                                    .modalUser__locale.text__paragraph.margin--top-10
+                                        span.text--strong Jazyk
+                                        span.value
+                            .modalUser__rating
+                                h4.text__subtitle.margin--top-35 Všechan hodnocení
+                                ul#listRating.table
+                                    li.table__row.table__noborder
+                                        .table__cell
+                                            p.text__paragraph.text--center Žádné hodnocení
 
 block scripts
     script.
@@ -198,7 +221,7 @@ block scripts
         }
         reservations = tmp;
     
-        function getTableHeading() {
+        function getReservationsTableHeading() {
             return $('<li class="table__row table__heading">')
                 .append('<div class="table__cell">Jméno')
                 .append('<div class="table__cell" title="Priorita">Pr')
@@ -223,10 +246,37 @@ block scripts
                 .append('<div class="table__cell" data-date="' + reservation.to + '">' + end.format('LL'));
         }
 
-        function getEmptyRow() {
+        function getReservationsEmptyRow() {
             return $('<li class="table__row table__noborder">')
                 .append($('<div class="table__cell">')
                     .append('<p class="text__paragraph text--center">Žádné rezervace'));
+        }
+
+        function getRatingTableHeading() {
+            return $('<li class="table__row table__heading">')
+                .append('<div class="table__cell">Od')
+                .append('<div class="table__cell">Do')
+                .append('<div class="table__cell" title="Celé grilcentrum">GC')
+                .append('<div class="table__cell" title="Mobilní gril">MB')
+                .append('<div class="table__cell">Hodnocení');
+        }
+
+        function getRatingRow(reservation) {
+            var tmp = moment(),
+                start = moment(reservation.from).subtract(tmp.local().utcOffset(), 'm'),
+                end = moment(reservation.to).subtract(tmp.local().utcOffset(), 'm');
+            return $('<li class="reservation table__row" data-id="' + reservation.id + '">')
+                .append('<div class="table__cell" data-date="' + reservation.from + '">' + start.format('LL'))
+                .append('<div class="table__cell" data-date="' + reservation.to + '">' + end.format('LL'))
+                .append('<div class="table__cell"><span class="icon icon__' + (!reservation.onlyMobileGrill ? 'check' : 'cross') + '">')
+                .append('<div class="table__cell"><span class="icon icon__' + (reservation.mobileGrill ? 'check' : 'cross') + '">')
+                .append('<div class="table__cell">' + reservation.rating.value);
+        }
+
+        function getRatingEmptyRow() {
+            return $('<li class="table__row table__noborder">')
+                .append($('<div class="table__cell">')
+                    .append('<p class="text__paragraph text--center">Žádné hodnocení'));
         }
 
         $(document).ready(function() {
@@ -260,7 +310,7 @@ block scripts
                     $('.month__next').text(month.add(2, 'months').format('MMMM')).attr('data-month', month.valueOf());
 
                     if (res.total > 0) {
-                        $list.html(getTableHeading());
+                        $list.html(getReservationsTableHeading());
                         for (var i = 0; i <  res.reservations.length; i++) {
                             $list.append(getReservationRow(res.reservations[i], res.users[res.reservations[i].userId]));
                             if (!(res.reservations[i].id in reservations)) {
@@ -274,7 +324,7 @@ block scripts
                             users[k] = res.users[k];
                         }
                     } else {
-                        $list.html(getEmptyRow());
+                        $list.html(getReservationsEmptyRow());
                     }
                 });
             });
@@ -409,7 +459,7 @@ block scripts
                 }
                 
                 $('.modalReservation__date .value').text(resDate);
-                $('.modalReservation__pickup .value').text(Math.floor(reservations[id].pickup / 60) + ':' + (reservations[id].pickup % 60));
+                $('.modalReservation__pickup .value').text(Math.floor(reservations[id].pickup / 60) + ':' + pad(reservations[id].pickup % 60));
                 $('.modalReservation__centre .value').text((reservations[id].onlyMobileGrill ? 'ne' : 'ano'));
                 $('.modalReservation__mobileGrill .value').text((reservations[id].mobileGrill ? 'ano' : 'ne'));
                 $('.modalReservation__accessories').html('');
@@ -424,7 +474,12 @@ block scripts
                 $('.modalUser__title').text(users[reservations[id].userId].fullName);
                 $('.modalUser__admin .value').text((users[reservations[id].userId].isAdmin ? 'ano' : 'ne'));
                 $('.modalUser__email .value').html('<a href="mailto:' + users[reservations[id].userId].email + '">' + users[reservations[id].userId].email + '</a>');
-                $('.modalUser__cell .value').text(users[reservations[id].userId].block + '/' + users[reservations[id].userId].room);
+                if (users[reservations[id].userId].block && users[reservations[id].userId].room) {
+                    $('.modalUser__cell').show();
+                    $('.modalUser__cell .value').text(users[reservations[id].userId].block + '/' + users[reservations[id].userId].room);
+                } else {
+                    $('.modalUser__cell').hide();
+                }
                 $('.modalUser__ban .value').text((users[reservations[id].userId].banned ? 'ano' : 'ne'));
                 if (users[reservations[id].userId].banned) {
                     $('.modalUser__ban .ban').hide();
@@ -445,6 +500,29 @@ block scripts
                 } else {
                     $('.modalUser__locale .value').text(users[reservations[id].userId].locale[locale].name);
                 }
+
+                var $list = $('#listRating');
+                $list.html(getRatingEmptyRow());
+
                 showModal();
+
+                var $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
+                $list.append($spinner);
+                makeRequest('/api/admin/user/' + id + '/reservations', 'GET', {}, function(res) {
+                    if (res.total > 0) {
+                        for (var i = 0; i <  res.reservations.length; i++) {
+                            if (!res.reservations[i].rating) {
+                                continue;
+                            }
+                            if ($list.find('li:not(.table__heading)').length === 1) {
+                                $list.html(getRatingTableHeading());
+                            }
+                            $list.append(getRatingRow(res.reservations[i]));
+                        }
+                    }
+                    if ($list.find('li:not(.table__heading)').length === 1) {
+                        $spinner.remove();
+                    }
+                });
             });
         });

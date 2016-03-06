@@ -4,6 +4,10 @@ var $window = $(window),
     $mainNavTrigger = $('.nav__trigger'),
     firstLoad = false;
 
+function pad(n) { 
+    return n < 10 ? '0' + n : n; 
+}
+
 function urlParam(name) {
     var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
     if (results === null) {
@@ -144,17 +148,12 @@ function showModal() {
         }
 
         $modal.velocity('fadeIn', {
-            display: 'table',
             complete: function() {
                 updateAfterHide();
             }
         });
-
-        $.Velocity.hook($modalContent, "translateY", "200px");
         $modalContent.velocity({
-            opacity: '1',
-            translateY: '0',
-            translateZ: '0'
+            opacity: '1'
         });
     }
 }

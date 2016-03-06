@@ -3,35 +3,40 @@
     
     &:after
         icon()
-        bottom 9px
-        content $icon-dropdown
+        bottom 14px
+        content $icon-arrow-down
         height 12px
+        pointer-events none
         position absolute
         right 15px
-        set-font-size 10px
-        z-index 1
+        set-font-size 16px
+        z-index 2
         
     select
         padding-right 35px
         position relative
-        z-index 2
+        z-index 1
 
 select
     appearance none
-    background-color transparent
+    background-color $color-input
     border none
-    border-bottom 1px solid $color-grey-10
+    border-bottom 2px solid $color-input
     border-radius 0
     padding 10px 5% 5px
     width 100%
-    transition border-color .2s linear, color .2s linear
+    transition background-color .2s linear, border-color .2s linear, color .2s linear
     
     @media $md-up
         padding 10px 3% 5px
 
     &:focus
-        border-color $color-grey-1
+        background-color transparent
         outline none
+        
+    &:-webkit-autofill
+        -webkit-box-shadow 0 0 0px 1000px $color-input inset
+        -webkit-text-fill-color $color-text-default !important
         
     &::-ms-expand
         display none
@@ -42,4 +47,6 @@ option
 
 .error
     select
+        background-color rgba(255, 80, 80, .5)
         border-color $color-red
+        color $color-white
