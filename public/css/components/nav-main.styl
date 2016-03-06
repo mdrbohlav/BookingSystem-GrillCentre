@@ -1,6 +1,7 @@
 .nav__main
     background-color $color-white
     display none
+    overflow auto
     position fixed
     size(100%)
     z-index 1
@@ -12,12 +13,9 @@
 
     ul
         reset-list()
-        display table-cell
-        padding 10px
-        vertical-align middle
+        padding 45px 10px
         
         @media $sm-up
-            display block
             padding 20px 10px
         
     li

@@ -180,9 +180,7 @@ function hideModal() {
 
 function showMainMenu($trigger) {
     $trigger.addClass('is-active');
-    var display = $window.width() >= 768 ? 'block' : 'table';
     $mainNav.velocity('fadeIn', {
-        display: display,
         complete: function() {
             if ($window.width() < 768) {
                 setBodyOverflowHidden();
