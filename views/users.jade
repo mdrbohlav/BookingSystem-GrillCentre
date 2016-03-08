@@ -59,7 +59,7 @@ block content
                                 li.table__row.table__noborder
                                     .table__cell
                                         p.text__paragraph.text--center Žádní uživatelé nenalezeni
-                    if data.total / data.pagination.limit > 0
+                    if data.total / data.pagination.limit > 1
                         .text--center.margin--top-35
                             ol.pagination
                                 - var pages = Math.ceil(data.total / data.pagination.limit)
@@ -193,6 +193,7 @@ block scripts
             var limit = #{data.pagination.limit},
                 $list = $('#listUsers'),
                 $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
+            url += '&offset=' + ((page - 1) * limit) + '&limit=' + limit;
 
             $list.append($spinner);
 
