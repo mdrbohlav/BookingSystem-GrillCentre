@@ -10,16 +10,15 @@ block content
         - }
         .container__md
             .box
-                - var resCnt = 0
                 .box__header.box__header--border
                     h2.text__title Všechny rezervace
                 .box__body
                     .table__wrapper
                         ul#listAllReservations.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
-                            each reservation in data.reservations
+                            each reservation, i in data.reservations
                                 - var today = new Date()
                                 - today.setUTCHours(0, 0, 0, 0)
-                                if resCnt === 0
+                                if i === 0
                                     li.table__row.table__heading
                                         .table__cell(title='Celé grilcentrum') GC
                                         .table__cell(title='Mobilní gril') MG
@@ -36,8 +35,7 @@ block content
                                     .reservation__action.table__cell
                                         if [ 'draft', 'confirmed' ].indexOf(reservation.state) > -1 && reservation.from >= today
                                             button.btn__cancel.icon.icon__cross(type='button', data-id= reservation.id, title='Cancel')
-                                - resCnt++
-                            if resCnt === 0
+                            if data.reservations.length === 0
                                 li.table__row.table__noborder
                                     .table__cell
                                         p.text__paragraph.text--center Žádné rezervace
@@ -226,7 +224,6 @@ block scripts
             //=================================================================
             $window.on('popstate', function(e) {
                 if (firstLoad) {
-                    console.log(window.history);
                     if (window.history.state && Object.keys(window.history.state).length) {
                         loadPage(window.history.state.page, false);
                     } else {

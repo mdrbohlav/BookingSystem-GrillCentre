@@ -36,13 +36,14 @@ block content
                             button#resetList.btn.btn__orange--full(type='button') Reset
                     .table__wrapper.margin--top-55
                         ul#listUsers.listUsers.table.table__styled.table--fullsize.table--responsive.text--center
-                            li.table__row.table__heading
-                                .table__cell Jméno
-                                .table__cell Admin
-                                .table__cell IS Id
-                                .table__cell Ban
-                                .table__cell Hodnocení
-                            each user in data.users
+                            each user, i in data.users
+                                if i === 0
+                                    li.table__row.table__heading
+                                        .table__cell Jméno
+                                        .table__cell Admin
+                                        .table__cell IS Id
+                                        .table__cell Ban
+                                        .table__cell Hodnocení
                                 li.user.table__row(data-id=user.id)
                                     .table__cell= user.fullName
                                     .user__admin.table__cell: span.icon(class='icon__' + (user.isAdmin ? 'check' : 'cross'))
@@ -54,9 +55,137 @@ block content
                                             - total += rating.value
                                         span.icon.icon__star.text--yellow
                                         |  #{Math.round(total / user.ratings.length) / 10}
+                            if data.users.length === 0
+                                li.table__row.table__noborder
+                                    .table__cell
+                                        p.text__paragraph.text--center Žádní uživatelé nenalezeni
+                    if data.total / data.pagination.limit > 0
+                        .text--center.margin--top-35
+                            ol.pagination
+                                - var pages = Math.ceil(data.total / data.pagination.limit)
+                                - var current = data.pagination.offset / data.pagination.limit + 1
+                                if current === 1
+                                    li: button.pagination__prev.icon.icon__arrow-left(type='button', disabled)
+                                else
+                                    li: button.pagination__prev.icon.icon__arrow-left(type='button', data-page= (current - 1))
+
+                                if current > 2 && pages !== 3
+                                    li: button(type='button', data-page='1') 1
+                                if current > 3
+                                    li: span.text …
+                                if current === pages && current > 2
+                                    li: button(type='button', data-page= (current - 2))= (current - 2)
+                                if current > 1
+                                    li: button(type='button', data-page= (current - 1))= (current - 1)
+                                li: button(type='button', data-page= current, disabled)= current
+                                if current < pages
+                                    li: button(type='button', data-page= (current + 1))= (current + 1)
+                                if current === 1 && pages > 2
+                                    li: button(type='button', data-page= (current + 2))= (current + 2)
+                                if current < pages - 2
+                                    li: span.text …
+                                if current < pages - 1 && pages !== 3
+                                    li: button(type='button', data-page= pages)= pages
+
+                                if current < pages
+                                    li: button.pagination__next.icon.icon__arrow-right(type='button', data-page= (current + 1))
+                                else
+                                    li: button.pagination__next.icon.icon__arrow-right(type='button', disabled)
 
 block scripts
     script.
+        function generatePagination(current, pages) {
+            $pagination = $('.pagination');
+            $pagination.html('');
+
+            if (current === 1) {
+                $pagination.append('<li><button class="pagination__prev icon icon__arrow-left" type="button" disabled>');
+            } else {
+                $pagination.append('<li><button class="pagination__prev icon icon__arrow-left" type="button" data-page="' + (current - 1) + '">');
+            }
+
+            if (current > 2 && pages !== 3) {
+                $pagination.append('<li><button type="button" data-page="1">1');
+            }
+            if (current > 3) {
+                $pagination.append('<li><span class="text">…');
+            }
+            if (current === pages && current > 2) {
+                $pagination.append('<li><button type="button" data-page="' + (current - 2) + '">' + (current - 2));
+            }
+            if (current > 1) {
+                $pagination.append('<li><button type="button" data-page="' + (current - 1) + '">' + (current - 1));
+            }
+            $pagination.append('<li><button type="button" data-page="' + current + '" disabled>' + current);
+            if (current < pages) {
+                $pagination.append('<li><button type="button" data-page="' + (current + 1) + '">' + (current + 1));
+            }
+            if (current === 1 && pages > 2) {
+                $pagination.append('<li><button type="button" data-page="' + (current + 2) + '">' + (current + 2));
+            }
+            if (current < pages - 2) {
+                $pagination.append('<li><span class="text">…');
+            }
+            if (current < pages - 1 && pages !== 3) {
+                $pagination.append('<li><button type="button" data-page="' + pages + '">' + pages);
+            }
+
+            if (current < pages) {
+                $pagination.append('<li><button class="pagination__next icon icon__arrow-right" type="button" data-page="' + (current + 1) + '">');
+            } else {
+                $pagination.append('<li><button class="pagination__next icon icon__arrow-right" type="button" disabled>');
+            }
+
+            paginationFunctionality();
+        }
+
+        function loadPage(page, updateHistory, url) {
+            var limit = #{data.pagination.limit},
+                $list = $('#listUsers'),
+                $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
+
+            $list.append($spinner);
+
+            firstLoad = true;
+            if (updateHistory) {
+                var historyUrl = url.replace(/accept=json/, '').replace(/\?&/, '?'),
+                    historyState = {
+                        page: page
+                    },
+                    historyTitle = document.title;
+                history.pushState(historyState, historyTitle, historyUrl);
+            }
+
+            makeRequest(url, 'GET', {}, function(res) {
+                if (res.users.length === 0) {
+                    $list.html(getUserEmptyRow());
+                } else {
+                    $list.html(getUserTableHeading());
+                    for (var i = 0; i < res.users.length; i++) {
+                        $list.append(getUserRow(res.users[i]));
+                    }
+                }
+            }, function(res) {
+                console.log(res);
+                if (res instanceof Array) {
+                    for (var i = 0; i < res.length; i++) {
+                        addNotification('error', res[i].message);
+                    }
+                } else {
+                    var msg = res.responseJSON.error.message;
+                    addNotification('error', msg);
+                }
+            });
+        }
+
+        function paginationFunctionality() {
+            $('.pagination button').on('click', function() {
+                var $this = $(this),
+                    page = parseInt($this.attr('data-page'));
+                loadPage(page, true);
+            });
+        }
+
         function getUserTableHeading() {
             return $('<li class="table__row table__heading">')
                 .append('<div class="table__cell">Jméno')
@@ -88,38 +217,9 @@ block scripts
                     .append('<p class="text__paragraph text--center">Žádní uživatelé nenalezeni'));
         }
 
-        function fetchUsers(url) {
-            var method = 'GET',
-                $list = $('#listUsers'),
-                $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
-
-            $list.append($spinner);
-
-            makeRequest(url, method, {}, function(res) {
-                if (res.users.length === 0) {
-                    $list.html(getUserEmptyRow());
-                } else {
-                    $list.html(getUserTableHeading());
-                    for (var i = 0; i < res.users.length; i++) {
-                        $list.append(getUserRow(res.users[i]));
-                    }
-                }
-            }, function(res) {
-                console.log(res);
-                if (res instanceof Array) {
-                    for (var i = 0; i < res.length; i++) {
-                        addNotification('error', res[i].message);
-                    }
-                } else {
-                    var msg = res.responseJSON.error.message;
-                    addNotification('error', msg);
-                }
-            });
-        }
-
         $(document).ready(function() {
             $('#resetList').on('click', function() {
-                fetchUsers('/admin/users?accept=json');
+                loadPage(1, true, '/admin/users?accept=json');
             });
 
             $('#searchUser').validate({
@@ -135,7 +235,29 @@ block scripts
                     query += '&ban=' + $('#ban').prop('checked');
                     
                     var url = $(form).attr('action') + query;
-                    fetchUsers(url);
+                    loadPage(1, true, url);
                 }
+            });
+
+            paginationFunctionality();
+
+            //=================================================================
+            // Popstate
+            //=================================================================
+            $window.on('popstate', function(e) {
+                if (firstLoad) {
+                    if (window.history.state && Object.keys(window.history.state).length) {
+                        var url = window.location.pathname + '?accept=json' + window.location.search.replace(/\?/, '&');
+                        loadPage(window.history.state.page, false, url);
+                    } else {
+                        var page = 1;
+                        if (urlParam('offset') && urlParam('limit')) {
+                            page = parseInt(urlParam('offset')) / parseInt(urlParam('limit')) + 1;
+                        }
+                        var url = window.location.pathname + '?accept=json' + window.location.search.replace(/\?/, '&');
+                        loadPage(page, false,  url);
+                    }
+                }
+                firstLoad = true;
             });
         });

@@ -120,7 +120,9 @@ router.get('/accessories', function(req, res, next) {
 // GET /admin/users
 router.get('/users', function(req, res, next) {
     var options = {
-        where: {}
+        where: {},
+        limit: 20,
+        offset: 0
     };
     if (req.query.search) {
         var tmp = req.query.search.split(' ');
@@ -161,8 +163,18 @@ router.get('/users', function(req, res, next) {
     if (req.query.block) {
         options.where.block = parseInt(req.query.block);
     }
+    if (req.query.limit) {
+        options.limit = req.query.limit;
+    }
+    if (req.query.offset) {
+        options.offset = req.query.offset;
+    }
+
     User.get(options).then(function(result) {
-        console.log(result);
+        result.pagination = {
+            limit: options.limit,
+            offset: options.offset
+        };
         if (req.query.accept && req.query.accept === 'json') {
             res.json(result);
         } else {
