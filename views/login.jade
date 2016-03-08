@@ -5,26 +5,26 @@ block content
         .table__cell.table--middle
             ul.listLogin.box.box--biggerShadow
                 .box__header.box__header--border
-                    h1.text__title Gril centrum přihlášení
+                    h1.text__title !{__('pages_login_title')}
                 .box__body
                     li.listLogin__item
-                        button#loginIs.btn.btn__orange--full.btn--block(type='button') Přihlásit pomocí ISu
+                        button#loginIs.btn.btn__orange--full.btn--block(type='button') !{__('buttons_isLogin')}
                     li.listLogin__item.margin--top-25.expandable__container
-                        button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') Přihlásit pomocí emailu
+                        button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') !{__('buttons_nativeLogin')}
                         form#login.form.form__login.expandable__content(method='POST', action='/auth/login/native')
                             .separator__text.text--center
-                                span.text--grey-1 přihlášení pomocí emailu
+                                span.text--grey-1 !{__('pages_login_nativeLoginTitle')}
                             .fieldset
                                 .field__container
-                                    label.text__label(for='email') Email
+                                    label.text__label(for='email') !{__('pages_login_email')}
                                     .field
                                         input#email(type='email', name='email', required)
                                 .field__container
-                                    label.text__label(for='password') Heslo
+                                    label.text__label(for='password') !{__('pages_login_password')}
                                     .field
                                         input#password(type='password', name='password', required)
                             .form__footer.text--right
-                                button.btn.btn__orange(type='submit') Přihlásit
+                                button.btn.btn__orange(type='submit') !{__('buttons_login')}
 
 block scripts
     script.

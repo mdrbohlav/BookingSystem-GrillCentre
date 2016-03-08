@@ -48,6 +48,8 @@ for (var i = 0; i < availableLocales.length; i++) {
     availableLocales[i] = availableLocales[i].replace(/\.js/, '');
 }
 
+console.log(availableLocales);
+
 i18n.expressBind(app, {
     locales: availableLocales,
     cookieName: 'locale'
