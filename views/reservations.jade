@@ -270,6 +270,7 @@ block scripts
             } else {
                 $row.append('<div class="table__cell">');
             }
+            reservationDetailFunctionality($row);
             return $row;
         }
 
@@ -312,6 +313,21 @@ block scripts
                     $this.remove();
                     $row.find('.reservation__state span').removeClass('icon__flag').removeClass('icon__check').addClass('icon__cross').attr('title', 'Canceled');
                 });
+            });
+        }
+
+        function reservationDetailFunctionality($btn) {
+            $btn.on('click', function() {
+                var $row = $(this),
+                    id = $row.attr('data-id'),
+                    ignore = $row.find('button').toArray();
+                if (ignore.indexOf(event.target) > -1) {
+                    return;
+                }
+                setModalReservation(id);
+                setModalUser(reservations[id].userId);
+
+                showModal();
             });
         }
 
@@ -576,17 +592,8 @@ block scripts
                 });
             });
 
-            $('.reservation[data-id]').on('click', function(event) {
-                var $row = $(this),
-                    id = $row.attr('data-id'),
-                    ignore = $row.find('button').toArray();
-                if (ignore.indexOf(event.target) > -1) {
-                    return;
-                }
-                setModalReservation(id);
-                setModalUser(reservations[id].userId);
-
-                showModal();
+            $('.reservation[data-id]').each(function(i, element) {
+                reservationDetailFunctionality($(element));
             });
 
             $('#rate').validate({

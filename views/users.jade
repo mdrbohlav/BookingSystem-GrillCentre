@@ -255,12 +255,14 @@ block scripts
             if (totalRating > 0) {
                 totalRating = Math.round(totalRating / user.ratings.length) / 10;
             }
-            return $('<li class="user table__row" data-id="' + user.id + '">')
+            var $row = $('<li class="user table__row" data-id="' + user.id + '">')
                 .append('<div class="table__cell">' + user.fullName)
                 .append('<div class="table__cell"><span class="icon icon__' + (user.isAdmin ? 'check' : 'cross') + '">')
                 .append('<div class="table__cell">' + (user.isId ? user.isId : ''))
                 .append('<div class="table__cell"><span class="icon icon__' + (user.banned ? 'check' : 'cross') + '">')
                 .append('<div class="table__cell"><span class="icon icon__star text--yellow"></span> ' + totalRating);
+            userDetailFunctionality($row);
+            return $row;
         }
 
         function getUserEmptyRow() {
@@ -345,6 +347,20 @@ block scripts
             }
         }
 
+        function userDetailFunctionality($btn) {
+            $btn.on('click', function() {
+                var $row = $(this),
+                    id = $row.attr('data-id'),
+                    ignore = $row.find('button').toArray();
+                if (ignore.indexOf(event.target) > -1) {
+                    return;
+                }
+                setModalUser(id);
+
+                showModal();
+            });
+        }
+
         $(document).ready(function() {
             users = arrayToObject(users, 'id');
 
@@ -369,16 +385,8 @@ block scripts
                 }
             });
 
-            $('.user[data-id]').on('click', function(event) {
-                var $row = $(this),
-                    id = $row.attr('data-id'),
-                    ignore = $row.find('button').toArray();
-                if (ignore.indexOf(event.target) > -1) {
-                    return;
-                }
-                setModalUser(id);
-
-                showModal();
+            $('.user[data-id]').each(function(i, element) {
+                userDetailFunctionality($(element));
             });
 
             paginationFunctionality();
