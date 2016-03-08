@@ -91,9 +91,59 @@ block content
                                     li: button.pagination__next.icon.icon__arrow-right(type='button', data-page= (current + 1))
                                 else
                                     li: button.pagination__next.icon.icon__arrow-right(type='button', disabled)
+    section.modal
+        .table.table--fullsize
+            button.modal__close.btn__close.icon.icon__cross(type='button')
+            .modal__content.table__cell
+                .container__md
+                    .box.modalUser
+                        h2.text__title.box__header.box__header--border Uživatel
+                        .box__body
+                            h3.modalUser__title.text__subtitle.text--default
+                            .row
+                                .col-xs-12.col-sm-6
+                                    .modalUser__admin.text__paragraph.margin--top-10
+                                        span.text--strong Admin
+                                        span.value
+                                    .modalUser__email.text__paragraph.margin--top-10
+                                        span.text--strong Email
+                                        span.value
+                                    .modalUser__cell.text__paragraph.margin--top-10
+                                        span.text--strong Blok/pokoj
+                                        span.value
+                                .col-xs-12.col-sm-6
+                                    .modalUser__ban.text__paragraph.margin--top-10
+                                        span.text--strong Ban
+                                        span.value
+                                        button.ban.btn.btn__orange.btn--small(data-type='button') udělit
+                                        button.unban.btn.btn__orange.btn--small(data-type='button') odebrat
+                                    .modalUser__isid.text__paragraph.margin--top-10
+                                        span.text--strong IS Id
+                                        span.value
+                                    .modalUser__locale.text__paragraph.margin--top-10
+                                        span.text--strong Jazyk
+                                        span.value
+                            .modalUser__rating
+                                h4.text__subtitle.margin--top-35 Všechna hodnocení (
+                                    span.modalUser__ratingTotal
+                                    | )
+                                ul#listRating.table.table__styled.table--fullsize.text--center
+                                    li.table__row.table__noborder
+                                        .table__cell
+                                            p.text__paragraph.text--center Žádné hodnocení
 
 block scripts
     script.
+        var users = !{JSON.stringify(data.users)};
+
+        function arrayToObject(arr, key) {
+            var tmp = {};
+            for (var i = 0; i < arr.length; i++) {
+                tmp[arr[i][key]] = arr[i];
+            }
+            return tmp;
+        }
+
         function generatePagination(current, pages) {
             $pagination = $('.pagination');
             $pagination.html('');
@@ -157,6 +207,7 @@ block scripts
             }
 
             makeRequest(url, 'GET', {}, function(res) {
+                users = arrayToObject(res.users, 'id');;
                 if (res.users.length === 0) {
                     $list.html(getUserEmptyRow());
                 } else {
@@ -217,7 +268,85 @@ block scripts
                     .append('<p class="text__paragraph text--center">Žádní uživatelé nenalezeni'));
         }
 
+        function getRatingTableHeading() {
+            return $('<li class="table__row table__heading">')
+                .append('<div class="table__cell">Uděleno')
+                .append('<div class="table__cell">Hodnocení')
+                .append('<div class="table__cell">Komentář');
+        }
+
+        function getRatingRow(rating) {
+            var tmp = moment(),
+                set = moment(rating.updatedAt).subtract(tmp.local().utcOffset(), 'm');
+            return $('<li class="rating table__row" data-id="' + rating.id + '">')
+                .append('<div class="table__cell" data-date="' + rating.updatedAt + '">' + set.format('LL'))
+                .append('<div class="rating__value table__cell"><span class="icon icon__star text--yellow"></span> ' + (rating.value / 10))
+                .append('<div class="rating__comment table__cell">' + rating.comment);
+        }
+
+        function getRatingEmptyRow() {
+            return $('<li class="table__row table__noborder">')
+                .append($('<div class="table__cell">')
+                    .append('<p class="text__paragraph text--center">Žádné hodnocení'));
+        }
+
+        function setModalUser(id) {
+            var user = users[id],
+                today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+
+            $('.modalUser').attr('data-id', id);
+            $('.modalUser__title').text(user.fullName);
+            $('.modalUser__admin .value').text((user.isAdmin ? 'ano' : 'ne'));
+            $('.modalUser__email .value').html('<a href="mailto:' + user.email + '">' + user.email + '</a>');
+            if (user.block && user.room) {
+                $('.modalUser__cell').show();
+                $('.modalUser__cell .value').text(user.block + '/' + user.room);
+            } else {
+                $('.modalUser__cell').hide();
+            }
+            $('.modalUser__ban .value').text((user.banned ? 'ano' : 'ne'));
+            if (user.banned) {
+                $('.modalUser__ban .ban').hide();
+                $('.modalUser__ban .unban').show();
+            } else {
+                $('.modalUser__ban .ban').show();
+                $('.modalUser__ban .unban').hide();
+            }
+            if (user.isId) {
+                $('.modalUser__isid').show();
+                $('.modalUser__isid .value').html('<a href="https://is.sh.cvut.cz/users/' + user.isId + '" target="_blank">' + user.isId + '</a>');
+            } else {
+                $('.modalUser__isid').hide();
+            }
+            var locale = Object.keys(user.locale)[0];
+            if ('#{Object.keys(user.locale)[0]}' === locale) {
+                $('.modalUser__locale .value').text(user.locale[locale].nativeName);
+            } else {
+                $('.modalUser__locale .value').text(user.locale[locale].name);
+            }
+
+            var $list = $('#listRating');
+
+            if (user.ratings.length) {
+                var totalRating = 0;
+                $list.html(getRatingTableHeading());
+                for (var i = 0; i <  user.ratings.length; i++) {
+                    totalRating += user.ratings[i].value;
+                    $list.append(getRatingRow(user.ratings[i]));
+                }
+                if (totalRating > 0) {
+                    totalRating = Math.round(totalRating / user.ratings.length) / 10;
+                }
+                $('.modalUser__ratingTotal').text(totalRating);
+            } else {
+                $list.html(getRatingEmptyRow());
+            }
+        }
+
         $(document).ready(function() {
+            users = arrayToObject(users, 'id');
+
             $('#resetList').on('click', function() {
                 loadPage(1, true, '/admin/users?accept=json');
             });
@@ -237,6 +366,18 @@ block scripts
                     var url = $(form).attr('action') + query;
                     loadPage(1, true, url);
                 }
+            });
+
+            $('.user[data-id]').on('click', function(event) {
+                var $row = $(this),
+                    id = $row.attr('data-id'),
+                    ignore = $row.find('button').toArray();
+                if (ignore.indexOf(event.target) > -1) {
+                    return;
+                }
+                setModalUser(id);
+
+                showModal();
             });
 
             paginationFunctionality();
