@@ -2,13 +2,13 @@ var express = require('express'),
     router = express.Router(),
     configCustom = require(__dirname + '/../../config/app').custom;
 
-var ICalHelper = require(__dirname + '/../../helpers/ICalHelper'),
-    Reservation = require(__dirname + '/../../api/reservation');
+var Reservation = require(__dirname + '/../../api/reservation');
 
 var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError'),
     MaxReservationUpfrontError = require(__dirname + '/../../errors/MaxReservationUpfrontError'),
     MaxReservationsError = require(__dirname + '/../../errors/MaxReservationsError'),
-    MaxReservationLengthError = require(__dirname + '/../../errors/MaxReservationLengthError');
+    MaxReservationLengthError = require(__dirname + '/../../errors/MaxReservationLengthError'),
+    UnauthorizedError = require(__dirname + '/../../errors/UnauthorizedError');
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {
@@ -98,12 +98,6 @@ router.post('/create', function(req, res, next) {
             }
 
             return Reservation.create(req, data, accessories).then(function(result) {
-                var id = result.id,
-                    start = new Date(result.from),
-                    summary = req.user.fullName + ' reservation ' + result.state,
-                    description = 'Key pickup time: ' + Math.floor(result.pickup / 60) + ':' + result.pickup % 60,
-                    organizer = req.user.fullName + ' <' + req.user.email + '>';
-                ICalHelper.createEvent(id, start, summary, description, organizer);
                 res.json(result);
             });
         });
@@ -183,8 +177,15 @@ router.put('/:id/cancel', function(req, res, next) {
             state: 'canceled',
             stateChangedBy: req.user.id
         };
-    Reservation.update(id, data).then(function(count) {
-        res.json(count);
+
+    Reservation.getById(id).then(function(reservation) {
+        if (reservation.userId !== req.user.id) {
+            throw new UnauthorizedError();
+        }
+
+        return Reservation.update(id, data).then(function(count) {
+            res.json(count);
+        });
     }).catch(function(data) {
         if ('status' in data) {
             next(data);

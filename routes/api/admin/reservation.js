@@ -2,7 +2,9 @@ var express = require('express'),
     router = express.Router();
 
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
-    Reservation = require(__dirname + '/../../../api/reservation');
+    ICalHelper = require(__dirname + '/../../../helpers/ICalHelper'),
+    Reservation = require(__dirname + '/../../../api/reservation'),
+    User = require(__dirname + '/../../../api/user');
 
 var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError'),
     ReservationExistsError = require(__dirname + '/../../../errors/ReservationExistsError');
@@ -43,7 +45,17 @@ router.put('/:id/confirm', function(req, res, next) {
             if (count > 0) {
                 throw new ReservationExistsError();
             }
-            return Reservation.update(id, data);
+            return Reservation.update(id, data).then(function(updatedRows) {
+                return User.getById(reservation.userId).then(function(user) {
+                    var id = reservation.id,
+                        start = new Date(reservation.from),
+                        summary = user.fullName + ' reservation',
+                        description = 'Key pickup time: ' + Math.floor(reservation.pickup / 60) + ':' + reservation.pickup % 60,
+                        organizer = user.fullName + ' <' + user.email + '>';
+                    ICalHelper.createEvent(id, start, summary, description, organizer);
+                    return updatedRows;
+                });
+            });
         });
     }).then(function(count) {
         res.json(count);
@@ -61,6 +73,24 @@ router.put('/:id/reject', function(req, res, next) {
     var id = req.params.id,
         data = {
             state: 'rejected',
+            stateChangedBy: req.user.id
+        };
+    Reservation.update(id, data).then(function(count) {
+        res.json(count);
+    }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
+    });
+});
+
+// PUT /api/admin/reservation/:id/cancel
+router.put('/:id/cancel', function(req, res, next) {
+    var id = req.params.id,
+        data = {
+            state: 'canceled',
             stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {

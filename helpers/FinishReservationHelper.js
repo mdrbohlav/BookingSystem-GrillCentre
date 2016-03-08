@@ -10,34 +10,28 @@ function checkUnfinishedReservations() {
         today.setUTCHours(0, 0, 0, 0);
         today.toISOString();
 
-        Reservation.findAll({
+        var options = {
             where: {
                 state: 'confirmed',
                 to: {
                     $lt: today
                 }
             }
-        }).then(function(reservations) {
-            var data = {
-                state: 'finished'
-            };
-            if (reservations.length === 0) {
-                resolve();
-            }
-            for (var i = 0; i < reservations.length; i++) {
-                var tmp = reservations[i].get({
-                    plain: true
+        };
+
+        Reservation.findAll(options).then(function(reservations) {
+            return reservations.reduce(function(sequence, reservation) {
+                return sequence.then(function() {
+                    var data = {
+                        state: 'finished'
+                    };
+                    return Reservation.update(data, {
+                        where: {
+                            id: reservation.id
+                        }
+                    });
                 });
-                Reservation.update(data, {
-                    where: {
-                        id: tmp.id
-                    }
-                }).then(function(affectedRows) {
-                    resolve();
-                }).catch(function(data) {
-                    reject(new InvalidRequestError(data.errors));
-                });
-            }
+            }, Promise.resolve());
         }).catch(function(err) {
             reject(new InvalidRequestError(err.message));
         });
@@ -45,14 +39,12 @@ function checkUnfinishedReservations() {
 }
 
 module.exports.scheduleFinishReservations = function() {
-    checkUnfinishedReservations().then(function() {
-    }).catch(function(err) {
+    checkUnfinishedReservations().then(function() {}).catch(function(err) {
         console.log(err);
     });
 
     schedule.scheduleJob('05 00 * * *', function() {
-        checkUnfinishedReservations().then(function() {
-        }).catch(function(err) {
+        checkUnfinishedReservations().then(function() {}).catch(function(err) {
             console.log(err);
         });
     });

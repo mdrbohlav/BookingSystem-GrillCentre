@@ -13,6 +13,7 @@ var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     OAuth2Strategy = require('passport-oauth2'),
     AuthHelper = require(__dirname + '/helpers/AuthHelper'),
+    ICalHelper = require(__dirname + '/helpers/ICalHelper'),
     FinishReservationHelper = require(__dirname + '/helpers/FinishReservationHelper');
 
 var config = require(__dirname + '/config/global'),
@@ -160,6 +161,9 @@ app.use(function(req, res, next) {
 
 // schedule checking unfinished reservations on start and at midnight
 FinishReservationHelper.scheduleFinishReservations();
+
+// init ICal calendar
+ICalHelper.initCalendar();
 
 // session-persisted message middleware
 app.use(function(req, res, next) {

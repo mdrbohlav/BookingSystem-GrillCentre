@@ -311,7 +311,6 @@ block scripts
                 },
                 clickEvents: {
                     click: function (target) {
-                        console.log(target);
                         var d = new Date(target.date.format()),
                             today = new Date(),
                             lastDay = new Date();
@@ -350,6 +349,17 @@ block scripts
                                     }
                                 } else {
                                     dayEvents = 4;
+                                    $('.modalReservation__centre .modalReservation__title').text(users[target.events[i].userId].fullName);
+                                    $('.modalReservation__centre .modalReservation__date .value').text(resDate);
+                                    $('.modalReservation__centre .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + pad(target.events[i].pickup % 60));
+                                    $('.modalReservation__centre .modalReservation__accessories').html('');
+                                    if (target.events[i].accessories.length === 0) {
+                                        $('.modalReservation__centre .modalReservation__accessories').append('<li>žádné</li>');
+                                    } else {
+                                        for (var j = 0; j < target.events[i].accessories.length; j++) {
+                                            $('.modalReservation__centre .modalReservation__accessories').append('<li>' + target.events[i].accessories[j].name + '</li>');
+                                        }
+                                    }
                                     $('.modalReservation__centre .modalReservation__mobileGrill .value').text((target.events[i].mobileGrill ? 'ano' : 'ne'));
                                 }
                             }

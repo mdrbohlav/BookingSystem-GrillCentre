@@ -34,7 +34,7 @@ block content
                                     .table__cell(data-date='#{reservation.from}')
                                     .table__cell(data-date='#{reservation.to}')
                                     .reservation__action.table__cell
-                                        if reservation.state === 'draft' && reservation.from > today
+                                        if [ 'draft', 'confirmed' ].indexOf(reservation.state) > -1 && reservation.from >= today
                                             button.btn__cancel.icon.icon__cross(type='button', data-id= reservation.id, title='Cancel')
                                 - resCnt++
                             if resCnt === 0
