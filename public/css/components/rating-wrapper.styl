@@ -1,0 +1,41 @@
+.rating
+    &Wrapper
+        overflow visible
+        display inline-block
+    
+    &__field
+        padding 6px 0 3px
+        
+        @media $sm-up
+            padding 7px 10px 4px
+
+    &__input
+        float right
+        width 20px
+        height 20px
+        padding 0
+        margin 0 0 0 -20px
+        opacity 0
+
+.ratingWrapper:hover .rating__star:hover,
+.ratingWrapper:hover .rating__star:hover ~ .rating__star,
+.rating__input:checked ~ .rating__star
+    &:before
+        icon()
+        color $color-yellow
+        content $icon-star
+        set-font-size 20px
+
+.rating__star,
+.ratingWrapper:hover .rating__star
+    padding 0
+    position relative
+    float right
+    display block
+    width 20px
+    height 20px
+        
+    &:before
+        icon()
+        content $icon-star-empty
+        set-font-size 20px

@@ -39,29 +39,46 @@ module.exports = {
     },
 
     get(options) {
-        return User.findAndCountAll(options).then(function(data) {
-            var users = [];
-            for (var i = 0; i < data.rows.length; i++) {
-                users.push(data.rows[i].get({ plain: true }));
-                var locale = users[i].locale;
-                users[i].locale = {};
-                users[i].locale[locale] = isoLocales[locale];
-            }
+        var result = {
+            users: [],
+            total: 0
+        };
 
-            return {
-                users: users,
-                total: data.count
-            };
+        return User.findAndCountAll(options).then(function(data) {
+            result.total = data.count;
+            return data.rows.reduce(function(sequence, user) {
+                return sequence.then(function() {
+                    return user.getRatings().then(function(ratings) {
+                        var plain = user.get({ plain: true });
+                        plain.ratings = [];
+                        for (var i = 0; i < ratings.length; i ++) {
+                            plain.ratings.push(ratings[i].get({ plin: true }));
+                        }
+                        var locale = plain.locale;
+                        plain.locale = {};
+                        plain.locale[locale] = isoLocales[locale];
+                        result.users.push(plain);
+                    });
+                });
+            }, Promise.resolve());
+        }).then(function() {
+            return result;
         });
     },
 
     getById(id) {
         return User.findById(id).then(function(user) {
-            user = user.get({ plain: true });
-            var locale = user.locale;
-            user.locale = {};
-            user.locale[locale] = isoLocales[locale];
-            return user;
+            return user.getRatings().then(function(ratings) {
+                var plain = user.get({ plain: true });
+                plain.ratings = [];
+                for (var i = 0; i < ratings.length; i ++) {
+                    plain.ratings.push(ratings[i].get({ plin: true }));
+                }
+                var locale = plain.locale;
+                plain.locale = {};
+                plain.locale[locale] = isoLocales[locale];
+                return plain;
+            });
         });
     },
 
@@ -75,11 +92,17 @@ module.exports = {
                 throw new UserDoesnotExistError();
             }
 
-            user = user.get({ plain: true });
-            var locale = user.locale;
-            user.locale = {};
-            user.locale[locale] = isoLocales[locale];
-            return user;
+            return user.getRatings().then(function(ratings) {
+                var plain = user.get({ plain: true });
+                plain.ratings = [];
+                for (var i = 0; i < ratings.length; i ++) {
+                    plain.ratings.push(ratings[i].get({ plin: true }));
+                }
+                var locale = plain.locale;
+                plain.locale = {};
+                plain.locale[locale] = isoLocales[locale];
+                return plain;
+            });
         });
     },
 
@@ -140,7 +163,7 @@ module.exports = {
         });
     },
 
-    getRatings(id){
+    getRatings(id) {
         return User.findById(id).then(function(user) {
             return user.getRatings().then(function(data) {
                 var result = [];

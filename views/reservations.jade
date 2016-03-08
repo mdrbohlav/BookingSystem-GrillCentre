@@ -172,7 +172,7 @@ block content
                                         .field__container.col-xs-12.col-sm-3.margin--top-10
                                             label.text__label Hodnota
                                             .field.rating__field
-                                                .rating
+                                                .ratingWrapper
                                                     input#rating-input-1-5.input--default.rating__input(type="radio", name="rating-input-1", checked)
                                                     label.rating__star(for="rating-input-1-5")
                                                     input#rating-input-1-4.input--default.rating__input(type="radio", name="rating-input-1")
@@ -281,21 +281,18 @@ block scripts
 
         function getRatingTableHeading() {
             return $('<li class="table__row table__heading">')
-                .append('<div class="table__cell">Od')
-                .append('<div class="table__cell">Do')
+                .append('<div class="table__cell">Uděleno')
                 .append('<div class="table__cell">Hodnocení')
                 .append('<div class="table__cell">Komentář');
         }
 
-        function getRatingRow(reservation) {
+        function getRatingRow(rating) {
             var tmp = moment(),
-                start = moment(reservation.from).subtract(tmp.local().utcOffset(), 'm'),
-                end = moment(reservation.to).subtract(tmp.local().utcOffset(), 'm');
-            return $('<li class="reservation table__row" data-id="' + reservation.id + '">')
-                .append('<div class="table__cell" data-date="' + reservation.from + '">' + start.format('LL'))
-                .append('<div class="table__cell" data-date="' + reservation.to + '">' + end.format('LL'))
-                .append('<div class="reservation__rating table__cell"><span class="icon icon__star text--yellow"></span> ' + (reservation.rating.value / 10))
-                .append('<div class="reservation__comment table__cell">' + reservation.rating.comment);
+                set = moment(rating.updatedAt).subtract(tmp.local().utcOffset(), 'm');
+            return $('<li class="rating table__row" data-id="' + rating.id + '">')
+                .append('<div class="table__cell" data-date="' + rating.updatedAt + '">' + set.format('LL'))
+                .append('<div class="rating__value table__cell"><span class="icon icon__star text--yellow"></span> ' + (rating.value / 10))
+                .append('<div class="rating__comment table__cell">' + rating.comment);
         }
 
         function getRatingEmptyRow() {
@@ -316,6 +313,96 @@ block scripts
                     $row.find('.reservation__state span').removeClass('icon__flag').removeClass('icon__check').addClass('icon__cross').attr('title', 'Canceled');
                 });
             });
+        }
+
+        function setModalReservation(id) {
+            var tmp = moment();
+            var reservation = reservations[id],
+                start = moment(reservation.from).subtract(tmp.local().utcOffset() , 'm').format('LL'),
+                end = moment(reservation.to).subtract(tmp.local().utcOffset() , 'm').format('LL'),
+                resDate = start;
+            if (start !== end) {
+                resDate += ' - ' + end;
+            }
+                
+            $('.modalReservation').attr('data-id', id);
+            $('.modalReservation__date .value').text(resDate);
+            $('.modalReservation__pickup .value').text(Math.floor(reservation.pickup / 60) + ':' + pad(reservation.pickup % 60));
+            $('.modalReservation__centre .value').text((reservation.onlyMobileGrill ? 'ne' : 'ano'));
+            $('.modalReservation__mobileGrill .value').text((reservation.mobileGrill ? 'ano' : 'ne'));
+            $('.modalReservation__accessories').html('');
+            if (reservation.accessories.length === 0) {
+                $('.modalReservation__accessories').append('<li>žádné</li>');
+            } else {
+                for (var j = 0; j < reservation.accessories.length; j++) {
+                    $('.modalReservation__accessories').append('<li>' + reservation.accessories[j].name + '</li>');
+                }
+            }
+
+            if (reservation.state !== 'finished') {
+                $('.modalReservation__rate').hide();
+            } else {
+                $('.modalReservation__rate').show();
+                if (reservation.rating) {
+                    var num = reservation.rating.value / 10;
+                    $('#rating-input-1-' + num).prop('checked', true);
+                    $('#rateComment').val(reservation.rating.comment);
+                } else {
+                    $('#rating-input-1-5').prop('checked', true);
+                    $('#rateComment').val('');
+                }
+            }
+        }
+
+        function setModalUser(id) {
+            var user = users[id],
+                today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+
+            $('.modalUser').attr('data-id', id);
+            $('.modalUser__title').text(user.fullName);
+            $('.modalUser__admin .value').text((user.isAdmin ? 'ano' : 'ne'));
+            $('.modalUser__email .value').html('<a href="mailto:' + user.email + '">' + user.email + '</a>');
+            if (user.block && user.room) {
+                $('.modalUser__cell').show();
+                $('.modalUser__cell .value').text(user.block + '/' + user.room);
+            } else {
+                $('.modalUser__cell').hide();
+            }
+            $('.modalUser__ban .value').text((user.banned ? 'ano' : 'ne'));
+            if (user.banned) {
+                $('.modalUser__ban .ban').hide();
+                $('.modalUser__ban .unban').show();
+            } else {
+                $('.modalUser__ban .ban').show();
+                $('.modalUser__ban .unban').hide();
+            }
+            if (user.isId) {
+                $('.modalUser__isid').show();
+                $('.modalUser__isid .value').html('<a href="https://is.sh.cvut.cz/users/' + user.isId + '" target="_blank">' + user.isId + '</a>');
+            } else {
+                $('.modalUser__isid').hide();
+            }
+            var locale = Object.keys(user.locale)[0];
+            if ('#{Object.keys(user.locale)[0]}' === locale) {
+                $('.modalUser__locale .value').text(user.locale[locale].nativeName);
+            } else {
+                $('.modalUser__locale .value').text(user.locale[locale].name);
+            }
+
+            var $list = $('#listRating');
+
+            if (user.ratings.length) {
+                var totalRating = 0;
+                $list.html(getRatingTableHeading());
+                for (var i = 0; i <  user.ratings.length; i++) {
+                    totalRating += user.ratings[i].value;
+                    $list.append(getRatingRow(user.ratings[i]));
+                }
+                $('.modalUser__ratingTotal').text(Math.round(totalRating / user.ratings.length) / 10);
+            } else {
+                $list.html(getRatingEmptyRow());
+            }
         }
 
         $(document).ready(function() {
@@ -493,106 +580,10 @@ block scripts
                 if (ignore.indexOf(event.target) > -1) {
                     return;
                 }
-                var tmp = moment();
-                var start = moment(reservations[id].from).subtract(tmp.local().utcOffset() , 'm').format('LL'),
-                    end = moment(reservations[id].to).subtract(tmp.local().utcOffset() , 'm').format('LL'),
-                    resDate = start;
-                if (start !== end) {
-                    resDate += ' - ' + end;
-                }
-                
-                $('.modalReservation').attr('data-id', id);
-                $('.modalReservation__date .value').text(resDate);
-                $('.modalReservation__pickup .value').text(Math.floor(reservations[id].pickup / 60) + ':' + pad(reservations[id].pickup % 60));
-                $('.modalReservation__centre .value').text((reservations[id].onlyMobileGrill ? 'ne' : 'ano'));
-                $('.modalReservation__mobileGrill .value').text((reservations[id].mobileGrill ? 'ano' : 'ne'));
-                $('.modalReservation__accessories').html('');
-                if (reservations[id].accessories.length === 0) {
-                    $('.modalReservation__accessories').append('<li>žádné</li>');
-                } else {
-                    for (var j = 0; j < reservations[id].accessories.length; j++) {
-                        $('.modalReservation__accessories').append('<li>' + reservations[id].accessories[j].name + '</li>');
-                    }
-                }
-
-                if (reservations[id].state !== 'finished') {
-                    $('.modalReservation__rate').hide();
-                } else {
-                    $('.modalReservation__rate').show();
-                    if (reservations[id].rating) {
-                        var num = reservations[id].rating.value / 10;
-                        $('#rating-input-1-' + num).prop('checked', true);
-                        $('#rateComment').val(reservations[id].rating.comment);
-                    } else {
-                        $('#rating-input-1-5').prop('checked', true);
-                        $('#rateComment').val('');
-                    }
-                }
-
-                var today = new Date();
-                today.setUTCHours(0, 0, 0, 0);
-
-                $('.modalUser').attr('data-id', reservations[id].userId);
-                $('.modalUser__title').text(users[reservations[id].userId].fullName);
-                $('.modalUser__admin .value').text((users[reservations[id].userId].isAdmin ? 'ano' : 'ne'));
-                $('.modalUser__email .value').html('<a href="mailto:' + users[reservations[id].userId].email + '">' + users[reservations[id].userId].email + '</a>');
-                if (users[reservations[id].userId].block && users[reservations[id].userId].room) {
-                    $('.modalUser__cell').show();
-                    $('.modalUser__cell .value').text(users[reservations[id].userId].block + '/' + users[reservations[id].userId].room);
-                } else {
-                    $('.modalUser__cell').hide();
-                }
-                $('.modalUser__ban .value').text((users[reservations[id].userId].banned ? 'ano' : 'ne'));
-                if (users[reservations[id].userId].banned) {
-                    $('.modalUser__ban .ban').hide();
-                    $('.modalUser__ban .unban').show();
-                } else {
-                    $('.modalUser__ban .ban').show();
-                    $('.modalUser__ban .unban').hide();
-                }
-                if (users[reservations[id].userId].isId) {
-                    $('.modalUser__isid').show();
-                    $('.modalUser__isid .value').html('<a href="https://is.sh.cvut.cz/users/' + users[reservations[id].userId].isId + '" target="_blank">' + users[reservations[id].userId].isId + '</a>');
-                } else {
-                    $('.modalUser__isid').hide();
-                }
-                var locale = Object.keys(users[reservations[id].userId].locale)[0];
-                if ('#{Object.keys(user.locale)[0]}' === locale) {
-                    $('.modalUser__locale .value').text(users[reservations[id].userId].locale[locale].nativeName);
-                } else {
-                    $('.modalUser__locale .value').text(users[reservations[id].userId].locale[locale].name);
-                }
-
-                var $list = $('#listRating');
-                $list.html(getRatingEmptyRow());
+                setModalReservation(id);
+                setModalUser(reservations[id].userId);
 
                 showModal();
-
-                var $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
-                $list.append($spinner);
-                makeRequest('/api/admin/user/' + reservations[id].userId + '/reservations', 'GET', {}, function(res) {
-                    var totalRating = 0,
-                        ratingCnt = 0;
-                    if (res.total > 0) {
-                        for (var i = 0; i <  res.reservations.length; i++) {
-                            if (!res.reservations[i].rating) {
-                                continue;
-                            }
-                            ratingCnt++;
-                            totalRating += res.reservations[i].rating.value;
-                            if ($list.find('li:not(.table__heading)').length === 1) {
-                                $list.html(getRatingTableHeading());
-                            }
-                            $list.append(getRatingRow(res.reservations[i]));
-                        }
-                    }
-                    if (ratingCnt > 0) {
-                        $('.modalUser__ratingTotal').text(Math.round(totalRating / ratingCnt) / 10)
-                    }
-                    if ($list.find('li:not(.table__heading)').length === 1) {
-                        $spinner.remove();
-                    }
-                });
             });
 
             $('#rate').validate({
@@ -614,15 +605,31 @@ block scripts
                         method = $(form).attr('method');
                     makeRequest(url, method, data, function(res) {
                         addNotification('success', 'Successfully rated.');
-                        var id = $('.modalReservation').attr('data-id');
-                        if (reservations[id].rating) {
-                            reservations[id].rating.value = data.value;
-                            reservations[id].rating.comment = data.comment;
+                        var reservationId = $('.modalReservation').attr('data-id'),
+                            id;
+                        if (reservations[reservationId].rating) {
+                            reservations[reservationId].rating.value = data.value;
+                            reservations[reservationId].rating.comment = data.comment;
+                            id = reservations[reservationId].rating.id;
+                            for (var i = 0; i < users[reservations[reservationId].userId].ratings.length; i++) {
+                                if (users[reservations[reservationId].userId].ratings[i].id !== id) {
+                                    continue;
+                                }
+                                users[reservations[reservationId].userId].ratings[i].value = data.value;
+                                users[reservations[reservationId].userId].ratings[i].comment = data.comment;
+                            }
                         } else {
-                            reservations[id].rating = res;
+                            reservations[reservationId].rating = res;
+                            id = res.id;
+                            users[reservations[reservationId].userId].ratings.push(res);
                         }
-                        $('.reservation[data-id="' + id + '"] .reservation__rating').html('<span class="icon icon__star text--yellow"></span> ' + (data.value / 10));
-                        $('.reservation[data-id="' + id + '"] .reservation__comment').text(data.comment);
+                        var totalRating = 0;
+                        for (var i = 0; i <  users[reservations[id].userId].ratings.length; i++) {
+                            totalRating += users[reservations[id].userId].ratings[i].value;
+                        }
+                        $('.modalUser__ratingTotal').text(Math.round(totalRating / users[reservations[id].userId].ratings.length) / 10);
+                        $('.rating[data-id="' + id + '"] .rating__value, .reservation[data-id="' + reservationId + '"] .reservation__rating').html('<span class="icon icon__star text--yellow"></span> ' + (data.value / 10));
+                        $('.rating[data-id="' + id + '"] .rating__comment').text(data.comment);
                     }, function(res) {
                         console.log(res);
                         if (res instanceof Array) {

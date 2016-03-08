@@ -6,7 +6,7 @@
     size(100%)
     z-index 1
     
-    @media $sm-up
+    @media $md-up
         box-shadow 0 0 15px rgba(0, 0, 0, .5)
         position relative
         size(100%, auto)
@@ -22,24 +22,20 @@
         opacity 0
         transform translateX(-100%)
         
-        @media $sm-up
+        @media $md-up
             display inline-block
             transform translateY(-100%)
 
         & + li
-            @media $sm-up
-                border-left 1px solid $color-grey-2
-                margin-left 15px
-                padding-left 15px
-                
             @media $md-up
+                border-left 1px solid $color-grey-2
                 margin-left 25px
                 padding-left 25px
 
             a
                 margin-top 10px
                 
-                @media $sm-up
+                @media $md-up
                     margin-top 0
 
     a

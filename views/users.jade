@@ -1,0 +1,35 @@
+extends layout
+
+block content
+    section.content
+        .container__md
+            .box
+                .box__header.box__header--border
+                    h2.text__title Uživatelé
+                .box__body
+                    .table__wrapper
+                        ul#listUsers.listUsers.table.table__styled.table--fullsize.table--responsive.text--center
+                            li.table__row.table__heading
+                                .table__cell Jméno
+                                .table__cell Admin
+                                .table__cell IS Id
+                                .table__cell Ban
+                                .table__cell Hodnocení
+                            each user in data.users
+                                li.reservation.table__row(data-id=user.id)
+                                    .table__cell= user.fullName
+                                    .user__admin.table__cell: span.icon(class='icon__' + (user.isAdmin ? 'check' : 'cross'))
+                                    .table__cell= user.isId
+                                    .user__ban.table__cell: span.icon(class='icon__' + (user.banned ? 'check' : 'cross'))
+                                    .user__rating.table__cell
+                                        - var total = 0
+                                        each rating in user.ratings
+                                            - total += rating.value
+                                        span.icon.icon__star.text--yellow
+                                        |  #{Math.round(total / user.ratings.length) / 10}
+
+block scripts
+    script.
+        $(document).ready(function() {
+
+        });

@@ -44,10 +44,12 @@ html
                         if user.isAdmin
                             - var reservationsLink = page === 'reservations' ? '#' : '/admin/reservations'
                             - var accessoriesLink = page === 'accessories' ? '#' : '/admin/accessories'
+                            - var usersLink = page === 'users' ? '#' : '/admin/users'
                             - var statisticsLink = page === 'statistics' ? '#' : '/admin/statistics'
                             - var configLink = page === 'config' ? '#' : '/admin/config'
                             li: a.text__nav(href= reservationsLink, class=(page === 'reservations' ? 'active' : '')) Rezervace
                             li: a.text__nav(href= accessoriesLink, class=(page === 'accessories' ? 'active' : '')) Příslušenství
+                            li: a.text__nav(href= usersLink, class=(page === 'users' ? 'active' : '')) Uživatelé
                             //li: a.text__nav(href= statisticsLink, class=(page === 'statistics' ? 'active' : '')) Statistiky
                             li: a.text__nav(href= configLink, class=(page === 'config' ? 'active' : '')) Nastavení
                         li: a.text__nav(href='/auth/logout') Odhlásit

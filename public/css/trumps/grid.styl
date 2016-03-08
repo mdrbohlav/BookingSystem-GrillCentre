@@ -39,20 +39,20 @@ make-sm-column($columns, $gutter = $grid-gutter-width)
   padding-left ($gutter / 2)
   padding-right ($gutter / 2)
 
-  @media $small-up
+  @media $sm-up
     float left
     width percentage(($columns / $grid-columns))
 
 make-sm-column-offset($columns)
-  @media $small-up
+  @media $sm-up
     margin-left percentage(($columns / $grid-columns))
 
 make-sm-column-push($columns)
-  @media $small-up
+  @media $sm-up
     left percentage(($columns / $grid-columns))
 
 make-sm-column-pull($columns)
-  @media $small-up
+  @media $sm-up
     right percentage(($columns / $grid-columns))
 
 // Generate the medium columns
@@ -62,20 +62,20 @@ make-md-column($columns, $gutter = $grid-gutter-width)
   padding-left ($gutter / 2)
   padding-right ($gutter / 2)
 
-  @media $medium-up
+  @media $md-up
     float left
     width percentage(($columns / $grid-columns))
 
 make-md-column-offset($columns)
-  @media $medium-up
+  @media $md-up
     margin-left percentage(($columns / $grid-columns))
 
 make-md-column-push($columns)
-  @media $medium-up
+  @media $md-up
     left percentage(($columns / $grid-columns))
 
 make-md-column-pull($columns)
-  @media $medium-up
+  @media $md-up
     right percentage(($columns / $grid-columns))
 
 // Generate the large columns
@@ -85,20 +85,20 @@ make-lg-column($columns, $gutter = $grid-gutter-width)
   padding-left ($gutter / 2)
   padding-right ($gutter / 2)
 
-  @media $large-up
+  @media $lg-up
     float left
     width percentage(($columns / $grid-columns))
 
 make-lg-column-offset($columns)
-  @media $large-up
+  @media $lg-up
     margin-left percentage(($columns / $grid-columns))
 
 make-lg-column-push($columns)
-  @media $large-up
+  @media $lg-up
     left percentage(($columns / $grid-columns))
 
 make-lg-column-pull($columns)
-  @media $large-up
+  @media $lg-up
     right percentage(($columns / $grid-columns))
     
 

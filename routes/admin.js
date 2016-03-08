@@ -5,6 +5,7 @@ var express = require('express'),
     configCustom = require(__dirname + '/../config/app').custom;
 
 var Reservation = require(__dirname + '/../api/reservation'),
+    User = require(__dirname + '/../api/user'),
     Accessory = require(__dirname + '/../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
@@ -22,7 +23,9 @@ function getFile(filename) {
 // GET /admin/reservations
 router.get('/reservations', function(req, res, next) {
     var options = {
-        order: [ [ 'createdAt', 'ASC' ] ],
+        order: [ 
+            ['createdAt', 'ASC']
+        ],
     };
 
     if (req.query.month) {
@@ -101,11 +104,77 @@ router.get('/accessories', function(req, res, next) {
     Accessory.get().then(function(result) {
         res.render('accessories', {
             page: 'accessories',
-            title: 'Příslušenství | ' + title,
+            title: 'Příslušenství | '  + title,
             description: description,
             data: result
         });
     }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
+    });
+});
+
+// GET /admin/users
+router.get('/users', function(req, res, next) {
+    var options = {
+        where: {}
+    };
+    if (req.query.search) {
+        var tmp = req.query.search.split(' ');
+        options.where = {
+            $or: [{
+                firstname: {
+                    $any: tmp
+                }
+            }, {
+                lastname: {
+                    $any: tmp
+                }
+            }, {
+                email: {
+                    $any: tmp
+                }
+            }]
+        };
+        for (var i = 0; i < tmp.length; i++) {
+            if (/^[0-9]+$/.test(tmp[i])) {
+                if (options.where.$or.length === 3) {
+                    options.where.$or.push({
+                        isId: {
+                            $any: []
+                        }
+                    });
+                }
+                options.where.$or[3].isId.$any.push(parseInt(tmp[i]));
+            }
+        }
+    }
+    if (req.query.isId) {
+        options.where.isId = req.query.isId === 'true' ? { $ne: null } : null;
+    }
+    if (req.query.ban) {
+        options.where.banned = req.query.ban === 'true' ? true : false;
+    }
+    if (req.query.block) {
+        options.where.block = parseInt(req.query.block);
+    }
+    User.get(options).then(function(result) {
+        console.log(result);
+        if (req.query.accept && req.query.accept === 'json') {
+            res.json(result);
+        } else {
+            res.render('users', {
+                page: 'users',
+                title: 'Uživatelé | '  + title,
+                description: description,
+                data: result
+            });
+        }
+    }).catch(function(data) {
+        console.log(data);
         if ('status' in data) {
             next(data);
         } else {
@@ -156,7 +225,7 @@ router.get('/statistics', function(req, res, next) {
     Reservation.get(options).then(function(result) {
         res.render('statistics', {
             page: 'statistics',
-            title: 'Statistiky | ' + title,
+            title: 'Statistiky | '  + title,
             description: description,
             data: result
         });
@@ -244,7 +313,7 @@ router.put('/config', function(req, res, next) {
     var fileData = getFile('./' + configFileName + '.js');
     fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
     for (var k in req.body) {
-        if ([ 'tel', 'time' ].indexOf(fileData.default[k].type) > -1) {
+        if (['tel', 'time'].indexOf(fileData.default[k].type) > -1) {
             fileData.custom[k] = parseInt(req.body[k]);
         } else if (fileData.default[k].type === 'checkbox') {
             fileData.custom[k] = req.body[k] === 'true' ? true : false;

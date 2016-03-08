@@ -181,7 +181,7 @@ function showMainMenu($trigger) {
     $trigger.addClass('is-active');
     $mainNav.velocity('fadeIn', {
         complete: function() {
-            if ($window.width() < 768) {
+            if ($window.width() < 1024) {
                 setBodyOverflowHidden();
             }
         }
@@ -192,7 +192,7 @@ function showMainMenu($trigger) {
         setTimeout(function() {
             $element.velocity({
                 before: function() {
-                    if ($window.width() < 768) {
+                    if ($window.width() < 1024) {
                         $.Velocity.hook($element, "translateX", "-100%");
                     } else {
                         $.Velocity.hook($element, "translateY", "-100%");
