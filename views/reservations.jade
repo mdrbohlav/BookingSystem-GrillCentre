@@ -399,7 +399,10 @@ block scripts
                     totalRating += user.ratings[i].value;
                     $list.append(getRatingRow(user.ratings[i]));
                 }
-                $('.modalUser__ratingTotal').text(Math.round(totalRating / user.ratings.length) / 10);
+                if (totalRating > 0) {
+                    totalRating = Math.round(totalRating / users[reservations[id].userId].ratings.length) / 10;
+                }
+                $('.modalUser__ratingTotal').text(totalRating);
             } else {
                 $list.html(getRatingEmptyRow());
             }
@@ -627,7 +630,10 @@ block scripts
                         for (var i = 0; i <  users[reservations[id].userId].ratings.length; i++) {
                             totalRating += users[reservations[id].userId].ratings[i].value;
                         }
-                        $('.modalUser__ratingTotal').text(Math.round(totalRating / users[reservations[id].userId].ratings.length) / 10);
+                        if (totalRating > 0) {
+                            totalRating = Math.round(totalRating / users[reservations[id].userId].ratings.length) / 10;
+                        }
+                        $('.modalUser__ratingTotal').text(totalRating);
                         $('.rating[data-id="' + id + '"] .rating__value, .reservation[data-id="' + reservationId + '"] .reservation__rating').html('<span class="icon icon__star text--yellow"></span> ' + (data.value / 10));
                         $('.rating[data-id="' + id + '"] .rating__comment').text(data.comment);
                     }, function(res) {

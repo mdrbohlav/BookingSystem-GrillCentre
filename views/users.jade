@@ -7,7 +7,34 @@ block content
                 .box__header.box__header--border
                     h2.text__title Uživatelé
                 .box__body
-                    .table__wrapper
+                    h3 Vyhledávání
+                    form#searchUser(action='/admin/users?accept=json', method='GET')
+                        .fieldset.row
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='search') Jméno, email, IS id
+                                .field
+                                    input#search(type='text', name='search')
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='block') Blok
+                                .field.field__select
+                                    select#block(name='block')
+                                        option(value='') všechny
+                                        each i in [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+                                            option(value=i)= i
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                .field__checkbox
+                                    span.checkbox.active
+                                        input(id='isId', type='checkbox', name='isId', checked)
+                                    label.t__label(for='isId') Přidělené IS id
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                .field__checkbox
+                                    span.checkbox
+                                        input(id='ban', type='checkbox', name='ban')
+                                    label.t__label(for='ban') Ban
+                        .form__footer.text--center.margin--top-40
+                            button.btn.btn__orange(type='submit') Najít
+                            button#resetList.btn.btn__orange--full(type='button') Reset
+                    .table__wrapper.margin--top-55
                         ul#listUsers.listUsers.table.table__styled.table--fullsize.table--responsive.text--center
                             li.table__row.table__heading
                                 .table__cell Jméno
@@ -16,7 +43,7 @@ block content
                                 .table__cell Ban
                                 .table__cell Hodnocení
                             each user in data.users
-                                li.reservation.table__row(data-id=user.id)
+                                li.user.table__row(data-id=user.id)
                                     .table__cell= user.fullName
                                     .user__admin.table__cell: span.icon(class='icon__' + (user.isAdmin ? 'check' : 'cross'))
                                     .table__cell= user.isId
@@ -30,6 +57,85 @@ block content
 
 block scripts
     script.
-        $(document).ready(function() {
+        function getUserTableHeading() {
+            return $('<li class="table__row table__heading">')
+                .append('<div class="table__cell">Jméno')
+                .append('<div class="table__cell">Admin')
+                .append('<div class="table__cell">IS Id')
+                .append('<div class="table__cell">Ban')
+                .append('<div class="table__cell">Hodnocení');
+        }
 
+        function getUserRow(user) {
+            var totalRating = 0;
+            for (var i = 0; i <  user.ratings.length; i++) {
+                totalRating += user.ratings[i].value;
+            }
+            if (totalRating > 0) {
+                totalRating = Math.round(totalRating / user.ratings.length) / 10;
+            }
+            return $('<li class="user table__row" data-id="' + user.id + '">')
+                .append('<div class="table__cell">' + user.fullName)
+                .append('<div class="table__cell"><span class="icon icon__' + (user.isAdmin ? 'check' : 'cross') + '">')
+                .append('<div class="table__cell">' + (user.isId ? user.isId : ''))
+                .append('<div class="table__cell"><span class="icon icon__' + (user.banned ? 'check' : 'cross') + '">')
+                .append('<div class="table__cell"><span class="icon icon__star text--yellow"></span> ' + totalRating);
+        }
+
+        function getUserEmptyRow() {
+            return $('<li class="table__row table__noborder">')
+                .append($('<div class="table__cell">')
+                    .append('<p class="text__paragraph text--center">Žádní uživatelé nenalezeni'));
+        }
+
+        function fetchUsers(url) {
+            var method = 'GET',
+                $list = $('#listUsers'),
+                $spinner = $('<div class="spinner--absolute"></div>').append(getSpinner());
+
+            $list.append($spinner);
+
+            makeRequest(url, method, {}, function(res) {
+                if (res.users.length === 0) {
+                    $list.html(getUserEmptyRow());
+                } else {
+                    $list.html(getUserTableHeading());
+                    for (var i = 0; i < res.users.length; i++) {
+                        $list.append(getUserRow(res.users[i]));
+                    }
+                }
+            }, function(res) {
+                console.log(res);
+                if (res instanceof Array) {
+                    for (var i = 0; i < res.length; i++) {
+                        addNotification('error', res[i].message);
+                    }
+                } else {
+                    var msg = res.responseJSON.error.message;
+                    addNotification('error', msg);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#resetList').on('click', function() {
+                fetchUsers('/admin/users?accept=json');
+            });
+
+            $('#searchUser').validate({
+                submitHandler: function(form) {
+                    var query = '';
+                    if ($('#search').val() !== '') {
+                        query += '&search=' + encodeURIComponent($('#search').val());
+                    }
+                    if ($('#block').val() !== '') {
+                        query += '&block=' + $('#block').val();
+                    }
+                    query += '&isId=' + $('#isId').prop('checked');
+                    query += '&ban=' + $('#ban').prop('checked');
+                    
+                    var url = $(form).attr('action') + query;
+                    fetchUsers(url);
+                }
+            });
         });

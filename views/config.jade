@@ -14,10 +14,11 @@ block content
                                 h3.col-xs-12(class= cnt > 0 ? 'margin--top-35' : '')= category.name
                                 each value, key in category.fields
                                     if value.type === 'checkbox'
-                                        .field__checkbox.col-xs-12.col-sm-6.margin--top-20
-                                            span.checkbox
-                                                input(id= key, type= value.type, name= key, data-val='#{fileData.custom[key]}')
-                                            label.t__label(for= key)= value.name
+                                        .field__container.col-xs-12.col-sm-6.margin--top-20
+                                            .field__checkbox
+                                                span.checkbox
+                                                    input(id= key, type= value.type, name= key, data-val='#{fileData.custom[key]}')
+                                                label.t__label(for= key)= value.name
                                     else
                                         .field__container.col-xs-12.col-sm-6.margin--top-20
                                             label.text__label(for= key)= value.name
