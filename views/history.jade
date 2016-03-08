@@ -11,7 +11,7 @@ block content
         .container__md
             .box
                 .box__header.box__header--border
-                    h2.text__title Všechny rezervace
+                    h2.text__title !{__('pages_history_title')}
                 .box__body
                     .table__wrapper
                         ul#listAllReservations.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
@@ -20,12 +20,12 @@ block content
                                 - today.setUTCHours(0, 0, 0, 0)
                                 if i === 0
                                     li.table__row.table__heading
-                                        .table__cell(title='Celé grilcentrum') GC
-                                        .table__cell(title='Mobilní gril') MG
-                                        .table__cell Stav
-                                        .table__cell Od
-                                        .table__cell Do
-                                        .table__cell Akce
+                                        .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
+                                        .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                        .table__cell !{__('labels_state')}
+                                        .table__cell !{__('labels_from')}
+                                        .table__cell !{__('labels_to')}
+                                        .table__cell !{__('labels_action')}
                                 li.reservation.table__row(data-id=reservation.id)
                                     .table__cell: span.icon(class=(!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
                                     .table__cell: span.icon(class=(reservation.mobileGrill ? 'icon__check' : 'icon__cross'))
@@ -34,11 +34,11 @@ block content
                                     .table__cell(data-date='#{reservation.to}')
                                     .reservation__action.table__cell
                                         if [ 'draft', 'confirmed' ].indexOf(reservation.state) > -1 && reservation.from >= today
-                                            button.btn__cancel.icon.icon__cross(type='button', data-id= reservation.id, title='Cancel')
+                                            button.btn__cancel.icon.icon__cross(type='button', data-id= reservation.id, title="#{__('buttons_cancel')}")
                             if data.reservations.length === 0
                                 li.table__row.table__noborder
                                     .table__cell
-                                        p.text__paragraph.text--center Žádné rezervace
+                                        p.text__paragraph.text--center !{__('pages_reservations_nothing_3')}
                     if data.total / data.pagination.limit > 1
                         .text--center.margin--top-35
                             ol.pagination
@@ -130,7 +130,7 @@ block scripts
                     $this.remove();
                     $row.find('.reservation__state span').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Canceled');
                     if ($('.listReservations li:not(.table__heading)').length === 0) {
-                        $('.listReservations').replaceWith('<p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p>');
+                        $('.listReservations').replaceWith('<p class="text__paragraph text--center">!{__('pages_reservations_nothing_1')}</p>');
                     }
                 });
             });
@@ -176,12 +176,12 @@ block scripts
 
         function getTableHeading() {
             return $('<li class="table__row table__heading">')
-                .append('<div class="table__cell" title="Celé grilcentrum">GC')
-                .append('<div class="table__cell" title="Mobilní gril">MB')
-                .append('<div class="table__cell">Stav')
-                .append('<div class="table__cell">Od')
-                .append('<div class="table__cell">Do')
-                .append('<div class="table__cell">Akce');
+                .append('<div class="table__cell" title="!{__('labels_grillCentre')}">!{__('labels_grillCentreShortcut')}')
+                .append('<div class="table__cell" title="!{__('labels_mobileGrill')}">!{__('labels_mobileGrillShortcut')}')
+                .append('<div class="table__cell">!{__('labels_state')}')
+                .append('<div class="table__cell">!{__('labels_from')}')
+                .append('<div class="table__cell">!{__('labels_to')}')
+                .append('<div class="table__cell">!{__('labels_action')}');
         }
 
         function getReservationRow(reservation) {
@@ -189,7 +189,7 @@ block scripts
                 today = new Date();
             today.setUTCHours(0, 0, 0, 0);
             if (reservation.state === 'draft' && reservation.from > today) {
-                $cancel = $('<button class="btn__cancel icon icon__cross" type="button" data-id="' + reservation.id + '" title="Cancel">');
+                $cancel = $('<button class="btn__cancel icon icon__cross" type="button" data-id="' + reservation.id + '" title="#{__('buttons_cancel')}">');
                 cancelBtnFunctionality($cancel);
             }
             var tmp = moment(),
@@ -205,7 +205,7 @@ block scripts
         }
 
         $(document).ready(function() {
-            moment.locale('#{user.locale}');
+            moment.locale('#{Object.keys(user.locale)[0]}');
 
             $('[data-date]').each(function(i, element) {
                 var tmp = moment(),

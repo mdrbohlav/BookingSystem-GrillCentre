@@ -1,5 +1,6 @@
 {
     "title": "Gril centrum SiliconHill",
+    "siliconhill": "SiliconHill",
     "description": "Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.",
     "config_sections_1_title": "Emaily",
     "config_sections_1_labels": [
@@ -30,18 +31,18 @@
     "buttons_reject": "Zamítnout",
     "buttons_cofirm": "Potvrdit",
     "buttons_close": "Zavřít",
+    "buttons_delete": "Smazat",
     "buttons_currentMonth": "současný měsíc",
     "buttons_find": "Najít",
     "buttons_reset": "Reset",
-    "navigation": [
-        "Domů",
-        "Moje rezervace",
-        "Rezervace",
-        "Příslušenství",
-        "Uživatelé",
-        "Nastavení",
-        "Odhlásit"
-    ],
+    "navigation_1": "Domů",
+    "navigation_2": "Moje rezervace",
+    "navigation_3": "Rezervace",
+    "navigation_4": "Příslušenství",
+    "navigation_5": "Uživatelé",
+    "navigation_6": "Nastavení",
+    "navigation_7": "Odhlásit",
+    "navigation_8": "Zobrazit menu",
     "modal_reservationTitle": "Rezervace",
     "modal_grillCentreReservationTitle": "Rezervace gril centra",
     "modal_mgReservationTitle": "Rezervace mobilního grilu",
@@ -83,16 +84,12 @@
     "pages_login_password": "Heslo",
     "pages_index_title": "Grilovací centrum",
     "pages_index_calendarTitle": "Kalendář rezervací",
-    "pages_index_legend": [
-        "Rezervace mobilního grilu",
-        "Rezervace gril centra",
-        "Rezervace gril centra i mobilního grilu"
-    ],
+    "pages_index_legend_1": "Rezervace mobilního grilu",
+    "pages_index_legend_2": "Rezervace gril centra",
+    "pages_index_legend_3": "Rezervace gril centra i mobilního grilu",
     "pages_index_newReservationTitle": "Nová rezervace",
-    "pages_index_switch": [
-        "Gril centrum",
-        "Pouze mobilní gril"
-    ],
+    "pages_index_switch_1": "Gril centrum",
+    "pages_index_switch_2": "Pouze mobilní gril",
     "pages_index_accessories": "Příslušenství",
     "pages_history_title": "Všechny rezervace",
     "pages_reservations_titles": [
@@ -100,15 +97,11 @@
         "Rezervace na ohodnocení",
         "Všechny rezervace"
     ],
-    "pages_reservations_nothing": [
-        "Žádné rezervace čekající na schválení",
-        "Žádné rezervace čekající na hodnocení",
-        "Žádné rezervace"
-    ],
-    "pages_accessories_titles": [
-        "Příslušenství",
-        "Přidat nové"
-    ],
+    "pages_reservations_nothing_1": "Žádné rezervace čekající na schválení",
+    "pages_reservations_nothing_2": "Žádné rezervace čekající na hodnocení",
+    "pages_reservations_nothing_3": "Žádné rezervace",
+    "pages_accessories_titles_1": "Příslušenství",
+    "pages_accessories_titles_2": "Přidat nové",
     "pages_users_title": [
         "Uživatelé",
         "Vyhledávání"

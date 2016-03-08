@@ -51,8 +51,7 @@ for (var i = 0; i < availableLocales.length; i++) {
 console.log(availableLocales);
 
 i18n.expressBind(app, {
-    locales: availableLocales,
-    cookieName: 'locale'
+    locales: availableLocales
 });
 
 app.use(function(req, res, next) {

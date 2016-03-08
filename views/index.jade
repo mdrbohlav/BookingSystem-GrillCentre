@@ -4,18 +4,18 @@ block content
     section.hero.table.table--fullsize
         .table__cell
             .hero__content
-                h1.text__mainTitle.separator__after Grilovací centrum
-                h2.shlogo.text__subtitle.text--white SiliconHill
+                h1.text__mainTitle.separator__after !{__('pages_index_title')}
+                h2.shlogo.text__subtitle.text--white !{__('siliconhill')}
     section.content
         .container__md
             .box
                 .box__header.box__header--border
-                    h2.text__title Kalendář rezervací
+                    h2.text__title !{__('pages_index_calendarTitle')}
                 .box__body
                     .row
-                        .col-xs-12.col-sm-6.text--yellow Rezervace mobilního grilu
-                        .col-xs-12.col-sm-6.text--red Rezervace gril centra
-                        .col-xs-12.col-sm-6.text--orange Rezervace gril centra i mobilního grilu
+                        .col-xs-12.col-sm-6.text--yellow !{__('pages_index_legend_1')}
+                        .col-xs-12.col-sm-6.text--red !{__('pages_index_legend_2')}
+                        .col-xs-12.col-sm-6.text--orange !{__('pages_index_legend_3')}
                     .calendar.margin--top-15
                         script#calendar-template(type="text/template").
                             <div class="calendar__controls text--center">
@@ -44,13 +44,13 @@ block content
                                         for (var i in day.events) {
                                             if (day.events[i].onlyMobileGrill) {
                                                 day.events[i].class = 'grill';
-                                                day.events[i].title = 'Rezervace mobilního grilu';
+                                                day.events[i].title = '!{__('pages_index_legend_1')}';
                                             } else if (!day.events[i].mobileGrill) {
                                                 day.events[i].class = 'centre';
-                                                day.events[i].title = 'Rezervace gril centra';
+                                                day.events[i].title = '!{__('pages_index_legend_2')}';
                                             } else {
                                                 day.events[i].class = 'both';
-                                                day.events[i].title = 'Rezervace gril centra i mobilního grilu';
+                                                day.events[i].title = '!{__('pages_index_legend_3')}';
                                             }
                                         }
                                     %>
@@ -69,85 +69,88 @@ block content
                                 <% }); %>
                                 </div>
                             </div>
-                            <button class="calendar__today text__paragraph text--center" type="button">současný měsíc</button>
+                            <button class="calendar__today text__paragraph text--center" type="button">!{__('buttons_currentMonth')}</button>
             .box
                 .box__header.box__header--border
-                    h2.text__title Nová rezervace
+                    h2.text__title !{__('pages_index_newReservationTitle')}
                 .box__body
                     form#create-reservation.form.form__reservation(method='POST', action='/api/reservation/create')
                         .fieldset.row
                             if reservationLength === 1 && !user.isAdmin
                                 .field__container.col-xs-12.col-sm-6.margin--top-20
-                                    label.text__label(for='date') Datum
+                                    label.text__label(for='date') !{__('labels_date')}
                                     .field
                                         input#date(type='text', name='date', required)
                             else
                                 .field__container.col-xs-12.col-sm-6.margin--top-20
-                                    label.text__label(for='date') Od
+                                    label.text__label(for='date') !{__('labels_from')}
                                     .field
                                         input#date(type='text', name='date', required)
                                 .field__container.col-xs-12.col-sm-6.margin--top-20
-                                    label.text__label(for='date-to') Do
+                                    label.text__label(for='date-to') !{__('labels_to')}
                                     .field
                                         input#date-to(type='text', name='date-to', required)
                             .field__container.col-xs-12.col-sm-6.margin--top-20
-                                label.text__label(for='pickup') Vyzvednutí
+                                label.text__label(for='pickup') !{__('labels_pickup')}
                                 .field
                                     input#pickup(type='text', name='pickup', required)
                         .switch__container
                             .fieldset
                                 .text--center.margin--top-35
                                     ul.switch__list
-                                        li: button.switch__trigger.active(type='button', data-res-type='centre') Gril centrum
-                                        li: button.switch__trigger(type='button', data-res-type='grill') Pouze mobilní gril
+                                        li: button.switch__trigger.active(type='button', data-res-type='centre') !{__('pages_index_switch_1')}
+                                        li: button.switch__trigger(type='button', data-res-type='grill') !{__('pages_index_switch_2')}
                             .switch__content.fieldset.accessories
-                                h3.text__subtitle.text--default Příslušenství
+                                h3.text__subtitle.text--default !{__('pages_index_accessories')}
                                 .field__checkbox
                                     span.checkbox
                                         input#mobileGrill(type='checkbox', name='mobileGrill')
-                                    label.t__label(for='mobileGrill') Mobilní gril
+                                    label.t__label(for='mobileGrill') !{__('labels_mobileGrill')}
                                 each accessory, index in accessories
                                     if accessory.available
                                         .field__checkbox
                                             span.checkbox
                                                 input(id='accessory-#{index}', type='checkbox', name='accessory', value= accessory.id)
-                                            label.t__label(for='accessory-#{index}')= accessory.name
+                                            if Object.keys(user.locale)[0] === 'cs'
+                                                label.t__label(for='accessory-#{index}')= accessory.name
+                                            else
+                                                label.t__label(for='accessory-#{index}')= accessory.nameEn
                         .form__footer.text--center.margin--top-40
-                            button.btn.btn__orange(type='submit') Vytvořit
+                            button.btn.btn__orange(type='submit') !{__('buttons_create')}
     section.modal
         .table.table--fullsize
             button.modal__close.btn__close.icon.icon__cross(type='button')
             .modal__content.table__cell
                 .container__md
                     .box.modalReservation__centre
-                        h2.text__title.box__header.box__header--border Rezervace gril centra
+                        h2.text__title.box__header.box__header--border !{__('modal_grillCentreReservationTitle')}
                         .box__body
                             h3.modalReservation__title.text__subtitle.text--default
                             .row
                                 .col-xs-12.col-sm-6
                                     .modalReservation__date.text__paragraph.margin--top-10
-                                        span.text--strong Datum
+                                        span.text--strong !{__('labels_date')}
                                         span.value
                                     .modalReservation__pickup.text__paragraph.margin--top-10
-                                        span.text--strong Čas vyzvednutí
+                                        span.text--strong !{__('labels_pickup')}
                                         span.value
                                     .modalReservation__mobileGrill.text__paragraph.margin--top-10
-                                        span.text--strong Mobilní gril
+                                        span.text--strong !{__('labels_mobileGrill')}
                                         span.value
                                 .col-xs-12.col-sm-6.margin--top-10
-                                    h4.text__paragraph Příslušenství
+                                    h4.text__paragraph !{__('modal_accessories')}
                                     ul.modalReservation__accessories.text__paragraph--small
                     .box.modalReservation__grill
-                        h2.text__title.box__header.box__header--border Rezervace mobilního grilu
+                        h2.text__title.box__header.box__header--border !{__('modal_mgReservationTitle')}
                         .box__body
                             h3.modalReservation__title.text__subtitle.text--default
                             .row
                                 .col-xs-12.col-sm-6
                                     .modalReservation__date.text__paragraph.margin--top-10
-                                        span.text--strong Datum
+                                        span.text--strong !{__('labels_date')}
                                         span.value
                                     .modalReservation__pickup.text__paragraph.margin--top-10
-                                        span.text--strong Čas vyzvednutí
+                                        span.text--strong !{__('labels_pickup')}
                                         span.value
 
 block scripts
@@ -296,7 +299,7 @@ block scripts
                 $pickup.valid();
             });
 
-            moment.locale('#{user.locale}');
+            moment.locale('#{Object.keys(user.locale)[0]}');
             var calendar = $('.calendar').clndr({
                 multiDayEvents: {
                     endDate: 'to',
@@ -341,7 +344,7 @@ block scripts
                                     $('.modalReservation__centre .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + pad(target.events[i].pickup % 60));
                                     $('.modalReservation__centre .modalReservation__accessories').html('');
                                     if (target.events[i].accessories.length === 0) {
-                                        $('.modalReservation__centre .modalReservation__accessories').append('<li>žádné</li>');
+                                        $('.modalReservation__centre .modalReservation__accessories').append('<li>!{__('modal_nothing')}</li>');
                                     } else {
                                         for (var j = 0; j < target.events[i].accessories.length; j++) {
                                             $('.modalReservation__centre .modalReservation__accessories').append('<li>' + target.events[i].accessories[j].name + '</li>');
@@ -354,7 +357,7 @@ block scripts
                                     $('.modalReservation__centre .modalReservation__pickup .value').text(Math.floor(target.events[i].pickup / 60) + ':' + pad(target.events[i].pickup % 60));
                                     $('.modalReservation__centre .modalReservation__accessories').html('');
                                     if (target.events[i].accessories.length === 0) {
-                                        $('.modalReservation__centre .modalReservation__accessories').append('<li>žádné</li>');
+                                        $('.modalReservation__centre .modalReservation__accessories').append('<li>!{__('modal_nothing')}</li>');
                                     } else {
                                         for (var j = 0; j < target.events[i].accessories.length; j++) {
                                             $('.modalReservation__centre .modalReservation__accessories').append('<li>' + target.events[i].accessories[j].name + '</li>');
@@ -387,17 +390,7 @@ block scripts
                             date.set('select', new Date(target.date.format()));
                         }
                     },
-                    nextInterval: function () {
-                        console.log('Calendar next interval');
-                    },
-                    previousInterval: function () {
-                        console.log('Calendar previous interval');
-                    },
-                    onIntervalChange: function () {
-                        console.log('Calendar interval changed');
-                    },
                     onMonthChange: function() {
-                        console.log('Calendar month changed');
                         loadReservations(this);
                     }
                 },

@@ -5,30 +5,33 @@ block content
         .container__md
             .box
                 .box__header.box__header--border
-                    h2.text__title Příslušenství
+                    h2.text__title !{__('pages_accessories_titles_1')}
                 .box__body
                     ul#listAccessories.listAccessories.row
                         each accessory in data.accessories
                             li.listAccessories__item.col-xs-12.col-sm-6.col-md-4
-                                span.name= accessory.name
-                                button.btn__remove.icon.icon__cross(type='button', data-id= accessory.id, title='Delete')
+                                if Object.keys(user.locale)[0] === 'cs'
+                                    span.name= accessory.name
+                                else
+                                    span.name= accessory.nameEn
+                                button.btn__remove.icon.icon__cross(type='button', data-id= accessory.id, title="#{__('buttons_delete')}")
 
             .box
                 .box__header.box__header--border
-                    h2.text__title Přidat nové
+                    h2.text__title !{__('pages_accessories_titles_2')}
                 .box__body
                     form#addAccessory(action='/api/admin/accessory/create', method='POST')
                         .fieldset.row
                             .field__container.col-xs-12.col-sm-6.margin--top-20
-                                label.text__label(for='name') Český název
+                                label.text__label(for='name') !{__('labels_czech')}
                                 .field
                                     input#name(type='text', name='name', required)
                             .field__container.col-xs-12.col-sm-6.margin--top-20
-                                label.text__label(for='nameEn') Anglický název
+                                label.text__label(for='nameEn') !{__('labels_english')}
                                 .field
                                     input#nameEn(type='text', name='nameEn', required)
                         .form__footer.text--center.margin--top-40
-                            button.btn.btn__orange(type='submit') Vytvořit
+                            button.btn.btn__orange(type='submit') !{__('buttons_create')}
                     
 
 block scripts
@@ -56,11 +59,16 @@ block scripts
             });
         }
         function getAccessoryItem(accessory) {
-            var $deleteBtn = $('<button class="btn__remove icon icon__cross" type="button" data-id="' + accessory.id + '" title="Delete">');
+            var $deleteBtn = $('<button class="btn__remove icon icon__cross" type="button" data-id="' + accessory.id + '" title="!{__('buttons_delete')}">');
             deleteBtnFunctionality($deleteBtn);
-            return $('<li class="listAccessories__item col-xs-12 col-sm-6 col-md-4">')
-                .append('<span class="name">' + accessory.name)
-                .append($deleteBtn);
+            var $row = $('<li class="listAccessories__item col-xs-12 col-sm-6 col-md-4">');
+            if ('!{Object.keys(user.locale)[0]}' === 'cs') {
+                $row.append('<span class="name">' + accessory.name);
+            } else {
+                $row.append('<span class="name">' + accessory.nameEn);
+            }
+            $row.append($deleteBtn);
+            return $row;
         }
 
         $(document).ready(function() {
