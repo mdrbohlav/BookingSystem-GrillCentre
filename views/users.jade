@@ -5,45 +5,45 @@ block content
         .container__md
             .box
                 .box__header.box__header--border
-                    h2.text__title Uživatelé
+                    h2.text__title !{__('pages_users_title_1')}
                 .box__body
-                    h3 Vyhledávání
+                    h3 !{__('pages_users_title_2')}
                     form#searchUser(action='/admin/users?accept=json', method='GET')
                         .fieldset.row
                             .field__container.col-xs-12.col-sm-6.margin--top-20
-                                label.text__label(for='search') Jméno, email, IS id
+                                label.text__label(for='search') !{__('labels_search')}
                                 .field
                                     input#search(type='text', name='search')
                             .field__container.col-xs-12.col-sm-6.margin--top-20
-                                label.text__label(for='block') Blok
+                                label.text__label(for='block') !{__('labels_block')}
                                 .field.field__select
                                     select#block(name='block')
-                                        option(value='') všechny
+                                        option(value='') !{__('pages_users_all')}
                                         each i in [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
                                             option(value=i)= i
                             .field__container.col-xs-12.col-sm-6.margin--top-20
                                 .field__checkbox
                                     span.checkbox.active
                                         input(id='isId', type='checkbox', name='isId', checked)
-                                    label.t__label(for='isId') Přidělené IS id
+                                    label.t__label(for='isId') !{__('labels_isIdExists')}
                             .field__container.col-xs-12.col-sm-6.margin--top-20
                                 .field__checkbox
                                     span.checkbox
                                         input(id='ban', type='checkbox', name='ban')
-                                    label.t__label(for='ban') Ban
+                                    label.t__label(for='ban') !{__('labels_ban')}
                         .form__footer.text--center.margin--top-40
-                            button.btn.btn__orange(type='submit') Najít
-                            button#resetList.btn.btn__orange--full(type='button') Reset
+                            button.btn.btn__orange(type='submit') !{__('buttons_find')}
+                            button#resetList.btn.btn__orange--full(type='button') !{__('buttons_reset')}
                     .table__wrapper.margin--top-55
                         ul#listUsers.listUsers.table.table__styled.table--fullsize.table--responsive.text--center
                             each user, i in data.users
                                 if i === 0
                                     li.table__row.table__heading
-                                        .table__cell Jméno
-                                        .table__cell Admin
-                                        .table__cell IS Id
-                                        .table__cell Ban
-                                        .table__cell Hodnocení
+                                        .table__cell !{__('labels_name')}
+                                        .table__cell !{__('labels_admin')}
+                                        .table__cell !{__('labels_isId')}
+                                        .table__cell !{__('labels_ban')}
+                                        .table__cell !{__('labels_rating')}
                                 li.user.table__row(data-id=user.id)
                                     .table__cell= user.fullName
                                     .user__admin.table__cell: span.icon(class='icon__' + (user.isAdmin ? 'check' : 'cross'))
@@ -58,7 +58,7 @@ block content
                             if data.users.length === 0
                                 li.table__row.table__noborder
                                     .table__cell
-                                        p.text__paragraph.text--center Žádní uživatelé nenalezeni
+                                        p.text__paragraph.text--center !{__('pages_users_nothing')}
                     if data.total / data.pagination.limit > 1
                         .text--center.margin--top-35
                             ol.pagination
@@ -97,40 +97,40 @@ block content
             .modal__content.table__cell
                 .container__md
                     .box.modalUser
-                        h2.text__title.box__header.box__header--border Uživatel
+                        h2.text__title.box__header.box__header--border !{__('modal_user')}
                         .box__body
                             h3.modalUser__title.text__subtitle.text--default
                             .row
                                 .col-xs-12.col-sm-6
                                     .modalUser__admin.text__paragraph.margin--top-10
-                                        span.text--strong Admin
+                                        span.text--strong !{__('labels_admin')}
                                         span.value
                                     .modalUser__email.text__paragraph.margin--top-10
-                                        span.text--strong Email
+                                        span.text--strong !{__('labels_email')}
                                         span.value
                                     .modalUser__cell.text__paragraph.margin--top-10
-                                        span.text--strong Blok/pokoj
+                                        span.text--strong !{__('labels_blockRoom')}
                                         span.value
                                 .col-xs-12.col-sm-6
                                     .modalUser__ban.text__paragraph.margin--top-10
-                                        span.text--strong Ban
+                                        span.text--strong !{__('labels_ban')}
                                         span.value
                                         button.ban.btn.btn__orange.btn--small(data-type='button') udělit
                                         button.unban.btn.btn__orange.btn--small(data-type='button') odebrat
                                     .modalUser__isid.text__paragraph.margin--top-10
-                                        span.text--strong IS Id
+                                        span.text--strong !{__('labels_isId')}
                                         span.value
                                     .modalUser__locale.text__paragraph.margin--top-10
-                                        span.text--strong Jazyk
+                                        span.text--strong !{__('labels_language')}
                                         span.value
                             .modalUser__rating
-                                h4.text__subtitle.margin--top-35 Všechna hodnocení (
+                                h4.text__subtitle.margin--top-35 !{__('modal_allRatings')} (
                                     span.modalUser__ratingTotal
                                     | )
                                 ul#listRating.table.table__styled.table--fullsize.text--center
                                     li.table__row.table__noborder
                                         .table__cell
-                                            p.text__paragraph.text--center Žádné hodnocení
+                                            p.text__paragraph.text--center !{__('pages_reservations_nothing_4')}
 
 block scripts
     script.
@@ -240,11 +240,11 @@ block scripts
 
         function getUserTableHeading() {
             return $('<li class="table__row table__heading">')
-                .append('<div class="table__cell">Jméno')
-                .append('<div class="table__cell">Admin')
-                .append('<div class="table__cell">IS Id')
-                .append('<div class="table__cell">Ban')
-                .append('<div class="table__cell">Hodnocení');
+                .append('<div class="table__cell">!{__('labels_name')}')
+                .append('<div class="table__cell">!{__('labels_admin')}')
+                .append('<div class="table__cell">!{__('labels_isId')}')
+                .append('<div class="table__cell">!{__('labels_ban')}')
+                .append('<div class="table__cell">!{__('labels_rating')}');
         }
 
         function getUserRow(user) {
@@ -268,14 +268,14 @@ block scripts
         function getUserEmptyRow() {
             return $('<li class="table__row table__noborder">')
                 .append($('<div class="table__cell">')
-                    .append('<p class="text__paragraph text--center">Žádní uživatelé nenalezeni'));
+                    .append('<p class="text__paragraph text--center">!{__('pages_users_nothing')}'));
         }
 
         function getRatingTableHeading() {
             return $('<li class="table__row table__heading">')
-                .append('<div class="table__cell">Uděleno')
-                .append('<div class="table__cell">Hodnocení')
-                .append('<div class="table__cell">Komentář');
+                .append('<div class="table__cell">!{__('labels_added')}')
+                .append('<div class="table__cell">!{__('labels_rating')}')
+                .append('<div class="table__cell">!{__('labels_comment')}');
         }
 
         function getRatingRow(rating) {
@@ -290,7 +290,7 @@ block scripts
         function getRatingEmptyRow() {
             return $('<li class="table__row table__noborder">')
                 .append($('<div class="table__cell">')
-                    .append('<p class="text__paragraph text--center">Žádné hodnocení'));
+                    .append('<p class="text__paragraph text--center">!{__('pages_reservations_nothing_4')}'));
         }
 
         function setModalUser(id) {
@@ -300,7 +300,7 @@ block scripts
 
             $('.modalUser').attr('data-id', id);
             $('.modalUser__title').text(user.fullName);
-            $('.modalUser__admin .value').text((user.isAdmin ? 'ano' : 'ne'));
+            $('.modalUser__admin .value').text((user.isAdmin ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             $('.modalUser__email .value').html('<a href="mailto:' + user.email + '">' + user.email + '</a>');
             if (user.block && user.room) {
                 $('.modalUser__cell').show();
@@ -308,7 +308,7 @@ block scripts
             } else {
                 $('.modalUser__cell').hide();
             }
-            $('.modalUser__ban .value').text((user.banned ? 'ano' : 'ne'));
+            $('.modalUser__ban .value').text((user.banned ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             if (user.banned) {
                 $('.modalUser__ban .ban').hide();
                 $('.modalUser__ban .unban').show();

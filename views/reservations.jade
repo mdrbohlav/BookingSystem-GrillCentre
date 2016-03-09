@@ -14,7 +14,7 @@ block content
                 - var today = new Date()
                 - today.setUTCHours(0, 0, 0, 0)
                 .box__header.box__header--border
-                    h2.text__title Rezervace na schválení
+                    h2.text__title !{__('pages_reservations_titles_1')}
                 .box__body
                     .table__wrapper
                         ul#listWaitingReservations.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
@@ -23,14 +23,14 @@ block content
                                     - var resUser = data.users[reservation.userId]
                                     if draftCnt === 0
                                         li.table__row.table__heading
-                                            .table__cell Jméno
-                                            .table__cell(title='Priorita') Pr
-                                            .table__cell(title='Celé grilcentrum') GC
-                                            .table__cell(title='Mobilní gril') MG
-                                            .table__cell Od
-                                            .table__cell Do
-                                            .table__cell Vyzvednutí
-                                            .table__cell Akce
+                                            .table__cell !{__('labels_name')}
+                                            .table__cell(title="#{__('labels_priority')}") !{__('labels_priority_shortcut')}
+                                            .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
+                                            .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                            .table__cell !{__('labels_from')}
+                                            .table__cell !{__('labels_to')}
+                                            .table__cell !{__('labels_pickup')}
+                                            .table__cell !{__('labels_action')}
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
                                         .table__cell= resUser.priority
@@ -40,17 +40,17 @@ block content
                                         .table__cell(data-date='#{reservation.to}')
                                         .table__cell #{Math.floor(reservation.pickup / 60)}:#{pad(reservation.pickup%60)}
                                         .reservation__action.table__cell
-                                            button.btn__confirm.icon.icon__check(type='button', data-id= reservation.id, title='Confirm')
-                                            button.btn__reject.icon.icon__cross(type='button', data-id= reservation.id, title='Reject')
+                                            button.btn__confirm.icon.icon__check(type='button', data-id= reservation.id, title="#{__('buttons_cofirm')}")
+                                            button.btn__reject.icon.icon__cross(type='button', data-id= reservation.id, title="#{__('buttons_reject')}")
                                     - draftCnt++
                             if draftCnt === 0
                                 li.table__row.table__noborder
                                     .table__cell
-                                        p.text__paragraph.text--center Žádné rezervace čekající na schválení
+                                        p.text__paragraph.text--center !{__('pages_reservations_nothing_1')}
             .box
                 - var finishedCnt = 0
                 .box__header.box__header--border
-                    h2.text__title Rezervace na ohodnocení
+                    h2.text__title !{__('pages_reservations_titles_2')}
                 .box__body
                     .table__wrapper
                         ul#listWaitingRating.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
@@ -59,11 +59,11 @@ block content
                                     - var resUser = data.users[reservation.userId]
                                     if finishedCnt === 0
                                         li.table__row.table__heading
-                                            .table__cell Jméno
-                                            .table__cell(title='Celé grilcentrum') GC
-                                            .table__cell(title='Mobilní gril') MG
-                                            .table__cell Od
-                                            .table__cell Do
+                                            .table__cell !{__('labels_name')}
+                                            .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
+                                            .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                            .table__cell !{__('labels_from')}
+                                            .table__cell !{__('labels_to')}
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
                                         .table__cell: span.icon(class= (!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
@@ -74,7 +74,7 @@ block content
                             if finishedCnt === 0
                                 li.table__row.table__noborder
                                     .table__cell
-                                        p.text__paragraph.text--center Žádné rezervace čekající na hodnocení
+                                        p.text__paragraph.text--center !{__('pages_reservations_nothing_2')}
             .box
                 - var resCnt = 0
                 - var date = new Date()
@@ -87,7 +87,7 @@ block content
                 - var today = new Date()
                 - today.setUTCHours(0, 0, 0, 0)
                 .box__header.box__header--border
-                    h2.text__title Všechny rezervace (
+                    h2.text__title !{__('pages_reservations_titles_3')} (
                         span.month__selected
                         | )
                 .box__body
@@ -98,13 +98,13 @@ block content
                                     - var resUser = data.users[reservation.userId]
                                     if resCnt === 0
                                         li.table__row.table__heading
-                                            .table__cell Jméno
-                                            .table__cell(title='Celé grilcentrum') GC
-                                            .table__cell(title='Mobilní gril') MG
-                                            .table__cell Stav
-                                            .table__cell Od
-                                            .table__cell Do
-                                            .table__cell Ostatní
+                                            .table__cell !{__('labels_name')}
+                                            .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
+                                            .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                            .table__cell !{__('labels_to')}
+                                            .table__cell !{__('labels_from')}
+                                            .table__cell !{__('labels_state')}
+                                            .table__cell !{__('labels_other')}
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
                                         .table__cell: span.icon(class=(!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
@@ -117,17 +117,17 @@ block content
                                                 span.icon.icon__star.text--yellow 
                                                 | #{reservation.rating.value / 10}
                                         else if reservation.state === 'finished'
-                                            .reservation__rating.table__cell nehodnoceno
+                                            .reservation__rating.table__cell !{__('labels_notrated')}
                                         else if [ 'draft', 'confirmed' ].indexOf(reservation.state) > -1 && reservation.from >= today
                                             .reservation__action.table__cell
-                                                button.btn__cancel.icon.icon__cross(type='button', data-id= reservation.id, title='Cancel')
+                                                button.btn__cancel.icon.icon__cross(type='button', data-id= reservation.id, title="#{__('buttons_cancel')}")
                                         else 
                                             .table__cell
                                     - resCnt++
                             if resCnt === 0
                                 li.table__row.table__noborder
                                     .table__cell
-                                        p.text__paragraph.text--center Žádné rezervace
+                                        p.text__paragraph.text--center !{__('pages_reservations_nothing_3')}
                     .text--center.margin--top-35
                         ol.pagination
                             li: button.pagination__prev(type='button')
@@ -135,7 +135,7 @@ block content
                                 | &nbsp;
                                 span.month__prev
                             li: button.pagination__item(type='button')
-                                span.month__current dnes
+                                span.month__current !{__('buttons_currentMonth')}
                             li: button.pagination__next(type='button')
                                 span.month__next
                                 | &nbsp;
@@ -146,31 +146,31 @@ block content
             .modal__content.table__cell
                 .container__md
                     .box.modalReservation
-                        h2.text__title.box__header.box__header--border Rezervace
+                        h2.text__title.box__header.box__header--border !{__('modal_reservationTitle')}
                         .box__body
                             .row
                                 .col-xs-12.col-sm-6
                                     .modalReservation__date.text__paragraph.margin--top-10
-                                        span.text--strong Datum
+                                        span.text--strong !{__('labels_date')}
                                         span.value
                                     .modalReservation__pickup.text__paragraph.margin--top-10
-                                        span.text--strong Čas vyzvednutí
+                                        span.text--strong !{__('labels_pickup')}
                                         span.value
                                     .modalReservation__centre.text__paragraph.margin--top-10
-                                        span.text--strong Gril centrum
+                                        span.text--strong !{__('labels_grillCentre')}
                                         span.value
                                     .modalReservation__mobileGrill.text__paragraph.margin--top-10
-                                        span.text--strong Mobilní gril
+                                        span.text--strong !{__('labels_mobileGrill')}
                                         span.value
                                 .col-xs-12.col-sm-6.margin--top-10
-                                    h3.text__paragraph Příslušenství
+                                    h3.text__paragraph !{__('modal_accessories')}
                                     ul.modalReservation__accessories.text__paragraph--small
                             .modalReservation__rate.margin--top-35
                                 form#rate(action='/api/admin/reservation/:id/rating', method='POST')
-                                    h3.text__paragraph Hodnocení
+                                    h3.text__paragraph !{__('labels_rating')}
                                     .fieldset.row
                                         .field__container.col-xs-12.col-sm-3.margin--top-10
-                                            label.text__label Hodnota
+                                            label.text__label !{__('labels_value')}
                                             .field.rating__field
                                                 .ratingWrapper
                                                     input#rating-input-1-5.input--default.rating__input(type="radio", name="rating-input-1", checked)
@@ -184,46 +184,46 @@ block content
                                                     input#rating-input-1-1.input--default.rating__input(type="radio", name="rating-input-1")
                                                     label.rating__star(for="rating-input-1-1")
                                         .field__container.col-xs-12.col-sm-9.margin--top-10
-                                            label.text__label(for='rateComment') Komentář
+                                            label.text__label(for='rateComment') !{__('labels_comment')}
                                             .field
                                                 input#rateComment(type='text', name='rateComment')
                                     .form__footer.text--center.margin--top-25
-                                        button.btn.btn__orange(type='submit') Hodnotit
+                                        button.btn.btn__orange(type='submit') !{__('buttons_rate')}
                     .box.modalUser
-                        h2.text__title.box__header.box__header--border Uživatel
+                        h2.text__title.box__header.box__header--border !{__('modal_user')}
                         .box__body
                             h3.modalUser__title.text__subtitle.text--default
                             .row
                                 .col-xs-12.col-sm-6
                                     .modalUser__admin.text__paragraph.margin--top-10
-                                        span.text--strong Admin
+                                        span.text--strong !{__('labels_admin')}
                                         span.value
                                     .modalUser__email.text__paragraph.margin--top-10
-                                        span.text--strong Email
+                                        span.text--strong !{__('labels_email')}
                                         span.value
                                     .modalUser__cell.text__paragraph.margin--top-10
-                                        span.text--strong Blok/pokoj
+                                        span.text--strong !{__('labels_blockRoom')}
                                         span.value
                                 .col-xs-12.col-sm-6
                                     .modalUser__ban.text__paragraph.margin--top-10
-                                        span.text--strong Ban
+                                        span.text--strong !{__('labels_ban')}
                                         span.value
-                                        button.ban.btn.btn__orange.btn--small(data-type='button') udělit
-                                        button.unban.btn.btn__orange.btn--small(data-type='button') odebrat
+                                        button.ban.btn.btn__orange.btn--small(data-type='button') !{__('buttons_grant')}
+                                        button.unban.btn.btn__orange.btn--small(data-type='button') !{__('buttons_take')}
                                     .modalUser__isid.text__paragraph.margin--top-10
-                                        span.text--strong IS Id
+                                        span.text--strong !{__('labels_isId')}
                                         span.value
                                     .modalUser__locale.text__paragraph.margin--top-10
-                                        span.text--strong Jazyk
+                                        span.text--strong !{__('labels_language')}
                                         span.value
                             .modalUser__rating
-                                h4.text__subtitle.margin--top-35 Všechna hodnocení (
+                                h4.text__subtitle.margin--top-35 !{__('modal_allRatings')} (
                                     span.modalUser__ratingTotal
                                     | )
                                 ul#listRating.table.table__styled.table--fullsize.text--center
                                     li.table__row.table__noborder
                                         .table__cell
-                                            p.text__paragraph.text--center Žádné hodnocení
+                                            p.text__paragraph.text--center !{__('pages_reservations_nothing_3')}
 
 block scripts
     script.
@@ -237,13 +237,13 @@ block scripts
     
         function getReservationsTableHeading() {
             return $('<li class="table__row table__heading">')
-                .append('<div class="table__cell">Jméno')
-                .append('<div class="table__cell" title="Celé grilcentrum">GC')
-                .append('<div class="table__cell" title="Mobilní gril">MG')
-                .append('<div class="table__cell">Stav')
-                .append('<div class="table__cell">Od')
-                .append('<div class="table__cell">Do')
-                .append('<div class="table__cell">Ostatní');
+                .append('<div class="table__cell">!{__('labels_name')}')
+                .append('<div class="table__cell" title="!{__('labels_grillCentre')}">!{__('labels_grillCentreShortcut')}')
+                .append('<div class="table__cell" title="!{__('labels_mobileGrill')}">!{__('labels_mobileGrillShortcut')}')
+                .append('<div class="table__cell">!{__('labels_state')}')
+                .append('<div class="table__cell">!{__('labels_from')}')
+                .append('<div class="table__cell">!{__('labels_to')}')
+                .append('<div class="table__cell">!{__('labels_other')}');
         }
 
         function getReservationRow(reservation, user) {
@@ -262,9 +262,9 @@ block scripts
             if (reservation.rating) {
                 $row.append('<div class="reservation__rating table__cell"><span class="icon icon__star text--yellow"></span> ' + (reservation.rating.value / 10));
             } else if (reservation.state === 'finished') {
-                $row.append('<div class="reservation__rating table__cell">nehodnoceno');
+                $row.append('<div class="reservation__rating table__cell">!{__('labels_notrated')}');
             } else if ([ 'draft', 'confirmed' ].indexOf(reservation.state) > -1 && new Date(reservation.from) >= today) {
-                var $cancelBtn = $('<div class="reservation__action table__cell"><button class="btn__cancel icon icon__cross" type="button" data-id="' + reservation.id + '" title="Cancel">');
+                var $cancelBtn = $('<div class="reservation__action table__cell"><button class="btn__cancel icon icon__cross" type="button" data-id="' + reservation.id + '" title="!{__('buttons_cancel')}">');
                 cancelBtnFunctionality($cancelBtn);
                 $row.append($cancelBtn);
             } else {
@@ -277,14 +277,14 @@ block scripts
         function getReservationsEmptyRow() {
             return $('<li class="table__row table__noborder">')
                 .append($('<div class="table__cell">')
-                    .append('<p class="text__paragraph text--center">Žádné rezervace'));
+                    .append('<p class="text__paragraph text--center">!{__('pages_reservations_nothing_3')}'));
         }
 
         function getRatingTableHeading() {
             return $('<li class="table__row table__heading">')
-                .append('<div class="table__cell">Uděleno')
-                .append('<div class="table__cell">Hodnocení')
-                .append('<div class="table__cell">Komentář');
+                .append('<div class="table__cell">!{__('labels_added')}')
+                .append('<div class="table__cell">!{__('labels_rating')}')
+                .append('<div class="table__cell">!{__('labels_comment')}');
         }
 
         function getRatingRow(rating) {
@@ -299,7 +299,7 @@ block scripts
         function getRatingEmptyRow() {
             return $('<li class="table__row table__noborder">')
                 .append($('<div class="table__cell">')
-                    .append('<p class="text__paragraph text--center">Žádné hodnocení'));
+                    .append('<p class="text__paragraph text--center">!{__('pages_reservations_nothing_4')}'));
         }
 
         function cancelBtnFunctionality($btn) {
@@ -348,10 +348,15 @@ block scripts
             $('.modalReservation__mobileGrill .value').text((reservation.mobileGrill ? 'ano' : 'ne'));
             $('.modalReservation__accessories').html('');
             if (reservation.accessories.length === 0) {
-                $('.modalReservation__accessories').append('<li>žádné</li>');
+                $('.modalReservation__accessories').append('<li>!{__('modal_nothing')}</li>');
             } else {
+                var locale = Object.keys(user.locale)[0];
                 for (var j = 0; j < reservation.accessories.length; j++) {
-                    $('.modalReservation__accessories').append('<li>' + reservation.accessories[j].name + '</li>');
+                    if ('#{Object.keys(user.locale)[0]}' === locale) {
+                        $('.modalReservation__accessories').append('<li>' + reservation.accessories[j].name + '</li>');
+                    } else {
+                        $('.modalReservation__accessories').append('<li>' + reservation.accessories[j].nameEn + '</li>');
+                    }
                 }
             }
 
@@ -377,7 +382,7 @@ block scripts
 
             $('.modalUser').attr('data-id', id);
             $('.modalUser__title').text(user.fullName);
-            $('.modalUser__admin .value').text((user.isAdmin ? 'ano' : 'ne'));
+            $('.modalUser__admin .value').text((user.isAdmin ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             $('.modalUser__email .value').html('<a href="mailto:' + user.email + '">' + user.email + '</a>');
             if (user.block && user.room) {
                 $('.modalUser__cell').show();
@@ -385,7 +390,7 @@ block scripts
             } else {
                 $('.modalUser__cell').hide();
             }
-            $('.modalUser__ban .value').text((user.banned ? 'ano' : 'ne'));
+            $('.modalUser__ban .value').text((user.banned ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             if (user.banned) {
                 $('.modalUser__ban .ban').hide();
                 $('.modalUser__ban .unban').show();
@@ -425,7 +430,7 @@ block scripts
         }
 
         $(document).ready(function() {
-            moment.locale('#{user.locale}');
+            moment.locale('#{Object.keys(user.locale)[0]}');
 
             $('[data-date]').each(function(i, element) {
                 var tmp = moment(),
@@ -483,7 +488,7 @@ block scripts
                     addNotification('success', 'Reservation successfully confirmed.');
                     $row.remove();
                     if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {
-                        $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p></div></li>');
+                        $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">!{__('pages_reservations_nothing_1')}</p></div></li>');
                     }
 
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
@@ -512,7 +517,7 @@ block scripts
                     addNotification('success', 'Reservation successfully rejected.');
                     $row.remove();
                     if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {
-                        $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">Žádné rezervace čekající na schválení</p></div></li>');
+                        $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">!{__('pages_reservations_nothing_1')}</p></div></li>');
                     }
 
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
