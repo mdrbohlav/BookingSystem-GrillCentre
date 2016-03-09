@@ -36,6 +36,15 @@ html
         if user
             header
                 nav.nav__main
+                    if availableLocales.length > 0
+                        .locales
+                            label(for='locale') Language: 
+                            select#locale(name='locales')
+                                each locale in availableLocales
+                                    if Object.keys(user.locale)[0] === locale
+                                        option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
+                                    else
+                                        option(value= locale)= isoLocales[locale].nativeName.split(',')[0]
                     ul.text--center
                         - var homeLink = page === 'index' ? '#' : '/'
                         - var historyLink = page === 'history' ? '#' : '/user/history'
@@ -54,7 +63,8 @@ html
                         li: a.text__nav(href='/auth/logout') !{__('navigation_7')}
                 button.nav__trigger(data-trigger-menu='nav__main') !{__('navigation_8')}
                     span.icon.lines
-
+            if [ 'login', 'index' ].indexOf(page) === -1
+                .header__placeholder.visible-md.visible-lg
         block content
 
         script(src="/js/app.min.js")

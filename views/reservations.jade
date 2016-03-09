@@ -344,8 +344,8 @@ block scripts
             $('.modalReservation').attr('data-id', id);
             $('.modalReservation__date .value').text(resDate);
             $('.modalReservation__pickup .value').text(Math.floor(reservation.pickup / 60) + ':' + pad(reservation.pickup % 60));
-            $('.modalReservation__centre .value').text((reservation.onlyMobileGrill ? 'ne' : 'ano'));
-            $('.modalReservation__mobileGrill .value').text((reservation.mobileGrill ? 'ano' : 'ne'));
+            $('.modalReservation__centre .value').text((reservation.onlyMobileGrill ? '!{__('labels_no')}' : '!{__('labels_yes')}'));
+            $('.modalReservation__mobileGrill .value').text((reservation.mobileGrill ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             $('.modalReservation__accessories').html('');
             if (reservation.accessories.length === 0) {
                 $('.modalReservation__accessories').append('<li>!{__('modal_nothing')}</li>');
@@ -555,7 +555,7 @@ block scripts
                     addNotification('success', 'User ‘' + users[id].fullName + '’ successfully banned.');
                     $this.hide();
                     $unban.show();
-                    $state.text('ano');
+                    $state.text('!{__('labels_yes')}');
                 }, function(res) {
                     console.log(res);
                     if (res instanceof Array) {
@@ -583,7 +583,7 @@ block scripts
                     addNotification('success', 'User ‘' + users[id].fullName + '’ successfully unbanned.');
                     $this.hide();
                     $ban.show();
-                    $state.text('ne');
+                    $state.text('!{__('labels_no')}');
                 }, function(res) {
                     console.log(res);
                     if (res instanceof Array) {

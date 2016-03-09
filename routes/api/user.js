@@ -69,7 +69,7 @@ router.put('/', function(req, res, next) {
 
     User.update(data).then(function(count) {
         var id = req.user.id;
-        return User.getById(id).then(function(user) {
+        return User.getById(id, true).then(function(user) {
             req.logIn(user, function(err) {
                 if (err) {
                     next(err);

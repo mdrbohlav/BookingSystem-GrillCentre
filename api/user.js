@@ -66,10 +66,14 @@ module.exports = {
         });
     },
 
-    getById(id) {
+    getById(id, raw) {
+        raw = typeof(raw) === 'undefined' ? false : raw;
         return User.findById(id).then(function(user) {
             return user.getRatings().then(function(ratings) {
-                var plain = user.get({ plain: true });
+                var plain = user;
+                if (!raw) {
+                    plain = user.get({ plain: true });
+                }
                 plain.ratings = [];
                 for (var i = 0; i < ratings.length; i ++) {
                     plain.ratings.push(ratings[i].get({ plin: true }));

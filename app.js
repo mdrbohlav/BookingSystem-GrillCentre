@@ -43,28 +43,6 @@ var app = express();
 // Postgres setup
 var models = require(__dirname + '/models');
 
-var availableLocales = fs.readdirSync(__dirname + '/locales');
-for (var i = 0; i < availableLocales.length; i++) {
-    availableLocales[i] = availableLocales[i].replace(/\.js/, '');
-}
-
-console.log(availableLocales);
-
-i18n.expressBind(app, {
-    locales: availableLocales
-});
-
-app.use(function(req, res, next) {
-    if (req.user) {
-        req.i18n.setLocale(Object.keys(req.user.locale)[0]);
-    }
-    if (req.query.ln) {
-        var locale = req.query.ln;
-        req.i18n.setLocale(locale);
-    }
-    next();
-});
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -247,6 +225,44 @@ passport.deserializeUser(function(obj, done) {
 //    res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
 //    next();
 //});
+
+
+// locales
+Array.prototype.move = function (old_index, new_index) {
+    if (new_index >= this.length) {
+        var k = new_index - this.length;
+        while ((k--) + 1) {
+            this.push(undefined);
+        }
+    }
+    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+};
+
+var availableLocales = fs.readdirSync(__dirname + '/locales'),
+    csIndex = 0;
+for (var i = 0; i < availableLocales.length; i++) {
+    availableLocales[i] = availableLocales[i].replace(/\.js/, '');
+    if (availableLocales[i] === 'cs') {
+        csIndex = i;
+    }
+}
+
+if (csIndex > 0) {
+    availableLocales.moce(csIndex, 0);
+}
+
+i18n.expressBind(app, {
+    locales: availableLocales
+});
+
+app.use(function(req, res, next) {
+    res.locals.isoLocales = isoLocales;
+    res.locals.availableLocales = availableLocales;
+    if (req.user) {
+        req.i18n.setLocale(Object.keys(req.user.locale)[0]);
+    }
+    next();
+});
 
 // routes require login
 var UnauthorizedError = require(__dirname + '/errors/UnauthorizedError');

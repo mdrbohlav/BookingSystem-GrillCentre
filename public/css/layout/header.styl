@@ -2,5 +2,18 @@ header
     left 0
     position fixed
     top 0
+    transition transform .2s ease-in-out
     width 100%
     z-index 5
+    
+    @media $md-up
+        transform translateY(0)
+
+    &.nav--up
+        @media $sm-up
+            transform translateY(-100%)
+
+.header
+    &__placeholder
+        @media $md-up
+            height 61px

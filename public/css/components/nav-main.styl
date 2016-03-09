@@ -4,10 +4,12 @@
     overflow auto
     position fixed
     size(100%)
+    transition translate .2s ease-in-out
     z-index 1
     
     @media $md-up
         box-shadow 0 0 15px rgba(0, 0, 0, .5)
+        display block
         position relative
         size(100%, auto)
 
@@ -24,13 +26,19 @@
         
         @media $md-up
             display inline-block
-            transform translateY(-100%)
+            opacity 1
+            transform translateX(0)
 
         & + li
             @media $md-up
                 border-left 1px solid $color-grey-2
-                margin-left 25px
-                padding-left 25px
+                margin-left 15px
+                padding-left 15px
+                
+            @media $lg-up
+                border-left 1px solid $color-grey-2
+                margin-left 20px
+                padding-left 20px
 
             a
                 margin-top 10px

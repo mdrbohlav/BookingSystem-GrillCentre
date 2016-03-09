@@ -4,8 +4,8 @@ var $window = $(window),
     $mainNavTrigger = $('.nav__trigger'),
     firstLoad = false;
 
-function pad(n) { 
-    return n < 10 ? '0' + n : n; 
+function pad(n) {
+    return n < 10 ? '0' + n : n;
 }
 
 function urlParam(name) {
@@ -210,7 +210,7 @@ function hideMainMenu($trigger) {
     $trigger.removeClass('is-active');
     $mainNav.velocity('fadeOut', {
         complete: function() {
-            if ($window.width() < 768) {
+            if ($window.width() < 1024) {
                 removeBodyOverflowHidden();
             }
             $mainNav.find('li').removeAttr('style');
@@ -268,13 +268,15 @@ $(document).ready(function() {
     });
 
     $window.on('resize orientationchange', function() {
-        if (!$mainNavTrigger.hasClass('is-active')) {
+        if (!$mainNavTrigger.hasClass('is-active') && !$('header').hasClass('nav--up')) {
             return;
         }
-        if ($window.width() < 768 &&  $mainNav.css('display') !== 'table') {
-            $mainNav.css('display', 'table');
-        } else if ($window.width() >= 768 &&  $mainNav.css('display') !== 'block') {
-            $mainNav.css('display', 'block');
+        if ($window.width() < 1024 && $('header').hasClass('nav--up')) {
+            $('header').removeClass('nav--up');
+        } else if ($window.width() >= 1024 && $mainNav.hasClass('is-active')) {
+            $mainNav.removeAttr('style');
+            $trigger.removeClass('is-active');
+            removeBodyOverflowHidden();
         }
     });
 
@@ -289,6 +291,56 @@ $(document).ready(function() {
         } else {
             showMainMenu($this);
         }
+    });
+
+
+    //=================================================================
+    // Main navigation display/hide on scroll
+    //=================================================================
+    var didScroll;
+    var lastScrollTop = 0;
+    var delta = 5;
+    var navbarHeight = $('header').outerHeight();
+
+    $(window).scroll(function(event) {
+        didScroll = true;
+    });
+
+    setInterval(function() {
+        if ($window.width() < 1024) {
+            return;
+        }
+        if (didScroll) {
+            hasScrolled();
+            didScroll = false;
+        }
+    }, 250);
+
+    function hasScrolled() {
+        var st = $(this).scrollTop();
+
+        if (Math.abs(lastScrollTop - st) <= delta) {
+            return;
+        }
+
+        if (st > lastScrollTop && st > navbarHeight) {
+            $('header').removeClass('nav--down').addClass('nav--up');
+        } else {
+            if (st + $(window).height() < $(document).height()) {
+                $('header').removeClass('nav--up').addClass('nav--down');
+            }
+        }
+
+        lastScrollTop = st;
+    }
+
+    //=================================================================
+    // Change locales
+    //=================================================================
+    $('select[name="locales"]').on('change', function() {
+        var $this = $(this),
+            locale = $this.val();
+        window.location = '/user/update-locale/' + locale + '/' + encodeURIComponent(window.location.pathname + window.location.search);
     });
 
     //=================================================================

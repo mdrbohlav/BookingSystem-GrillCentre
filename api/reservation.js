@@ -89,12 +89,12 @@ module.exports = {
             }, Promise.resolve());
         }).then(function() {
             var usersArr = [];
-            for (var resId in result.reservations) {
-                if (result.reservations[resId].userId in result.users) {
+            for (var i = 0; i < result.reservations.length; i++) {
+                if (result.reservations[i].userId in result.users) {
                     continue;
                 }
-                result.users[result.reservations[resId].userId] = {};
-                usersArr.push(result.reservations[resId].userId);
+                result.users[result.reservations[i].userId] = {};
+                usersArr.push(result.reservations[i].userId);
             }
 
             return usersArr.reduce(function(sequence, userId) {

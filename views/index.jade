@@ -363,7 +363,7 @@ block scripts
                                             $('.modalReservation__centre .modalReservation__accessories').append('<li>' + target.events[i].accessories[j].name + '</li>');
                                         }
                                     }
-                                    $('.modalReservation__centre .modalReservation__mobileGrill .value').text((target.events[i].mobileGrill ? 'ano' : 'ne'));
+                                    $('.modalReservation__centre .modalReservation__mobileGrill .value').text((target.events[i].mobileGrill ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
                                 }
                             }
 

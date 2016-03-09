@@ -34,7 +34,7 @@ router.get('/history', function(req, res, next) {
             limit: options.limit,
             offset: options.offset
         };
-        if (req.query.accept && req.query.accept === 'json') {
+        if (req.query.accept &&  req.query.accept === 'json') {
             res.json(result);
         } else {
             res.render('history', {
@@ -44,6 +44,32 @@ router.get('/history', function(req, res, next) {
                 data: result
             });
         }
+    }).catch(function(data) {
+        if ('status' in data) {
+            next(data);
+        } else {
+            next(new InvalidRequestError(data.errors));
+        }
+    });
+});
+
+// GET /user/update-locale/:locale/:returnUrl
+router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
+    var locale = req.params.locale,
+        returnUrl = decodeURIComponent(req.params.returnUrl),
+        data = {
+            id: req.user.id,
+            locale: locale
+        };
+    User.update(data).then(function(count) {
+        return User.getById(data.id, true).then(function(user) {
+            req.logIn(user, function(err) {
+                if (err) {
+                    next(err);
+                }
+                res.redirect(returnUrl);
+            });
+        });
     }).catch(function(data) {
         if ('status' in data) {
             next(data);
