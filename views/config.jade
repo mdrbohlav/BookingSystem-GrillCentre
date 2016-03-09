@@ -5,7 +5,7 @@ block content
         .container__md
             .box
                 .box__header.box__header--border
-                    h2.text__title Konfigurace
+                    h2.text__title !{__('pages_config_title')}
                 .box__body
                     form#config.form.form__config(method='PUT', action='/admin/config')
                         - var cnt = 0
@@ -26,15 +26,15 @@ block content
                                                 input(id= key, type= value.type, name= key, data-val= fileData.custom[key], required)
                             - cnt++
                         .form__footer.text--center.margin--top-40
-                            button.btn.btn__orange(type='submit') Uložit
-                            button#configDefault.btn.btn__orange--full(type='button') Nastavit defaultní hodnoty
+                            button.btn.btn__orange(type='submit') !{__('buttons_save')}
+                            button#configDefault.btn.btn__orange--full(type='button') !{__('buttons_setDefault')}
 
 block scripts
     script.
         var configDefault = JSON.parse('#{JSON.stringify(fileData.default)}'.replace(/&quot;/g, '\"'));
 
         $(document).ready(function() {
-            moment.locale('#{user.locale}');
+            moment.locale('#{Object.keys(user.locale)[0]}');
             
             $('input[type="time"]').each(function(i, element) {
                 var $element = $(element);
@@ -70,7 +70,7 @@ block scripts
             });
 
             $('#configDefault').on('click', function() {
-                if (confirm('Opravdu chcete nastavit defaultní hodnoty?')) {
+                if (confirm('!{__('pages_config_confirm_1')}')) {
                     for (var key in configDefault) {
                         if (configDefault[key].type === 'time') {
                             var picker = $('#' + key).pickatime('picker');

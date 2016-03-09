@@ -10,9 +10,6 @@ var Reservation = require(__dirname + '/../api/reservation'),
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
-var title = 'Gril centrum SiliconHill',
-    description = 'Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.';
-
 function getFile(filename) {
     var data = fs.readFileSync(filename, {
         encoding: 'utf8'
@@ -85,8 +82,8 @@ router.get('/reservations', function(req, res, next) {
         } else {
             res.render('reservations', {
                 page: 'reservations',
-                title: 'Rezervace | ' + title,
-                description: description,
+                title: req.i18n.__('titles_2') + ' | ' + req.i18n.__('title'),
+                description: req.i18n.__('description'),
                 data: result
             });
         }
@@ -104,8 +101,8 @@ router.get('/accessories', function(req, res, next) {
     Accessory.get().then(function(result) {
         res.render('accessories', {
             page: 'accessories',
-            title: 'Příslušenství | '  + title,
-            description: description,
+            title: req.i18n.__('titles_3') + ' | '  + req.i18n.__('title'),
+            description: req.i18n.__('description'),
             data: result
         });
     }).catch(function(data) {
@@ -180,8 +177,8 @@ router.get('/users', function(req, res, next) {
         } else {
             res.render('users', {
                 page: 'users',
-                title: 'Uživatelé | '  + title,
-                description: description,
+                title: req.i18n.__('titles_4') + ' | '  + req.i18n.__('title'),
+                description: req.i18n.__('description'),
                 data: result
             });
         }
@@ -195,116 +192,61 @@ router.get('/users', function(req, res, next) {
     });
 });
 
-// GET /admin/statistics
-router.get('/statistics', function(req, res, next) {
-    var options = {
-            where: {}
-        },
-        startInterval,
-        endInterval;
-
-    var date = new Date(),
-        y = date.getFullYear(),
-        m = date.getMonth();
-    var firstDay = new Date(y, m, 1);
-    var lastDay = new Date(y, m + 1, 0);
-    firstDay.setUTCHours(0, 0, 0, 0);
-    lastDay.setUTCHours(23, 59, 59, 999);
-
-    var startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date(),
-        endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
-
-    if (startInterval.toString() === 'Invalid Date' || endInterval.toString() === 'Invalid Date') {
-        next(new InvalidRequestError('Invalid date format!'));
-    }
-
-    startInterval.setUTCHours(0, 0, 0, 0);
-    endInterval.setUTCHours(23, 59, 59, 999);
-    options.where = {
-        $or: [{
-            $and: [
-                { from: { $gte: startInterval } },
-                { from: { $lte: endInterval } }
-            ]
-        }, {
-            $and: [
-                { to: { $gte: startInterval } },
-                { to: { $lte: endInterval } }
-            ]
-        }]
-    };
-
-    Reservation.get(options).then(function(result) {
-        res.render('statistics', {
-            page: 'statistics',
-            title: 'Statistiky | '  + title,
-            description: description,
-            data: result
-        });
-    }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
-            next(new InvalidRequestError(data.errors));
-        }
-    });
-});
-
 // GET /admin/config
 router.get('/config', function(req, res, next) {
     var fileData = getFile('./' + configFileName + '.js'),
         configKeys = {
             emails: {
-                name: 'Emaily',
+                name: req.i18n.__('config_sections_1_title'),
                 fields: {
                     CONFIRM_RESERVATION_HEADING: {
-                        name: 'Nadpis potvrzené rezervace',
+                        name: req.i18n.__('config_sections_1_labels_1'),
                         type: 'text'
                     },
                     DRAFT_RESERVATION_HEADING: {
-                        name: 'Nadpis předrezervace',
+                        name: req.i18n.__('config_sections_1_labels_2'),
                         type: 'text'
                     },
                     SEND_EMAILS: {
-                        name: 'Posílat emaily',
+                        name: req.i18n.__('config_sections_1_labels_3'),
                         type: 'checkbox'
                     }
                 }
             },
             reservations: {
-                name: 'Rezervace',
+                name: req.i18n.__('config_sections_2_title'),
                 fields: {
                     MAX_PRERESERVATIONS_DAY: {
-                        name: 'Maximální počet předrezervací na den',
+                        name: req.i18n.__('config_sections_2_labels_1'),
                         type: 'tel'
                     },
                     MAX_RESERVATIONS_USER: {
-                        name: 'Maximální počet rezervací na uživatele',
+                        name: req.i18n.__('config_sections_2_labels_2'),
                         type: 'tel'
                     },
                     MAX_RESERVATION_LENGTH: {
-                        name: 'Maximální délka rezervace [dny]',
+                        name: req.i18n.__('config_sections_2_labels_3'),
                         type: 'tel'
                     },
                     MAX_RESERVATION_UPFRONT: {
-                        name: 'Rezervace dopředu [dny]',
+                        name: req.i18n.__('config_sections_2_labels_4'),
                         type: 'tel'
                     }
                 }
             },
             pickup: {
-                name: 'Vyzvednutí klíčů',
+                name: req.i18n.__('config_sections_3_title'),
                 fields: {
                     KEY_PICKUP_FROM: {
-                        name: 'Minimální čas',
+                        name: req.i18n.__('config_sections_3_labels_1'),
                         type: 'time'
                     },
                     KEY_PICKUP_TO: {
-                        name: 'Maximální čas',
+                        name: req.i18n.__('config_sections_3_labels_2'),
                         type: 'time'
                     },
                     KEY_PICKUP_INTERVAL_MINS: {
-                        name: 'Interval [minuty]',
+                        name: req.i18n.__('config_sections_3_labels_3'),
                         type: 'tel'
                     }
                 }
@@ -313,8 +255,8 @@ router.get('/config', function(req, res, next) {
     fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
     res.render('config', {
         page: 'config',
-        title: 'Nastavení | ' + title,
-        description: description,
+        title: req.i18n.__('titles_5') + ' | ' + req.i18n.__('title'),
+        description: req.i18n.__('description'),
         configKeys: configKeys,
         fileData: fileData
     });

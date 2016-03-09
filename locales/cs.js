@@ -3,24 +3,18 @@
     "siliconhill": "SiliconHill",
     "description": "Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.",
     "config_sections_1_title": "Emaily",
-    "config_sections_1_labels": [
-        "Nadpis potvrzené rezervace",
-        "Nadpis předrezervace",
-        "Posílat emaily"
-    ],
+    "config_sections_1_labels_1": "Nadpis potvrzené rezervace",
+    "config_sections_1_labels_2": "Nadpis předrezervace",
+    "config_sections_1_labels_3": "Posílat emaily",
     "config_sections_2_title": "Rezervace",
-    "config_sections_2_labels": [
-        "Maximální počet předrezervací na den",
-        "Maximální počet rezervací na uživatele",
-        "Maximální délka rezervace [dny]",
-        "Rezervace dopředu [dny]"
-    ],
+    "config_sections_2_labels_1": "Maximální počet předrezervací na den",
+    "config_sections_2_labels_2": "Maximální počet rezervací na uživatele",
+    "config_sections_2_labels_3": "Maximální délka rezervace [dny]",
+    "config_sections_2_labels_4": "Rezervace dopředu [dny]",
     "config_sections_3_title": "Vyzvednutí klíčů",
-    "config_sections_3_labels": [
-        "Minimální čas",
-        "Maximální čas",
-        "Interval [minuty]"
-    ],
+    "config_sections_3_labels_1": "Minimální čas",
+    "config_sections_3_labels_2": "Maximální čas",
+    "config_sections_3_labels_3": "Interval [minuty]",
     "buttons_isLogin": "Přihlasit pomocí ISu",
     "buttons_nativeLogin": "Přihlásit pomocí emailu",
     "buttons_login": "Přihlásit",
@@ -54,6 +48,12 @@
     "modal_nothing": "žádné",
     "modal_user": "Uživatel",
     "modal_allRatings": "Všechna hodnocení",
+    "titles_1": "Historie",
+    "titles_2": "Rezervace",
+    "titles_3": "Příslušenství",
+    "titles_4": "Uživatelé",
+    "titles_5": "Nastavení",
+    "titles_6": "Přihlášení",
     "labels_grillCentre": "Gril centrum",
     "labels_grillCentreShortcut": "GC",
     "labels_mobileGrill": "Mobilní gril",
@@ -114,5 +114,6 @@
     "pages_users_title_2": "Vyhledávání",
     "pages_users_all": "všechny",
     "pages_users_nothing": "Žádní uživatelé nenalezeni",
-    "pages_config_title": "Konfigurace"
+    "pages_config_title": "Konfigurace",
+    "pages_config_confirm_1": "Opravdu chcete nastavit defaultní hodnoty?"
 }

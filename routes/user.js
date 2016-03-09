@@ -6,9 +6,6 @@ var User = require(__dirname + '/../api/user');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
-var title = 'Gril centrum SiliconHill',
-    description = 'Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.';
-
 // GET /user/history
 router.get('/history', function(req, res, next) {
     req.query.from = new Date();
@@ -42,8 +39,8 @@ router.get('/history', function(req, res, next) {
         } else {
             res.render('history', {
                 page: 'history',
-                title: 'Historie | ' + title,
-                description: description,
+                title: req.i18n.__('titles_1') + ' | ' + req.i18n.__('title'),
+                description: req.i18n.__('description'),
                 data: result
             });
         }
