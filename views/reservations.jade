@@ -293,7 +293,7 @@ block scripts
             return $('<li class="rating table__row" data-id="' + rating.id + '">')
                 .append('<div class="table__cell" data-date="' + rating.updatedAt + '">' + set.format('LL'))
                 .append('<div class="rating__value table__cell"><span class="icon icon__star text--yellow"></span> ' + (rating.value / 10))
-                .append('<div class="rating__comment table__cell">' + rating.comment);
+                .append('<div class="rating__comment table__cell">' + (rating.comment ? rating.comment : ''));
         }
 
         function getRatingEmptyRow() {
@@ -616,7 +616,7 @@ block scripts
                         data.comment = $('#rateComment').val();
                     }
                     
-                    var url = $(form).attr('action').replace(/:id/, $('.modalUser').attr('data-id')),
+                    var url = $(form).attr('action').replace(/:id/, $('.modalReservation').attr('data-id')),
                         method = $(form).attr('method');
                     makeRequest(url, method, data, function(res) {
                         addNotification('success', 'Successfully rated.');
@@ -639,15 +639,16 @@ block scripts
                             users[reservations[reservationId].userId].ratings.push(res);
                         }
                         var totalRating = 0;
-                        for (var i = 0; i <  users[reservations[id].userId].ratings.length; i++) {
-                            totalRating += users[reservations[id].userId].ratings[i].value;
+                        for (var i = 0; i <  users[reservations[reservationId].userId].ratings.length; i++) {
+                            totalRating += users[reservations[reservationId].userId].ratings[i].value;
                         }
                         if (totalRating > 0) {
-                            totalRating = Math.round(totalRating / users[reservations[id].userId].ratings.length) / 10;
+                            totalRating = Math.round(totalRating / users[reservations[reservationId].userId].ratings.length) / 10;
                         }
+                        $('#listWaitingRating .reservation[data-id="' + reservationId + '"]').remove();
                         $('.modalUser__ratingTotal').text(totalRating);
                         $('.rating[data-id="' + id + '"] .rating__value, .reservation[data-id="' + reservationId + '"] .reservation__rating').html('<span class="icon icon__star text--yellow"></span> ' + (data.value / 10));
-                        $('.rating[data-id="' + id + '"] .rating__comment').text(data.comment);
+                        $('.rating[data-id="' + id + '"] .rating__comment').text((data.comment ? data.comment : ''));
                     }, function(res) {
                         console.log(res);
                         if (res instanceof Array) {

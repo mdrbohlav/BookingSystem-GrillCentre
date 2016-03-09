@@ -76,7 +76,6 @@ app.use(stylus.middleware({
     path.join(__dirname, 'bower_components/pickadate/lib/picker.js'),
     path.join(__dirname, 'bower_components/pickadate/lib/picker.date.js'),
     path.join(__dirname, 'bower_components/pickadate/lib/picker.time.js'),
-    path.join(__dirname, 'bower_components/pickadate/lib/translations/cs_CZ.js'),
     path.join(__dirname, 'bower_components/clndr/clndr.min.js'),
     path.join(__dirname, 'bower_components/fastclick/lib/fastclick.js')
 ], {

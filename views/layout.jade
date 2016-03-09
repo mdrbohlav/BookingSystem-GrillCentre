@@ -68,6 +68,8 @@ html
         block content
 
         script(src="/js/app.min.js")
+        if Object.keys(user.locale)[0] === 'cs'
+            script(src="/js/vendor/pickadata-cs_CZ.js")
         script(src="/js/global.js")
         if success
             script.
