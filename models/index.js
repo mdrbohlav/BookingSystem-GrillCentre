@@ -7,11 +7,12 @@ var basename  = path.basename(module.filename);
 var env       = process.env.NODE_ENV || 'development';
 var config    = require(__dirname + '/../config/database.json')[env];
 var db        = {};
+var database  = process.env.DATABASE_HOST ? 'postgres://' + process.env.DATABASE_HOST + ':' + process.env.DATABASE_PORT + '/' + process.env.DATABASE_NAME : config.database;
 
 if (config.use_env_variable) {
   var sequelize = new Sequelize(process.env[config.use_env_variable]);
 } else {
-  var sequelize = new Sequelize(config.database, config.username, config.password, config);
+  var sequelize = new Sequelize(database, process.env.DATABASE_USER || config.username, process.env.DATABASE_PASS || config.password, config);
 }
 
 fs

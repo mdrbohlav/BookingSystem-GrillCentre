@@ -102,9 +102,9 @@ fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, functi
 
 // Redis Store options
 var redisOptions = {
-    host: config.REDIS_HOST,
-    port: config.REDIS_PORT,
-    pass: config.REDIT_PASS,
+    host: process.env.REDIS_HOST || config.REDIS_HOST,
+    port: process.env.REDIS_PORT || config.REDIS_PORT,
+    pass: process.env.REDIS_PASS || config.REDIT_PASS,
     db: 0
 };
 

@@ -41,7 +41,7 @@ html
                             label(for='locale') Language: 
                             select#locale(name='locales')
                                 each locale in availableLocales
-                                    if Object.keys(user.locale)[0] === locale
+                                    if user && Object.keys(user.locale)[0] === locale
                                         option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
                                     else
                                         option(value= locale)= isoLocales[locale].nativeName.split(',')[0]
@@ -68,7 +68,7 @@ html
         block content
 
         script(src="/js/app.min.js")
-        if Object.keys(user.locale)[0] === 'cs'
+        if user && Object.keys(user.locale)[0] === 'cs'
             script(src="/js/vendor/pickadata-cs_CZ.js")
         script(src="/js/global.js")
         if success
