@@ -17,6 +17,7 @@ var passport = require('passport'),
     FinishReservationHelper = require(__dirname + '/helpers/FinishReservationHelper');
 
 var config = require(__dirname + '/config/global'),
+    redisConfig = require(__dirname + '/config/redis'),
     expressValidator = require('express-validator');
 
 var stylus = require('stylus'),
@@ -102,9 +103,9 @@ fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, functi
 
 // Redis Store options
 var redisOptions = {
-    host: process.env.REDIS_HOST || config.REDIS_HOST,
-    port: process.env.REDIS_PORT || config.REDIS_PORT,
-    pass: process.env.REDIS_PASS || config.REDIT_PASS,
+    host: redisConfig.host,
+    port: redisConfig.port,
+    pass: redisConfig.password,
     db: 0
 };
 
@@ -257,9 +258,19 @@ i18n.expressBind(app, {
 app.use(function(req, res, next) {
     res.locals.isoLocales = isoLocales;
     res.locals.availableLocales = availableLocales;
+    var locale = 'cs';
     if (req.user) {
-        req.i18n.setLocale(Object.keys(req.user.locale)[0]);
+        locale = Object.keys(req.user.locale)[0];
+    } else {
+        var tmp = req.headers['accept-language'].split(/[\s,;]/);
+        for (var i = 0; i < tmp.length; i++) {
+            if (availableLocales.indexOf(tmp[i]) > -1) {
+                locale = tmp[i];
+                break;
+            }
+        }
     }
+    req.i18n.setLocale(locale);
     next();
 });
 

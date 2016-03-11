@@ -13,7 +13,8 @@ var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestEr
 router.put('/:id/confirm', function(req, res, next) {
     var id = req.params.id,
         data = {
-            state: 'confirmed'
+            state: 'confirmed',
+            stateChangedBy: req.user.id
         },
         options;
     Reservation.getById(id).then(function(reservation) {
