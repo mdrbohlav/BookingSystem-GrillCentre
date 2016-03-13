@@ -25,7 +25,8 @@ var stylus = require('stylus'),
     fs = require('fs'),
     uglify = require("uglify-js");
 
-var nodemon = require('nodemon');
+var nodemon = require('nodemon'),
+    bunyan = require('bunyan');
 
 var index = require(__dirname + '/routes/index'),
     auth = require(__dirname + '/routes/auth'),
@@ -40,6 +41,24 @@ var index = require(__dirname + '/routes/index'),
     apiAdminAccessory = require(__dirname + '/routes/api/admin/accessory');
 
 var app = express();
+
+var log = bunyan.createLogger({
+    name: 'myserver',
+    serializers: {
+        req: bunyan.stdSerializers.req,
+        res: bunyan.stdSerializers.res
+    },
+    streams: [{
+        level: 'info',
+        stream: process.stdout
+    }, {
+        level: 'error',
+        path: 'grill-error.log'
+    }, {
+        level: 'info',
+        path: 'grill-info.log'
+    }]
+});
 
 // Postgres setup
 var models = require(__dirname + '/models');
@@ -228,7 +247,7 @@ passport.deserializeUser(function(obj, done) {
 
 
 // locales
-Array.prototype.move = function (old_index, new_index) {
+Array.prototype.move = function(old_index, new_index) {
     if (new_index >= this.length) {
         var k = new_index - this.length;
         while ((k--) + 1) {
@@ -359,12 +378,13 @@ app.use(function(err, req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (app.get('env') === 'development' || app.get('env') === 'localhost') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
-            error: err
+            error: err,
+            status: err.status || 500
         });
     });
 }
@@ -375,7 +395,8 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
-        error: {}
+        error: {},
+        status: err.status || 500
     });
 });
 

@@ -295,7 +295,7 @@ $(document).ready(function() {
 
 
     //=================================================================
-    // Main navigation display/hide on scroll
+    // Header and footer display/hide on scroll
     //=================================================================
     var didScroll;
     var lastScrollTop = 0;
@@ -307,9 +307,6 @@ $(document).ready(function() {
     });
 
     setInterval(function() {
-        if ($window.width() < 1024) {
-            return;
-        }
         if (didScroll) {
             hasScrolled();
             didScroll = false;
@@ -324,10 +321,16 @@ $(document).ready(function() {
         }
 
         if (st > lastScrollTop && st > navbarHeight) {
-            $('header').removeClass('nav--down').addClass('nav--up');
+            if ($window.width() >= 1024) {
+                $('header').removeClass('header--down').addClass('header--up');
+            }
+            $('footer').removeClass('footer--up').addClass('footer--down');
         } else {
             if (st + $(window).height() < $(document).height()) {
-                $('header').removeClass('nav--up').addClass('nav--down');
+                if ($window.width() >= 1024) {
+                    $('header').removeClass('header--up').addClass('header--down');
+                }
+                $('footer').removeClass('footer--down').addClass('footer--up');
             }
         }
 

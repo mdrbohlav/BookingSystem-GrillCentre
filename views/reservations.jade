@@ -208,8 +208,8 @@ block content
                                     .modalUser__ban.text__paragraph.margin--top-10
                                         span.text--strong !{__('labels_ban')}
                                         span.value
-                                        button.ban.btn.btn__orange.btn--small(data-type='button') !{__('buttons_grant')}
-                                        button.unban.btn.btn__orange.btn--small(data-type='button') !{__('buttons_take')}
+                                        button.grant.btn.btn__orange.btn--small(data-type='button') !{__('buttons_grant')}
+                                        button.take.btn.btn__orange.btn--small(data-type='button') !{__('buttons_take')}
                                     .modalUser__isid.text__paragraph.margin--top-10
                                         span.text--strong !{__('labels_isId')}
                                         span.value
@@ -392,11 +392,11 @@ block scripts
             }
             $('.modalUser__ban .value').text((user.banned ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             if (user.banned) {
-                $('.modalUser__ban .ban').hide();
-                $('.modalUser__ban .unban').show();
+                $('.modalUser__ban .grant').hide();
+                $('.modalUser__ban .take').show();
             } else {
-                $('.modalUser__ban .ban').show();
-                $('.modalUser__ban .unban').hide();
+                $('.modalUser__ban .grant').show();
+                $('.modalUser__ban .take').hide();
             }
             if (user.isId) {
                 $('.modalUser__isid').show();
@@ -541,7 +541,7 @@ block scripts
                 cancelBtnFunctionality($(element));
             });
 
-            $('.modalUser__ban .ban').on('click', function() {
+            $('.modalUser__ban .grant').on('click', function() {
                 var $this = $(this),
                     $user = $this.closest('.modalUser'),
                     id = $user.attr('data-id'),
@@ -569,7 +569,7 @@ block scripts
                 });
             });
 
-            $('.modalUser__ban .unban').on('click', function() {
+            $('.modalUser__ban .take').on('click', function() {
                 var $this = $(this),
                     $user = $this.closest('.modalUser'),
                     id = $user.attr('data-id'),

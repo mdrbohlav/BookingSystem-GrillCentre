@@ -36,15 +36,6 @@ html
         if user
             header
                 nav.nav__main
-                    if availableLocales.length > 0
-                        .locales
-                            label(for='locale') Language: 
-                            select#locale(name='locales')
-                                each locale in availableLocales
-                                    if user && Object.keys(user.locale)[0] === locale
-                                        option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
-                                    else
-                                        option(value= locale)= isoLocales[locale].nativeName.split(',')[0]
                     ul.text--center
                         - var homeLink = page === 'index' ? '#' : '/'
                         - var historyLink = page === 'history' ? '#' : '/user/history'
@@ -66,6 +57,19 @@ html
             if [ 'login', 'index' ].indexOf(page) === -1
                 .header__placeholder.visible-md.visible-lg
         block content
+
+        if availableLocales.length > 0
+            if [ 'login' ].indexOf(page) === -1
+                .footer__placeholder
+                footer
+                    .locales
+                        label(for='locale') Language: 
+                        select#locale(name='locales')
+                            each locale in availableLocales
+                                if user && Object.keys(user.locale)[0] === locale
+                                    option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
+                                else
+                                    option(value= locale)= isoLocales[locale].nativeName.split(',')[0]
 
         script(src="/js/app.min.js")
         if user && Object.keys(user.locale)[0] === 'cs'

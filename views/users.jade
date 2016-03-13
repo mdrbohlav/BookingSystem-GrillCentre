@@ -5,9 +5,9 @@ block content
         .container__md
             .box
                 .box__header.box__header--border
-                    h2.text__title !{__('pages_users_title_1')}
+                    h2.text__title !{__('pages_users_titles_1')}
                 .box__body
-                    h3 !{__('pages_users_title_2')}
+                    h3 !{__('pages_users_titles_2')}
                     form#searchUser(action='/admin/users?accept=json', method='GET')
                         .fieldset.row
                             .field__container.col-xs-12.col-sm-6.margin--top-20
@@ -24,12 +24,12 @@ block content
                             .field__container.col-xs-12.col-sm-6.margin--top-20
                                 .field__checkbox
                                     span.checkbox.active
-                                        input(id='isId', type='checkbox', name='isId', checked)
+                                        input#isId(type='checkbox', name='isId', checked)
                                     label.t__label(for='isId') !{__('labels_isIdExists')}
                             .field__container.col-xs-12.col-sm-6.margin--top-20
                                 .field__checkbox
                                     span.checkbox
-                                        input(id='ban', type='checkbox', name='ban')
+                                        input#ban(type='checkbox', name='ban')
                                     label.t__label(for='ban') !{__('labels_ban')}
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') !{__('buttons_find')}
@@ -50,11 +50,14 @@ block content
                                     .table__cell= user.isId
                                     .user__ban.table__cell: span.icon(class='icon__' + (user.banned ? 'check' : 'cross'))
                                     .user__rating.table__cell
-                                        - var total = 0
-                                        each rating in user.ratings
-                                            - total += rating.value
-                                        span.icon.icon__star.text--yellow
-                                        |  #{Math.round(total / user.ratings.length) / 10}
+                                        if user.ratings.length > 0
+                                            - var total = 0
+                                            each rating in user.ratings
+                                                - total += rating.value
+                                            span.icon.icon__star.text--yellow
+                                            |  #{Math.round(total / user.ratings.length) / 10}
+                                        else
+                                            span nehodnoceno
                             if data.users.length === 0
                                 li.table__row.table__noborder
                                     .table__cell
@@ -91,6 +94,50 @@ block content
                                     li: button.pagination__next.icon.icon__arrow-right(type='button', data-page= (current + 1))
                                 else
                                     li: button.pagination__next.icon.icon__arrow-right(type='button', disabled)
+            .box
+                .box__header.box__header--border
+                    h2.text__title !{__('pages_users_titles_3')}
+                .box__body
+                    form#addUser(action='/api/admin/user/create', method='POST')
+                        .fieldset.row
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='firstname') !{__('labels_firstname')}
+                                .field
+                                    input#firstname(type='text', name='firstname', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='lastname') !{__('labels_lastname')}
+                                .field
+                                    input#lastname(type='text', name='lastname')
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='email') !{__('labels_email')}
+                                .field
+                                    input#email(type='email', name='email', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                .field__checkbox
+                                    span.checkbox
+                                        input#isAdmin(type='checkbox', name='isAdmin')
+                                    label.t__label(for='isAdmin') !{__('labels_admin')}
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='password') !{__('labels_password')}
+                                .field
+                                    input#password(type='password', name='password', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='passwordCheck') !{__('labels_password_check')}
+                                .field
+                                    input#passwordCheck(type='password', name='passwordCheck', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='block') !{__('labels_block')}
+                                .field.field__select
+                                    select#block(name='block')
+                                        option(value='') !{__('pages_users_select')}
+                                        each i in [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+                                            option(value=i)= i
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='room') !{__('labels_room')}
+                                .field
+                                    input#room(type='tel', name='room')
+                        .form__footer.text--center.margin--top-40
+                            button.btn.btn__orange(type='submit') !{__('buttons_create')}
     section.modal
         .table.table--fullsize
             button.modal__close.btn__close.icon.icon__cross(type='button')
@@ -105,6 +152,8 @@ block content
                                     .modalUser__admin.text__paragraph.margin--top-10
                                         span.text--strong !{__('labels_admin')}
                                         span.value
+                                        button.grant.btn.btn__orange.btn--small(data-type='button') !{__('buttons_grant')}
+                                        button.take.btn.btn__orange.btn--small(data-type='button') !{__('buttons_take')}
                                     .modalUser__email.text__paragraph.margin--top-10
                                         span.text--strong !{__('labels_email')}
                                         span.value
@@ -115,8 +164,8 @@ block content
                                     .modalUser__ban.text__paragraph.margin--top-10
                                         span.text--strong !{__('labels_ban')}
                                         span.value
-                                        button.ban.btn.btn__orange.btn--small(data-type='button') udělit
-                                        button.unban.btn.btn__orange.btn--small(data-type='button') odebrat
+                                        button.grant.btn.btn__orange.btn--small(data-type='button') !{__('buttons_grant')}
+                                        button.take.btn.btn__orange.btn--small(data-type='button') !{__('buttons_take')}
                                     .modalUser__isid.text__paragraph.margin--top-10
                                         span.text--strong !{__('labels_isId')}
                                         span.value
@@ -301,6 +350,13 @@ block scripts
             $('.modalUser').attr('data-id', id);
             $('.modalUser__title').text(user.fullName);
             $('.modalUser__admin .value').text((user.isAdmin ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
+            if (user.isAdmin) {
+                $('.modalUser__admin .grant').hide();
+                $('.modalUser__admin .take').show();
+            } else {
+                $('.modalUser__admin .grant').show();
+                $('.modalUser__admin .take').hide();
+            }
             $('.modalUser__email .value').html('<a href="mailto:' + user.email + '">' + user.email + '</a>');
             if (user.block && user.room) {
                 $('.modalUser__cell').show();
@@ -310,11 +366,11 @@ block scripts
             }
             $('.modalUser__ban .value').text((user.banned ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             if (user.banned) {
-                $('.modalUser__ban .ban').hide();
-                $('.modalUser__ban .unban').show();
+                $('.modalUser__ban .grant').hide();
+                $('.modalUser__ban .take').show();
             } else {
-                $('.modalUser__ban .ban').show();
-                $('.modalUser__ban .unban').hide();
+                $('.modalUser__ban .grant').show();
+                $('.modalUser__ban .take').hide();
             }
             if (user.isId) {
                 $('.modalUser__isid').show();
@@ -331,8 +387,8 @@ block scripts
 
             var $list = $('#listRating');
 
+            var totalRating = 0;
             if (user.ratings.length) {
-                var totalRating = 0;
                 $list.html(getRatingTableHeading());
                 for (var i = 0; i <  user.ratings.length; i++) {
                     totalRating += user.ratings[i].value;
@@ -341,10 +397,10 @@ block scripts
                 if (totalRating > 0) {
                     totalRating = Math.round(totalRating / user.ratings.length) / 10;
                 }
-                $('.modalUser__ratingTotal').text(totalRating);
             } else {
                 $list.html(getRatingEmptyRow());
             }
+            $('.modalUser__ratingTotal').text(totalRating);
         }
 
         function userDetailFunctionality($btn) {
@@ -364,10 +420,16 @@ block scripts
         $(document).ready(function() {
             users = arrayToObject(users, 'id');
 
+            //=================================================================
+            // Reset users list
+            //=================================================================
             $('#resetList').on('click', function() {
                 loadPage(1, true, '/admin/users?accept=json');
             });
 
+            //=================================================================
+            // Search form
+            //=================================================================
             $('#searchUser').validate({
                 submitHandler: function(form) {
                     var query = '';
@@ -392,6 +454,132 @@ block scripts
             paginationFunctionality();
 
             //=================================================================
+            // Ban user
+            //=================================================================
+            $('.modalUser__ban .grant').on('click', function() {
+                var $this = $(this),
+                    $user = $this.closest('.modalUser'),
+                    id = $user.attr('data-id'),
+                    $state = $user.find('.modalUser__ban .value'),
+                    $unban = $this.next(),
+                    data = {
+                        banned: true
+                    };
+
+                makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
+                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully banned.');
+                    $this.hide();
+                    $unban.show();
+                    $state.text('!{__('labels_yes')}');
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
+                    }
+                });
+            });
+
+            //=================================================================
+            // Unban user
+            //=================================================================
+            $('.modalUser__ban .take').on('click', function() {
+                var $this = $(this),
+                    $user = $this.closest('.modalUser'),
+                    id = $user.attr('data-id'),
+                    $state = $user.find('.modalUser__ban .value'),
+                    $ban = $this.prev(),
+                    data = {
+                        banned: false
+                    };
+
+                makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
+                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully unbanned.');
+                    $this.hide();
+                    $ban.show();
+                    $state.text('!{__('labels_no')}');
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
+                    }
+                });
+            });
+
+            //=================================================================
+            // Add admin permissions
+            //=================================================================
+            $('.modalUser__admin .grant').on('click', function() {
+                var $this = $(this),
+                    $user = $this.closest('.modalUser'),
+                    id = $user.attr('data-id'),
+                    $state = $user.find('.modalUser__admin .value'),
+                    $unban = $this.next(),
+                    data = {
+                        isAdmin: true,
+                        priority: 0
+                    };
+
+                makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
+                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully set as admin.');
+                    $this.hide();
+                    $unban.show();
+                    $state.text('!{__('labels_yes')}');
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
+                    }
+                });
+            });
+
+            //=================================================================
+            // Take admin permissions
+            //=================================================================
+            $('.modalUser__admin .take').on('click', function() {
+                var $this = $(this),
+                    $user = $this.closest('.modalUser'),
+                    id = $user.attr('data-id'),
+                    $state = $user.find('.modalUser__admin .value'),
+                    $ban = $this.prev(),
+                    data = {
+                        banned: false,
+                        priority: 1
+                    };
+
+                makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
+                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully set as classic member.');
+                    $this.hide();
+                    $ban.show();
+                    $state.text('!{__('labels_no')}');
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
+                    }
+                });
+            });
+
+            //=================================================================
             // Popstate
             //=================================================================
             $window.on('popstate', function(e) {
@@ -409,5 +597,76 @@ block scripts
                     }
                 }
                 firstLoad = true;
+            });
+
+            $('#addUser').validate({
+                rules: {
+                    firstname: {
+                        required: true
+                    },
+                    email: {
+                        required: true
+                    },
+                    password: {
+                        required: true
+                    },
+                    passwordCheck: {
+                        equalTo: "#password"
+                    }
+                },
+                errorPlacement: function() {
+                    return false;
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).parent().addClass('error');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).parent().removeClass('error');
+                },
+                submitHandler: function(form) {
+                    var data = {
+                        email: $('#email').val(),
+                        firstname: $('#firstname').val(),
+                        lastname: $('#lastname').val(),
+                        password: $('#password').val(),
+                        isAdmin: $('#isAdmin').prop('checked')
+                    };
+
+                    if ($('#block').val() !== '') {
+                        data.block = $('#block').val();
+                    }
+                    if ($('#room').val() !== '') {
+                        data.room = $('#room').val();
+                    }
+                    
+                    var url = $(form).attr('action'),
+                        method = $(form).attr('method');
+                    makeRequest(url, method, data, function(res) {
+                        for (var key in data) {
+                            var $tmp = $('#' + key);
+                            if ($tmp.get(0).tagName === 'checkbox') {
+                                if ($tmp.prop('checked')) {
+                                    $tmp.prop('checked', false);
+                                }
+                            } else if ($tmp.get(0).tagName === 'select') {
+                                $tmp.find('option:eq(0)').prop('selected', true);
+                            } else {
+                                $tmp.val('');
+                            }
+                        }
+                        $('#passwordCheck').val('');
+                        addNotification('success', 'User successfully added.');
+                    }, function(res) {
+                        console.log(res);
+                        if (res instanceof Array) {
+                            for (var i = 0; i < res.length; i++) {
+                                addNotification('error', res[i].message);
+                            }
+                        } else {
+                            var msg = res.responseJSON.error.message;
+                            addNotification('error', msg);
+                        }
+                    });
+                }
             });
         });
