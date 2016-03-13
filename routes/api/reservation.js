@@ -2,7 +2,8 @@ var express = require('express'),
     router = express.Router(),
     configCustom = require(__dirname + '/../../config/app').custom;
 
-var Reservation = require(__dirname + '/../../api/reservation');
+var ICalHelper = require(__dirname + '/../../helpers/ICalHelper'),
+    Reservation = require(__dirname + '/../../api/reservation');
 
 var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError'),
     MaxReservationUpfrontError = require(__dirname + '/../../errors/MaxReservationUpfrontError'),
@@ -184,6 +185,7 @@ router.put('/:id/cancel', function(req, res, next) {
         }
 
         return Reservation.update(id, data).then(function(count) {
+            ICalHelper.initCalendar();
             res.json(count);
         });
     }).catch(function(data) {

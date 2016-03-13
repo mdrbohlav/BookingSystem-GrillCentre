@@ -57,7 +57,7 @@ block content
                                             span.icon.icon__star.text--yellow
                                             |  #{Math.round(total / user.ratings.length) / 10}
                                         else
-                                            span nehodnoceno
+                                            span !{__('labels_notrated')}
                             if data.users.length === 0
                                 li.table__row.table__noborder
                                     .table__cell
@@ -317,8 +317,12 @@ block scripts
                 .append('<div class="table__cell">' + user.fullName)
                 .append('<div class="table__cell"><span class="icon icon__' + (user.isAdmin ? 'check' : 'cross') + '">')
                 .append('<div class="table__cell">' + (user.isId ? user.isId : ''))
-                .append('<div class="table__cell"><span class="icon icon__' + (user.banned ? 'check' : 'cross') + '">')
-                .append('<div class="table__cell"><span class="icon icon__star text--yellow"></span> ' + totalRating);
+                .append('<div class="table__cell"><span class="icon icon__' + (user.banned ? 'check' : 'cross') + '">');
+            if (user.ratings.length) {
+                $row.append('<div class="table__cell"><span class="icon icon__star text--yellow"></span> ' + totalRating);
+            } else {
+                $row.append('<div class="table__cell">!{__('labels_notrated')}');
+            }
             userDetailFunctionality($row);
             return $row;
         }

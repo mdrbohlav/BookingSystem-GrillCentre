@@ -39,6 +39,8 @@ function initCalendar() {
         }
     };
 
+    calendar.clear();
+
     Reservation.findAll(options).then(function(reservations) {
         return reservations.reduce(function(sequence, reservation) {
             return sequence.then(function() {

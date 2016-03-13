@@ -77,6 +77,7 @@ router.put('/:id/reject', function(req, res, next) {
             stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {
+        ICalHelper.initCalendar();
         res.json(count);
     }).catch(function(data) {
         if ('status' in data) {
@@ -95,6 +96,7 @@ router.put('/:id/cancel', function(req, res, next) {
             stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {
+        ICalHelper.initCalendar();
         res.json(count);
     }).catch(function(data) {
         if ('status' in data) {
