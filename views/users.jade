@@ -136,6 +136,15 @@ block content
                                 label.text__label(for='room') !{__('labels_room')}
                                 .field
                                     input#room(type='tel', name='room')
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='locale') !{__('labels_language')}
+                                .field.field__select
+                                    select#locale(name='locale')
+                                        each locale in availableLocales
+                                            if user && Object.keys(user.locale)[0] === locale
+                                                option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
+                                            else
+                                                option(value= locale)= isoLocales[locale].name.split(',')[0]
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') !{__('buttons_create')}
     section.modal
@@ -629,7 +638,9 @@ block scripts
                         firstname: $('#firstname').val(),
                         lastname: $('#lastname').val(),
                         password: $('#password').val(),
-                        isAdmin: $('#isAdmin').prop('checked')
+                        isAdmin: $('#isAdmin').prop('checked'),
+                        locale: $('#locale').val(),
+                        priority: $('#isAdmin').prop('checked') ? 0 : 1
                     };
 
                     if ($('#block').val() !== '') {
@@ -644,6 +655,9 @@ block scripts
                     makeRequest(url, method, data, function(res) {
                         for (var key in data) {
                             var $tmp = $('#' + key);
+                            if ($tmp.length === 0) {
+                                continue;
+                            }
                             if ($tmp.get(0).tagName === 'checkbox') {
                                 if ($tmp.prop('checked')) {
                                     $tmp.prop('checked', false);
