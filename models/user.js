@@ -32,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
         },
         lastname: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         priority: {
             type: DataTypes.INTEGER,
@@ -93,7 +93,11 @@ module.exports = function(sequelize, DataTypes) {
         },
         getterMethods: {
             fullName: function() {
-                return this.firstname + ' ' + this.lastname
+                var fullName = this.firstname;
+                if (this.lastname) {
+                    fullName += this.lastname;
+                }
+                return fullName;
             }
         }
     });
