@@ -4,7 +4,8 @@ var express = require('express'),
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
     User = require(__dirname + '/../../../api/user');
 
-var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError');
+var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError'),
+    MinimumAdminsError = require(__dirname + '/../../../errors/MinimumAdminsError');
 
 function getData(req, data) {
     if (req.body.password) {
@@ -84,26 +85,62 @@ router.put('/:id', function(req, res, next) {
         id: req.params.id
     };
     data = getData(req, data);
-    User.update(data).then(function(count) {
-        if (req.user.id === req.params.id) {
-            return User.getById(id).then(function(user) {
-                req.logIn(user, function(err) {
-                    if (err) {
-                        next(err);
+
+    if ('isAdmin' in data &&  data.isAdmin === 'false') {
+        var options = {
+            where: {
+                isAdmin: true
+            }
+        };
+
+        User.count(options).then(function(count) {
+            if (count < 2) {
+                next(new MinimumAdminsError());
+            } else {
+                return User.update(data).then(function(count) {
+                    if (req.user.id === req.params.id) {
+                        return User.getById(id).then(function(user) {
+                            req.logIn(user, function(err) {
+                                if (err) {
+                                    next(err);
+                                }
+                                res.json(count);
+                            });
+                        });
+                    } else {
+                        res.json(count);
                     }
-                    res.json(count);
                 });
-            });
-        } else {
-            res.json(count);
-        }
-    }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
-            next(new InvalidRequestError(data.errors));
-        }
-    });
+            }
+        }).catch(function(data) {
+            if ('status' in data) {
+                next(data);
+            } else {
+                next(new InvalidRequestError(data.errors));
+            }
+        });
+    } else {
+        User.update(data).then(function(count) {
+            if (req.user.id === req.params.id) {
+                return User.getById(id).then(function(user) {
+                    req.logIn(user, function(err) {
+                        if (err) {
+                            next(err);
+                        }
+                        res.json(count);
+                    });
+                });
+            } else {
+                res.json(count);
+            }
+        }).catch(function(data) {
+            if ('status' in data) {
+                next(data);
+            } else {
+                next(new InvalidRequestError(data.errors));
+            }
+        });
+    }
 });
 
 // DELETE /api/admin/user/:id

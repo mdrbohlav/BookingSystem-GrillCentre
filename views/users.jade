@@ -483,6 +483,7 @@ block scripts
                     addNotification('success', 'User ‘' + users[id].fullName + '’ successfully banned.');
                     $this.hide();
                     $unban.show();
+                    $('.user[data-id="' + id + '"] .user__ban span').removeClass('icon__cross').addClass('icon__check');
                     $state.text('!{__('labels_yes')}');
                 }, function(res) {
                     console.log(res);
@@ -514,6 +515,7 @@ block scripts
                     addNotification('success', 'User ‘' + users[id].fullName + '’ successfully unbanned.');
                     $this.hide();
                     $ban.show();
+                    $('.user[data-id="' + id + '"] .user__ban span').removeClass('icon__check').addClass('icon__cross');
                     $state.text('!{__('labels_no')}');
                 }, function(res) {
                     console.log(res);
@@ -546,6 +548,7 @@ block scripts
                     addNotification('success', 'User ‘' + users[id].fullName + '’ successfully set as admin.');
                     $this.hide();
                     $unban.show();
+                    $('.user[data-id="' + id + '"] .user__admin span').removeClass('icon__cross').addClass('icon__check');
                     $state.text('!{__('labels_yes')}');
                 }, function(res) {
                     console.log(res);
@@ -570,7 +573,7 @@ block scripts
                     $state = $user.find('.modalUser__admin .value'),
                     $ban = $this.prev(),
                     data = {
-                        banned: false,
+                        isAdmin: false,
                         priority: 1
                     };
 
@@ -578,6 +581,7 @@ block scripts
                     addNotification('success', 'User ‘' + users[id].fullName + '’ successfully set as classic member.');
                     $this.hide();
                     $ban.show();
+                    $('.user[data-id="' + id + '"] .user__admin span').removeClass('icon__check').addClass('icon__cross');
                     $state.text('!{__('labels_no')}');
                 }, function(res) {
                     console.log(res);

@@ -130,6 +130,10 @@ module.exports = {
         });
     },
 
+    count(options) {
+        return User.count(options);
+    },
+
     getReservations(id, options) {
         return User.findById(id).then(function(user) {
             var result = {
