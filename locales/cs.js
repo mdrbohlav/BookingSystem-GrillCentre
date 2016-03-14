@@ -6,6 +6,8 @@
 	"config_sections_1_labels_1": "Nadpis potvrzené rezervace",
 	"config_sections_1_labels_2": "Nadpis předrezervace",
 	"config_sections_1_labels_3": "Posílat emaily",
+	"config_sections_1_labels_4": "Jméno odesílatele",
+	"config_sections_1_labels_5": "Email odesílatele",
 	"config_sections_2_title": "Rezervace",
 	"config_sections_2_labels_1": "Maximální počet předrezervací na den",
 	"config_sections_2_labels_2": "Maximální počet rezervací na uživatele",

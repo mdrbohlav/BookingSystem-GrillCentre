@@ -56,7 +56,7 @@ function renderPdf(_session, req) {
 
                     page.close();
                     page = null;
-                    resolve(filePath, fileName);
+                    resolve(wholePath);
                 });
             });
         }).catch(function(e) {
@@ -109,10 +109,10 @@ var PdfHelper = function() {
     helper.getFile = function(req) {
         return new Promise(function(resolve, reject) {
             createPhantomSession().then(function(session) {
-                renderPdf(session, req).then(function(filePath, fileName) {
+                renderPdf(session, req).then(function(wholePath) {
                     resolve({
                         success: true,
-                        file: filePath + fileName
+                        file: wholePath
                     });
                 }).catch(function(err) {
                     reject(err);

@@ -39,6 +39,14 @@ module.exports = {
         "KEY_PICKUP_INTERVAL_MINS": {
             "value": 30,
             "type": "tel"
+        },
+        "SENDER_NAME": {
+            "value": "Grill SiliconHill",
+            "type": "text"
+        },
+        "SENDER_EMAIL": {
+            "value": "test@email.com",
+            "type": "email"
         }
     },
     "custom": {
@@ -48,9 +56,11 @@ module.exports = {
         "MAX_RESERVATIONS_USER": 10,
         "MAX_RESERVATION_LENGTH": 3,
         "MAX_RESERVATION_UPFRONT": 40,
-        "SEND_EMAILS": false,
+        "SEND_EMAILS": true,
         "KEY_PICKUP_FROM": 1020,
         "KEY_PICKUP_TO": 1200,
-        "KEY_PICKUP_INTERVAL_MINS": 30
+        "KEY_PICKUP_INTERVAL_MINS": 30,
+        "SENDER_NAME": "Grill SiliconHill",
+        "SENDER_EMAIL": "test@email.com"
     }
 };

@@ -119,8 +119,8 @@ router.get('/', function(req, res, next) {
         startInterval,
         endInterval;
 
-    startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date(),
-        endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
+    startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date();
+    endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
 
     if (startInterval.toString() === 'Invalid Date' || endInterval.toString() === 'Invalid Date') {
         next(new InvalidRequestError('Invalid date format!'));
@@ -145,7 +145,6 @@ router.get('/', function(req, res, next) {
     Reservation.get(options).then(function(result) {
         res.json(result);
     }).catch(function(data) {
-        console.log(data);
         if ('status' in data) {
             next(data);
         } else {

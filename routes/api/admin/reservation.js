@@ -46,7 +46,7 @@ router.put('/:id/confirm', function(req, res, next) {
             if (count > 0) {
                 throw new ReservationExistsError();
             }
-            return Reservation.update(id, data).then(function(updatedRows) {
+            return Reservation.update(id, data, req).then(function(updatedRows) {
                 return User.getById(reservation.userId).then(function(user) {
                     var id = reservation.id,
                         start = new Date(reservation.from),
@@ -61,6 +61,7 @@ router.put('/:id/confirm', function(req, res, next) {
     }).then(function(count) {
         res.json(count);
     }).catch(function(data) {
+        console.log(data);
         if ('status' in data) {
             next(data);
         } else {

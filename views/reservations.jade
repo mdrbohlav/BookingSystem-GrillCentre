@@ -523,6 +523,7 @@ block scripts
                     var $reservationRow = $('.reservation[data-id="' + id + '"]');
                     if ($reservationRow.length) {
                         $reservationRow.find('.reservation__state span').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Rejected');
+                        $reservationRow.find('.reservation__action').html('').removeClass('reservation__action');
                     }
                 }, function(res) {
                     console.log(res);

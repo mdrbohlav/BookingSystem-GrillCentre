@@ -95,7 +95,7 @@ module.exports = function(sequelize, DataTypes) {
             fullName: function() {
                 var fullName = this.firstname;
                 if (this.lastname) {
-                    fullName += this.lastname;
+                    fullName += ' ' + this.lastname;
                 }
                 return fullName;
             }

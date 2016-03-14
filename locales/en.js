@@ -6,6 +6,8 @@
     "config_sections_1_labels_1": "Confirmed reservation heading",
     "config_sections_1_labels_2": "Pre-reservation heading",
     "config_sections_1_labels_3": "Send emails",
+    "config_sections_1_labels_4": "Sender name",
+    "config_sections_1_labels_5": "Sender email",
     "config_sections_2_title": "Reservation",
     "config_sections_2_labels_1": "Maximum pre-reservations per day",
     "config_sections_2_labels_2": "Maximum reservations per user",

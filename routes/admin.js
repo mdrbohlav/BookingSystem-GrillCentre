@@ -207,6 +207,14 @@ router.get('/config', function(req, res, next) {
                         name: req.i18n.__('config_sections_1_labels_2'),
                         type: 'text'
                     },
+                    SENDER_NAME: {
+                        name: req.i18n.__('config_sections_1_labels_4'),
+                        type: 'text'
+                    },
+                    SENDER_EMAIL: {
+                        name: req.i18n.__('config_sections_1_labels_5'),
+                        type: 'email'
+                    },
                     SEND_EMAILS: {
                         name: req.i18n.__('config_sections_1_labels_3'),
                         type: 'checkbox'

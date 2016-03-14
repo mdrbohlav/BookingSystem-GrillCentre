@@ -11,17 +11,19 @@ var Reservation = require(__dirname + '/../models').Reservation,
     User = require(__dirname + '/user'),
     Accessory = require(__dirname + '/accessory');
 
-function processPdfMail(req, plain) {
+function processMail(req, state, pdfFile) {
+    if (configCustom.SEND_EMAILS) {
+        return mail_helper.send(req.user, state, pdfFile.file).then(function(mailResponse) {
+            return { success: true };
+        });
+    } else {
+        return { success: true };
+    }
+}
+
+function processPdfMail(req, state) {
     return pdf_helper.getFile(req).then(function(pdfFile) {
-        if (configCustom.SEND_EMAILS) {
-            return mail_helper.send(req.user, 'draft', pdfFile).then(function(mailResponse) {
-                plain.mailSent = true;
-                return plain;
-            });
-        } else {
-            plain.mailSent = false;
-            return plain;
-        }
+        return processMail(req, state, pdfFile);
     });
 }
 
@@ -33,8 +35,9 @@ module.exports = {
                 plain.accessories = [];
 
                 if (accessoriesArr.length === 0) {
-                    return processPdfMail(req, plain).then(function(result) {
-                        return result;
+                    return mail_helper.send(req.user, plain.state).then(function(mailResponse) {
+                        plain.mailSent = true;
+                        return plain;
                     });
                 }
 
@@ -49,8 +52,9 @@ module.exports = {
                         plain.accessories.push(accessoriesData.accessories[i].get({ plain: true }));
                     }
                     return reservation.addAccessory(accessoriesData.accessories, { transaction: t }).then(function(response) {
-                        return processPdfMail(req, plain).then(function(result) {
-                            return result;
+                        return mail_helper.send(req.user, plain.state).then(function(mailResponse) {
+                            plain.mailSent = true;
+                            return plain;
                         });
                     });
                 });
@@ -131,11 +135,26 @@ module.exports = {
         return Reservation.count(options);
     },
 
-    update(id, data) {
-        return Reservation.update(data, {
-            where: {
-                id: id
-            }
+    update(id, data, req) {
+        return sequelize.transaction(function(t) {
+            return Reservation.update(data, {
+                where: {
+                    id: id
+                }
+            }, { transaction: t }).then(function(count) {
+                if ('state' in data && data.state === 'confirmed') {
+                    return Reservation.findById(id, { transaction: t }).then(function(reservation) {
+                        return User.getById(reservation.userId, { transaction: t }).then(function(user) {
+                            req.user = user.get({ plain: true });
+                            return processPdfMail(req, data.state).then(function(result) {
+                                return result;
+                            });
+                        });
+                    });
+                } else {
+                    return count;
+                }
+            });
         });
     },
 

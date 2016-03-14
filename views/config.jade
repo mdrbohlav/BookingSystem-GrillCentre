@@ -52,7 +52,7 @@ block scripts
                 });
             });
 
-            $('input[type="text"]').each(function(i, element) {
+            $('input[type="text"], input[type="email"]').each(function(i, element) {
                 var $element = $(element);
                 $element.val($element.attr('data-val'));
             });
@@ -75,7 +75,7 @@ block scripts
                         if (configDefault[key].type === 'time') {
                             var picker = $('#' + key).pickatime('picker');
                             picker.set('select', configDefault[key].value);
-                        } else if (configDefault[key].type === 'text') {
+                        } else if ([ 'text', 'email' ].indexOf(configDefault[key].type) > -1) {
                             $('#' + key).val(configDefault[key].value);
                         } else if (configDefault[key].type === 'tel') {
                             $('#' + key).val(parseInt(configDefault[key].value));
