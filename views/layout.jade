@@ -58,7 +58,7 @@ html
                 .header__placeholder.visible-md.visible-lg
         block content
 
-        if availableLocales.length > 0
+        if availableLocales && availableLocales.length > 0
             if [ 'login' ].indexOf(page) === -1
                 .footer__placeholder
                 footer

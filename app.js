@@ -25,8 +25,7 @@ var stylus = require('stylus'),
     fs = require('fs'),
     uglify = require("uglify-js");
 
-var nodemon = require('nodemon'),
-    bunyan = require('bunyan');
+var nodemon = require('nodemon');
 
 var index = require(__dirname + '/routes/index'),
     auth = require(__dirname + '/routes/auth'),
@@ -41,24 +40,6 @@ var index = require(__dirname + '/routes/index'),
     apiAdminAccessory = require(__dirname + '/routes/api/admin/accessory');
 
 var app = express();
-
-var log = bunyan.createLogger({
-    name: 'myserver',
-    serializers: {
-        req: bunyan.stdSerializers.req,
-        res: bunyan.stdSerializers.res
-    },
-    streams: [{
-        level: 'info',
-        stream: process.stdout
-    }, {
-        level: 'error',
-        path: 'grill-error.log'
-    }, {
-        level: 'info',
-        path: 'grill-info.log'
-    }]
-});
 
 // Postgres setup
 var models = require(__dirname + '/models');
@@ -153,8 +134,9 @@ app.use(function(req, res, next) {
             message: 'Lost connection to the Redis.',
             error: {}
         });
+    } else {
+        next();
     }
-    next();
 });
 
 // schedule checking unfinished reservations on start and at midnight
@@ -177,7 +159,7 @@ app.use(function(req, res, next) {
     delete req.session.success;
     delete req.session.notice;
 
-    if (err) res.locals.error = err;
+    if (err) res.locals.error = 'message' in err ? err.message : err;
     if (msg) res.locals.notice = msg;
     if (success) res.locals.success = success;
     if (req.user) res.locals.user = req.user;
@@ -196,7 +178,7 @@ passport.use('login-native', new LocalStrategy({
             done(null, user);
         }
         if (!user) {
-            req.session.error = 'Could not log user in. Please try again.';
+            req.session.error = 'Could not log in. Please try again.';
             done(null, user);
         }
     }).catch(function(err) {
