@@ -70,19 +70,20 @@ block scripts
             });
 
             $('#configDefault').on('click', function() {
-                if (confirm('!{__('pages_config_confirm_1')}')) {
-                    for (var key in configDefault) {
-                        if (configDefault[key].type === 'time') {
-                            var picker = $('#' + key).pickatime('picker');
-                            picker.set('select', configDefault[key].value);
-                        } else if ([ 'text', 'email' ].indexOf(configDefault[key].type) > -1) {
-                            $('#' + key).val(configDefault[key].value);
-                        } else if (configDefault[key].type === 'tel') {
-                            $('#' + key).val(parseInt(configDefault[key].value));
-                        } else if (configDefault[key].type === 'checkbox') {
-                            if ($('#' + key).prop('checked') !== configDefault[key].value) {
-                                $('#' + key).trigger('click');
-                            }
+                if (!confirm('!{__('pages_config_confirm_1')}')) {
+                    return;
+                }
+                for (var key in configDefault) {
+                    if (configDefault[key].type === 'time') {
+                        var picker = $('#' + key).pickatime('picker');
+                        picker.set('select', configDefault[key].value);
+                    } else if ([ 'text', 'email' ].indexOf(configDefault[key].type) > -1) {
+                        $('#' + key).val(configDefault[key].value);
+                    } else if (configDefault[key].type === 'tel') {
+                        $('#' + key).val(parseInt(configDefault[key].value));
+                    } else if (configDefault[key].type === 'checkbox') {
+                        if ($('#' + key).prop('checked') !== configDefault[key].value) {
+                            $('#' + key).trigger('click');
                         }
                     }
                 }
@@ -131,7 +132,7 @@ block scripts
                     var url = $(form).attr('action'),
                         method = $(form).attr('method');
                     makeRequest(url, method, data, function(res) {
-                        addNotification('success', 'Config successfully changed.');
+                        addNotification('success', '!{__('success_config_changed')}');
                     }, function(res) {
                         console.log(res);
                         addNotification('error', 'Something went worng, please try again.');

@@ -494,7 +494,7 @@ block scripts
                                 $(element).trigger('click');
                             }
                         });
-                        addNotification('success', 'Pre-reservation successfully created.');
+                        addNotification('success', '!{__('success_prereservation_created')}');
                     }, function(res) {
                         console.log(res);
                         if (res instanceof Array) {

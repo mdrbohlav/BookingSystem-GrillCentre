@@ -44,7 +44,7 @@ block scripts
 
                 makeRequest('/api/admin/accessory/' + id, 'DELETE', {}, function(res) {
                     $item.remove();
-                    addNotification('success', 'Accessory successfully deleted.');
+                    addNotification('success', '!{__('success_accessory_deleted')}');
                 }, function(res) {
                     console.log(res);
                     if (res instanceof Array) {
@@ -106,7 +106,7 @@ block scripts
                             $('#name').val('');
                             $('#nameEn').val('');
                             $('#listAccessories').append(getAccessoryItem(res));
-                            addNotification('success', 'Accessory successfully added.');
+                            addNotification('success', '!{__('success_accessory_added')}');
                         }, function(res) {
                             console.log(res);
                             if (res instanceof Array) {

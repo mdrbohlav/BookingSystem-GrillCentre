@@ -3,11 +3,11 @@ var util = require('util');
 function MailError(err) {
     Error.call(this);
     Error.captureStackTrace(this, this.constructor);
-
+ 
     this.name = this.constructor.name;
     this.status = 400;
-
-    this.customType = "InvalidMail";
+    
+    this.customType = "Mail";
     this.customMessage = err;
 }
 

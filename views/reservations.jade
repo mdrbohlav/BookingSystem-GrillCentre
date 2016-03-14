@@ -309,7 +309,7 @@ block scripts
                     id = $this.attr('data-id');
 
                 makeRequest('/api/admin/reservation/' + id + '/cancel', 'PUT', {}, function(res) {
-                    addNotification('success', 'Reservation successfully canceled.');
+                    addNotification('success', '!{__('success_reservation_canceled')}');
                     $this.remove();
                     $row.find('.reservation__state span').removeClass('icon__flag').removeClass('icon__check').addClass('icon__cross').attr('title', 'Canceled');
                 });
@@ -485,7 +485,7 @@ block scripts
                     id = $this.attr('data-id');
 
                 makeRequest('/api/admin/reservation/' + id + '/confirm', 'PUT', {}, function(res) {
-                    addNotification('success', 'Reservation successfully confirmed.');
+                    addNotification('success', '!{__('success_reservation_confirmed')}');
                     $row.remove();
                     if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {
                         $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">!{__('pages_reservations_nothing_1')}</p></div></li>');
@@ -514,7 +514,7 @@ block scripts
                     id = $this.attr('data-id');
 
                 makeRequest('/api/admin/reservation/' + id + '/reject', 'PUT', {}, function(res) {
-                    addNotification('success', 'Reservation successfully rejected.');
+                    addNotification('success', '!{__('success_reservation_rejected')}');
                     $row.remove();
                     if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {
                         $('#listWaitingReservations').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">!{__('pages_reservations_nothing_1')}</p></div></li>');
@@ -553,7 +553,7 @@ block scripts
                     };
 
                 makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
-                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully banned.');
+                    addNotification('success', '!{__('success_user_banned')}' + ' (' + users[id].fullName + ')');
                     $this.hide();
                     $unban.show();
                     $state.text('!{__('labels_yes')}');
@@ -581,7 +581,7 @@ block scripts
                     };
 
                 makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
-                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully unbanned.');
+                    addNotification('success', '!{__('success_user_unbanned')}' + ' (' + users[id].fullName + ')');
                     $this.hide();
                     $ban.show();
                     $state.text('!{__('labels_no')}');
@@ -620,7 +620,7 @@ block scripts
                     var url = $(form).attr('action').replace(/:id/, $('.modalReservation').attr('data-id')),
                         method = $(form).attr('method');
                     makeRequest(url, method, data, function(res) {
-                        addNotification('success', 'Successfully rated.');
+                        addNotification('success', '!{__('success_reservation_rated')}');
                         var reservationId = $('.modalReservation').attr('data-id'),
                             id;
                         if (reservations[reservationId].rating) {

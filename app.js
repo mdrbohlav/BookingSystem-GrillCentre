@@ -192,7 +192,7 @@ passport.use('login-native', new LocalStrategy({
 }, function(req, email, password, done) {
     AuthHelper.localAuth(email, password).then(function(user) {
         if (user) {
-            req.session.success = 'You are successfully logged in ' + user.fullName + '!';
+            req.session.success = req.i18n.__('success_logged_in') + user.fullName + '!';
             done(null, user);
         }
         if (!user) {

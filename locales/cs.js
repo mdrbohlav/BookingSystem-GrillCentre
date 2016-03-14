@@ -124,6 +124,19 @@
 	"pages_users_nothing": "Žádní uživatelé nenalezeni",
 	"pages_config_title": "Konfigurace",
 	"pages_config_confirm_1": "Opravdu chcete nastavit defaultní hodnoty?",
-	"pages_users_title_2": "pages_users_title_2",
-	"labels_rooms": "labels_rooms"
+    "success_logged_in": "Byl(a) jste úspěšně přihlášen(a) jako ",
+    "success_logged_out": "Byl(a) jste úspěšně odhlášen(a)!",
+    "success_config_changed": "Konfigurace úspěšně změněna!",
+    "success_accessory_added": "Příslušenství úspěšně přidáno!",
+    "success_accessory_deleted": "Příslušenství úspěšně odebráno!",
+    "success_user_banned": "Uživatel úspěšně zabanován!",
+    "success_user_unbanned": "Uživatel úspěšně odbanován!",
+    "success_user_set_admin": "Uživatel úspěšně nastaven jako admin!",
+    "success_user_unset_admin": "Uživateli úspěšně odebrána práva admina!",
+    "success_user_added": "Uživatel úspěšně přidán!",
+    "success_prereservation_created": "Předrezervace úspěšně vytvořena!",
+    "success_reservation_confirmed": "Rezervace úspěšně potvrzena!",
+    "success_reservation_canceled": "Rezervace úspěšně zrušena!",
+    "success_reservation_rejected": "Rezervace úspěšně zamítnuta!",
+    "success_reservation_rated": "Rezervace úspěšně ohodnocena!"
 }

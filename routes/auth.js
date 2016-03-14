@@ -21,7 +21,7 @@ router.get('/logout', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next, false).then(function() {
         var name = req.user.fullName;
         req.logout();
-        req.session.notice = "You have successfully been logged out " + name + "!";
+        req.session.notice = req.i18n.__('success_logged_out');
         res.redirect('/login');
     }).catch(function() {
         res.redirect('/login');

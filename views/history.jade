@@ -126,7 +126,7 @@ block scripts
                     id = $this.attr('data-id');
 
                 makeRequest('/api/reservation/' + id + '/cancel', 'PUT', {}, function(res) {
-                    addNotification('success', 'Reservation successfully canceled.');
+                    addNotification('success', '!{__('success_reservation_canceled')}');
                     $this.remove();
                     $row.find('.reservation__state span').removeClass('icon__pencil').addClass('icon__cross').attr('title', 'Canceled');
                     if ($('.listReservations li:not(.table__heading)').length === 0) {

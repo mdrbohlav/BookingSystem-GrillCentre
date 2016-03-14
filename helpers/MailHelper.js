@@ -54,7 +54,7 @@ var MailHelper = function() {
                 email.setHtml("Rezervace potvrzena, prosím přinést vyplněný přiložený PDF soubor.");
                 fs.readFile(filePath, function(err, data) {
                     if (err) {
-                        reject(err);
+                        reject(new MailError(err));
                     }
 
                     email.addFile({
@@ -66,7 +66,7 @@ var MailHelper = function() {
 
                     fs.unlink(filePath, function(err) {
                         if (err) {
-                            reject(err);
+                            reject(new MailError(err));
                         }
                         resolve({ success: true });
                     });

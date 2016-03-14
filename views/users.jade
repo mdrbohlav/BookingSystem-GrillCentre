@@ -480,7 +480,7 @@ block scripts
                     };
 
                 makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
-                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully banned.');
+                    addNotification('success', '!{__('success_user_banned')}' + ' (' + users[id].fullName + ')');
                     $this.hide();
                     $unban.show();
                     $('.user[data-id="' + id + '"] .user__ban span').removeClass('icon__cross').addClass('icon__check');
@@ -512,7 +512,7 @@ block scripts
                     };
 
                 makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
-                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully unbanned.');
+                    addNotification('success', '!{__('success_user_unbanned')}' + ' (' + users[id].fullName + ')');
                     $this.hide();
                     $ban.show();
                     $('.user[data-id="' + id + '"] .user__ban span').removeClass('icon__check').addClass('icon__cross');
@@ -545,7 +545,7 @@ block scripts
                     };
 
                 makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
-                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully set as admin.');
+                    addNotification('success', '!{__('success_user_set_admin')}' + ' (' + users[id].fullName + ')');
                     $this.hide();
                     $unban.show();
                     $('.user[data-id="' + id + '"] .user__admin span').removeClass('icon__cross').addClass('icon__check');
@@ -578,7 +578,7 @@ block scripts
                     };
 
                 makeRequest('/api/admin/user/' + id, 'PUT', data, function(res) {
-                    addNotification('success', 'User ‘' + users[id].fullName + '’ successfully set as classic member.');
+                    addNotification('success', '!{__('success_user_unset_admin')}' + ' (' + users[id].fullName + ')');
                     $this.hide();
                     $ban.show();
                     $('.user[data-id="' + id + '"] .user__admin span').removeClass('icon__check').addClass('icon__cross');
@@ -677,7 +677,7 @@ block scripts
                             }
                         }
                         $('#passwordCheck').val('');
-                        addNotification('success', 'User successfully added.');
+                        addNotification('success', '!{__('success_user_added')}');
                     }, function(res) {
                         console.log(res);
                         if (res instanceof Array) {

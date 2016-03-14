@@ -124,5 +124,20 @@
     "pages_users_select": "select",
     "pages_users_nothing": "No users found",
     "pages_config_title": "Configuration",
-    "pages_config_confirm_1": "Do you really want to set the default values?"
+    "pages_config_confirm_1": "Do you really want to set the default values?",
+    "success_logged_in": "You have been successfully logged in as ",
+    "success_logged_out": "You have been successfully logged out!",
+    "success_config_changed": "Config successfully changed!",
+    "success_accessory_added": "Accessory successfully added!",
+    "success_accessory_deleted": "Accessory successfully deleted!",
+    "success_user_banned": "User successfully banned!",
+    "success_user_unbanned": "User successfully unbanned!",
+    "success_user_set_admin": "User successfully set as admin!",
+    "success_user_unset_admin": "User successfully removed admin permissions!",
+    "success_user_added": "User successfully added!",
+    "success_prereservation_created": "Pre-reservation successfully created!",
+    "success_reservation_confirmed": "Reservation successfully confirmed!",
+    "success_reservation_canceled": "Reservation successfully canceled!",
+    "success_reservation_rejected": "Reservation successfully rejected!",
+    "success_reservation_rated": "Reservation successfully rated!"
 }
