@@ -9,6 +9,9 @@ var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
 // GET /
 router.get('/', function(req, res, next) {
+    if (req.cookies.locale) {
+        res.clearCookie('locale');        
+    }
     Accessory.get({}).then(function(result) {
         res.render('index', {
             page: 'index',
@@ -45,6 +48,19 @@ router.get('/login', function(req, res, next) {
 // GET /reservations.ical
 router.get('/reservations.ical', function(req, res, next) {
     ICalHelper.calendar.serve(res);
+});
+
+// GET /update-locale/:locale/:returnUrl
+router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
+    var locale = req.params.locale,
+        returnUrl = decodeURIComponent(req.params.returnUrl);
+
+    if (!req.user) {
+        res.cookie('locale', locale);
+        res.redirect(returnUrl);
+    } else {
+        res.redirect('/user/update-locale/' + locale + '/' + req.params.returnUrl);
+    }
 });
 
 module.exports = router;

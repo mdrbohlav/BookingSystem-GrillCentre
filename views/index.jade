@@ -103,8 +103,8 @@ block content
                             .switch__content.fieldset.accessories
                                 h3.text__subtitle.text--default !{__('pages_index_accessories')}
                                 .field__checkbox
-                                    span.checkbox
-                                        input#mobileGrill(type='checkbox', name='mobileGrill')
+                                    span.checkbox.active
+                                        input#mobileGrill(type='checkbox', name='mobileGrill', checked='checked')
                                     label.t__label(for='mobileGrill') !{__('labels_mobileGrill')}
                                 each accessory, index in accessories
                                     if accessory.available

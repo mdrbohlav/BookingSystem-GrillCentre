@@ -29,6 +29,10 @@ block content
 block scripts
     script.
         $(document).ready(function() {
+            $('#loginIs').on('click', function() {
+                addNotification('notice', 'This feature is not suported yet.');
+            });
+
             $('#login').validate({
                 rules: {
                     email: {

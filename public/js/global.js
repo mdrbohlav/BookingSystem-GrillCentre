@@ -343,7 +343,7 @@ $(document).ready(function() {
     $('select[name="locales"]').on('change', function() {
         var $this = $(this),
             locale = $this.val();
-        window.location = '/user/update-locale/' + locale + '/' + encodeURIComponent(window.location.pathname + window.location.search);
+        window.location = '/update-locale/' + locale + '/' + encodeURIComponent(window.location.pathname + window.location.search);
     });
 
     //=================================================================

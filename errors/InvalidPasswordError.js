@@ -8,7 +8,7 @@ function InvalidPasswordError() {
     this.status = 400;
     
     this.customType = "InvalidPassword";
-    this.customMessage = "The old password is incorrect.";
+    this.customMessage = "The password is incorrect.";
 }
 
 util.inherits(InvalidPasswordError, Error);

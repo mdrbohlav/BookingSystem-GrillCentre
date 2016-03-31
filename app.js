@@ -1,6 +1,5 @@
 var express = require('express'),
     path = require('path'),
-    favicon = require('serve-favicon'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
@@ -24,8 +23,6 @@ var stylus = require('stylus'),
     nib = require('nib'),
     fs = require('fs'),
     uglify = require("uglify-js");
-
-var nodemon = require('nodemon');
 
 var index = require(__dirname + '/routes/index'),
     auth = require(__dirname + '/routes/auth'),
@@ -65,7 +62,7 @@ app.use(stylus.middleware({
 }));
 
 // uglify setup
-/*var uglified = uglify.minify([
+var uglified = uglify.minify([
     path.join(__dirname, 'bower_components/jquery/dist/jquery.js'),
     path.join(__dirname, 'bower_components/velocity/velocity.js'),
     path.join(__dirname, 'bower_components/jquery-validation/dist/jquery.validate.js'),
@@ -99,7 +96,7 @@ fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, functi
   } else {
     console.log("Script generated and saved.");
   }      
-});*/
+});
 
 // Redis Store options
 var redisOptions = {
@@ -159,7 +156,7 @@ app.use(function(req, res, next) {
     delete req.session.success;
     delete req.session.notice;
 
-    if (err) res.locals.error = 'message' in err ? err.message : err;
+    if (err) res.locals.error = typeof(err) === 'object' && 'message' in err ? err.message : err;
     if (msg) res.locals.notice = msg;
     if (success) res.locals.success = success;
     if (req.user) res.locals.user = req.user;
@@ -182,6 +179,7 @@ passport.use('login-native', new LocalStrategy({
             done(null, user);
         }
     }).catch(function(err) {
+        console.log(err);
         req.session.error = err.customMessage;
         done(null, false);
     });
@@ -249,7 +247,7 @@ for (var i = 0; i < availableLocales.length; i++) {
 }
 
 if (csIndex > 0) {
-    availableLocales.moce(csIndex, 0);
+    availableLocales.move(csIndex, 0);
 }
 
 i18n.expressBind(app, {
@@ -262,6 +260,8 @@ app.use(function(req, res, next) {
     var locale = 'cs';
     if (req.user) {
         locale = Object.keys(req.user.locale)[0];
+    } else if (req.cookies.locale) {
+        locale = req.cookies.locale;
     } else {
         var tmp = req.headers['accept-language'].split(/[\s,;]/);
         for (var i = 0; i < tmp.length; i++) {
@@ -271,6 +271,7 @@ app.use(function(req, res, next) {
             }
         }
     }
+    res.locals.locale = locale;
     req.i18n.setLocale(locale);
     next();
 });
@@ -299,7 +300,7 @@ app.get('/admin*', function(req, res, next) {
         if (req.user.isAdmin) {
             next();
         } else {
-            next(new UnauthorizedError());
+            next(new UnauthorizedError()); // render error page with Unauthorized error
         }
     }).catch(function(err) {
         res.redirect('/login');
