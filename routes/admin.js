@@ -199,14 +199,6 @@ router.get('/config', function(req, res, next) {
             emails: {
                 name: req.i18n.__('config_sections_1_title'),
                 fields: {
-                    CONFIRM_RESERVATION_HEADING: {
-                        name: req.i18n.__('config_sections_1_labels_1'),
-                        type: 'text'
-                    },
-                    DRAFT_RESERVATION_HEADING: {
-                        name: req.i18n.__('config_sections_1_labels_2'),
-                        type: 'text'
-                    },
                     SENDER_NAME: {
                         name: req.i18n.__('config_sections_1_labels_4'),
                         type: 'text'

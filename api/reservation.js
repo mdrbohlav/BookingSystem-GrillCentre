@@ -13,7 +13,7 @@ var Reservation = require(__dirname + '/../models').Reservation,
 
 function processMail(req, state, pdfFile) {
     if (configCustom.SEND_EMAILS) {
-        return mail_helper.send(req.user, state, pdfFile.file).then(function(mailResponse) {
+        return mail_helper.send(req, state, pdfFile.file).then(function(mailResponse) {
             return { success: true };
         });
     } else {
@@ -35,7 +35,7 @@ module.exports = {
                 plain.accessories = [];
 
                 if (accessoriesArr.length === 0) {
-                    return mail_helper.send(req.user, plain.state).then(function(mailResponse) {
+                    return mail_helper.send(req, plain.state).then(function(mailResponse) {
                         plain.mailSent = true;
                         return plain;
                     });
@@ -52,7 +52,7 @@ module.exports = {
                         plain.accessories.push(accessoriesData.accessories[i].get({ plain: true }));
                     }
                     return reservation.addAccessory(accessoriesData.accessories, { transaction: t }).then(function(response) {
-                        return mail_helper.send(req.user, plain.state).then(function(mailResponse) {
+                        return mail_helper.send(req, plain.state).then(function(mailResponse) {
                             plain.mailSent = true;
                             return plain;
                         });

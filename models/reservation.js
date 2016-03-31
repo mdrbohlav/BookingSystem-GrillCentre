@@ -57,11 +57,6 @@ module.exports = function(sequelize, DataTypes) {
                 }
             }
         },
-        priority: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 0
-        },
         mobileGrill: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
@@ -71,6 +66,10 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
+        },
+        comment: {
+            type: DataTypes.TEXT,
+            allowNull: true
         },
         state: {
             type: DataTypes.ENUM,

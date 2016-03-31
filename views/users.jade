@@ -113,6 +113,19 @@ block content
                                 .field
                                     input#email(type='email', name='email', required)
                             .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='email') !{__('labels_phone')}
+                                .field
+                                    input#phone(type='tel', name='phone', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='locale') !{__('labels_language')}
+                                .field.field__select
+                                    select#locale(name='locale')
+                                        each locale in availableLocales
+                                            if user && Object.keys(user.locale)[0] === locale
+                                                option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
+                                            else
+                                                option(value= locale)= isoLocales[locale].name.split(',')[0]
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
                                 .field__checkbox
                                     span.checkbox
                                         input#isAdmin(type='checkbox', name='isAdmin')
@@ -136,15 +149,6 @@ block content
                                 label.text__label(for='room') !{__('labels_room')}
                                 .field
                                     input#room(type='tel', name='room')
-                            .field__container.col-xs-12.col-sm-6.margin--top-20
-                                label.text__label(for='locale') !{__('labels_language')}
-                                .field.field__select
-                                    select#locale(name='locale')
-                                        each locale in availableLocales
-                                            if user && Object.keys(user.locale)[0] === locale
-                                                option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
-                                            else
-                                                option(value= locale)= isoLocales[locale].name.split(',')[0]
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') !{__('buttons_create')}
     section.modal

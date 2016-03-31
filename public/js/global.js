@@ -394,6 +394,28 @@ $(document).ready(function() {
     });
 
     //=================================================================
+    // Textarea counter
+    //=================================================================
+    $('.textarea__counter').each(function() {
+        var $this = $(this),
+            $textarea = $this.prev();
+
+        $textarea.on('keyup', function(event) {
+            var $this = $(event.currentTarget),
+                $counter = $this.next().find('span'),
+                limit = parseInt($this.attr('maxlength')),
+                exists = $this.val().length;
+
+            if (exists > limit) {
+                $this.val($this.val().substring(0, 140));
+                exists = 140;
+            }
+
+            $counter.text(exists);
+        });
+    });
+
+    //=================================================================
     // Esc key listener - hide menu
     //=================================================================
     $(document).on('keyup', function(event) {

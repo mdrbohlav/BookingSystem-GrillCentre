@@ -1,0 +1,27 @@
+textarea
+    appearance none
+    background-color $color-input
+    border none
+    border-bottom 2px solid $color-input
+    border-radius 0
+    min-height 105px
+    padding 10px 5% 5px
+    resize none
+    width 100%
+    transition background-color .2s linear, border-color .2s linear, color .2s linear
+    
+    @media $md-up
+        padding 10px 3% 5px
+
+    &:focus
+        background-color transparent
+        outline none
+        
+    &:-webkit-autofill
+        -webkit-box-shadow 0 0 0px 1000px $color-input inset
+        -webkit-text-fill-color $color-text-default !important
+
+.textarea__counter
+    bottom 5px
+    position absolute
+    right 3%

@@ -17,6 +17,10 @@ module.exports = function(sequelize, DataTypes) {
                 }
             }
         },
+        phone: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         password: {
             type: DataTypes.STRING,
             allowNull: false
@@ -33,11 +37,6 @@ module.exports = function(sequelize, DataTypes) {
         lastname: {
             type: DataTypes.STRING,
             allowNull: true
-        },
-        priority: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 1
         },
         block: {
             type: DataTypes.INTEGER,

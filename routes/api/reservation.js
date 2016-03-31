@@ -67,8 +67,12 @@ router.post('/create', function(req, res, next) {
         }
 
         delete options.where.$and;
+        delete options.where.state;
         options.where.from = { gte: today };
-        options.where.state = 'confirmed';
+        options.where.$or = [
+            { state: 'draft' },
+            { state: 'confirmed' }
+        ];
         options.where.userId = req.user.id;
 
         return Reservation.count(options).then(function(countUserReservations) {

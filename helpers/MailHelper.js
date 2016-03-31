@@ -7,18 +7,18 @@ var MailError = require(__dirname + '/../errors/MailError');
 
 var transporter = nodemailer.createTransport();
 
-function getOptions(email, type) {
+function getOptions(req, type) {
     return {
         from: configCustom.SENDER_NAME + ' <' + configCustom.SENDER_EMAIL + '>',
-        to: email,
-        subject: type === 'draft' ? configCustom.DRAFT_RESERVATION_HEADING : configCustom.CONFIRM_RESERVATION_HEADING
+        to: req.user.email,
+        subject: type === 'draft' ? req.i18n.__('email_heading_draft') : req.i18n.__('email_heading_confirm')
     };
 }
 
 var MailHelper = function() {
     var helper = {};
 
-    helper.send = function(user, type, filePath) {
+    helper.send = function(req, type, filePath) {
         return new Promise(function(resolve, reject) {
             /*var mailOptions = getOptions(user.email, type),
                 text = [
@@ -44,7 +44,7 @@ var MailHelper = function() {
                 resolve(info.response);
             });*/
             var email = new sendgrid.Email(),
-                opt = getOptions(user.email, type);
+                opt = getOptions(req, type);
 
             email.addTo(opt.to);
             email.setFrom(opt.from);

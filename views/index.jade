@@ -94,6 +94,14 @@ block content
                                 label.text__label(for='pickup') !{__('labels_pickup')}
                                 .field
                                     input#pickup(type='text', name='pickup', required)
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='pickup') !{__('labels_comment')}
+                                .field
+                                    - var limit = 140
+                                    textarea#comment(name='comment', maxlength= limit)
+                                    .textarea__counter 
+                                        span 0
+                                        | /#{limit}
                         .switch__container
                             .fieldset
                                 .text--center.margin--top-35

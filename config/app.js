@@ -1,13 +1,5 @@
 module.exports = {
     "default": {
-        "CONFIRM_RESERVATION_HEADING": {
-            "value": "Reservation confirmed.",
-            "type": "text"
-        },
-        "DRAFT_RESERVATION_HEADING": {
-            "value": "Reservation created.",
-            "type": "text"
-        },
         "MAX_PRERESERVATIONS_DAY": {
             "value": 10,
             "type": "tel"
@@ -50,8 +42,6 @@ module.exports = {
         }
     },
     "custom": {
-        "CONFIRM_RESERVATION_HEADING": "Reservation confirmed.",
-        "DRAFT_RESERVATION_HEADING": "Reservation created.",
         "MAX_PRERESERVATIONS_DAY": 10,
         "MAX_RESERVATIONS_USER": 10,
         "MAX_RESERVATION_LENGTH": 3,
