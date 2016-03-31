@@ -24,7 +24,6 @@ block content
                                     if draftCnt === 0
                                         li.table__row.table__heading
                                             .table__cell !{__('labels_name')}
-                                            .table__cell(title="#{__('labels_priority')}") !{__('labels_priority_shortcut')}
                                             .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
                                             .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
                                             .table__cell !{__('labels_from')}
@@ -33,7 +32,6 @@ block content
                                             .table__cell !{__('labels_action')}
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
-                                        .table__cell= resUser.priority
                                         .table__cell: span.icon(class= (!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
                                         .table__cell: span.icon(class= (reservation.mobileGrill ? 'icon__check' : 'icon__cross'))
                                         .table__cell(data-date='#{reservation.from}')
@@ -80,10 +78,12 @@ block content
                 - var date = new Date()
                 - var y = date.getFullYear()
                 - var m = date.getMonth()
-                - var lastDay = new Date(y, m + 1, 0)
                 - var firstDay = new Date(y, m, 1)
+                - var lastDay = new Date(y, m + 1, 0)
                 - firstDay.setUTCHours(0, 0, 0, 0)
                 - lastDay.setUTCHours(23, 59, 59, 999)
+                - firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset()*60000);
+                - lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset()*60000);
                 - var today = new Date()
                 - today.setUTCHours(0, 0, 0, 0)
                 .box__header.box__header--border

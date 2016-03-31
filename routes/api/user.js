@@ -13,6 +13,9 @@ function getData(req, data) {
     if (req.body.email) {
         data.email = req.body.email;
     }
+    if (req.body.phone) {
+        data.phone = req.body.phone;
+    }
     if (req.body.firstname) {
         data.firstname = req.body.firstname;
     }
@@ -31,9 +34,6 @@ function getData(req, data) {
     if (req.user.isAdmin || req.user.email === 'm.drbohlav1@gmail.com') {
         if ('isAdmin' in req.body) {
             data.isAdmin = req.body.isAdmin;
-        }
-        if ('priority' in req.body) {
-            data.priority = req.body.priority;
         }
         if ('ban' in req.body) {
             data.banned = req.body.ban;

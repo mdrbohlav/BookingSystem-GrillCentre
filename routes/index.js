@@ -1,14 +1,15 @@
 var express = require('express'),
-    router = express.Router(),
-    configCustom = require(__dirname + '/../config/app').custom;
+    router = express.Router();
 
 var ICalHelper = require(__dirname + '/../helpers/ICalHelper'),
+    GetFile = require(__dirname + '/../helpers/GetFile'),
     Accessory = require(__dirname + '/../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
 // GET /
 router.get('/', function(req, res, next) {
+    var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
     if (req.cookies.locale) {
         res.clearCookie('locale');        
     }
@@ -59,7 +60,7 @@ router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
         res.cookie('locale', locale);
         res.redirect(returnUrl);
     } else {
-        res.redirect('/user/update-locale/' + locale + '/' + req.params.returnUrl);
+        res.redirect('/user/update-locale/' + locale + '/' + encodeURIComponent(req.params.returnUrl));
     }
 });
 

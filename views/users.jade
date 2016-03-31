@@ -647,12 +647,12 @@ block scripts
                 submitHandler: function(form) {
                     var data = {
                         email: $('#email').val(),
+                        phone: $('#phone').val().replace('/[\(\)- ]/', '').replace(/^\+/, '00'),
                         firstname: $('#firstname').val(),
                         lastname: $('#lastname').val(),
                         password: $('#password').val(),
                         isAdmin: $('#isAdmin').prop('checked'),
-                        locale: $('#locale').val(),
-                        priority: $('#isAdmin').prop('checked') ? 0 : 1
+                        locale: $('#locale').val()
                     };
 
                     if ($('#block').val() !== '') {

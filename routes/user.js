@@ -1,13 +1,14 @@
 var express = require('express'),
-    router = express.Router(),
-    configCustom = require(__dirname + '/../config/app').custom;
+    router = express.Router();
 
-var User = require(__dirname + '/../api/user');
+var GetFile = require(__dirname + '/../helpers/GetFile'),
+    User = require(__dirname + '/../api/user');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
 // GET /user/history
 router.get('/history', function(req, res, next) {
+    var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
     req.query.from = new Date();
     var to = new Date();
     to.setDate(to.getDate() + configCustom.MAX_RESERVATION_UPFRONT);

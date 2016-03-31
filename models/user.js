@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
             }
         },
         phone: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.TEXT,
             allowNull: false
         },
         password: {

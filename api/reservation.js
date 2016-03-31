@@ -1,7 +1,7 @@
-var sequelize = require(__dirname + '/../models/index').sequelize,
-    configCustom = require(__dirname + '/../config/app').custom;
+var sequelize = require(__dirname + '/../models/index').sequelize;
 
-var PdfHelper = require(__dirname + '/../helpers/PdfHelper'),
+var GetFile = require(__dirname + '/../helpers/GetFile'),
+    PdfHelper = require(__dirname + '/../helpers/PdfHelper'),
     pdf_helper = new PdfHelper();
 var MailHelper = require(__dirname + '/../helpers/MailHelper'),
     mail_helper = new MailHelper();
@@ -12,6 +12,8 @@ var Reservation = require(__dirname + '/../models').Reservation,
     Accessory = require(__dirname + '/accessory');
 
 function processMail(req, state, pdfFile) {
+    var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
+
     if (configCustom.SEND_EMAILS) {
         return mail_helper.send(req, state, pdfFile.file).then(function(mailResponse) {
             return { success: true };
@@ -62,7 +64,7 @@ module.exports = {
         });
     },
 
-    get(options) {
+    get(options, fetchUsers) {
         var result = {
                 reservations: [],
                 users: {},
@@ -92,6 +94,10 @@ module.exports = {
                 });
             }, Promise.resolve());
         }).then(function() {
+            if (!fetchUsers) {
+                return result;
+            }
+
             var usersArr = [];
             for (var i = 0; i < result.reservations.length; i++) {
                 if (result.reservations[i].userId in result.users) {

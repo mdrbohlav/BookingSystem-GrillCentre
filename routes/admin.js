@@ -1,21 +1,13 @@
 var express = require('express'),
     fs = require('fs'),
-    router = express.Router(),
-    configFileName = 'config/app',
-    configCustom = require(__dirname + '/../config/app').custom;
+    router = express.Router();
 
-var Reservation = require(__dirname + '/../api/reservation'),
+var GetFile = require(__dirname + '/../helpers/GetFile'),
+    Reservation = require(__dirname + '/../api/reservation'),
     User = require(__dirname + '/../api/user'),
     Accessory = require(__dirname + '/../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
-
-function getFile(filename) {
-    var data = fs.readFileSync(filename, {
-        encoding: 'utf8'
-    });
-    return data;
-}
 
 // GET /admin/reservations
 router.get('/reservations', function(req, res, next) {
@@ -31,6 +23,8 @@ router.get('/reservations', function(req, res, next) {
             m = date.getMonth();
         var firstDay = new Date(y, m, 1);
         var lastDay = new Date(y, m + 1, 0);
+        firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset()*60000);
+        lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset()*60000);
         firstDay.setUTCHours(0, 0, 0, 0);
         lastDay.setUTCHours(23, 59, 59, 999);
 
@@ -53,6 +47,8 @@ router.get('/reservations', function(req, res, next) {
             m = date.getMonth();
         var firstDay = new Date(y, m, 1);
         var lastDay = new Date(y, m + 1, 0);
+        firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset()*60000);
+        lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset()*60000);
         firstDay.setUTCHours(0, 0, 0, 0);
         lastDay.setUTCHours(23, 59, 59, 999);
 
@@ -76,10 +72,11 @@ router.get('/reservations', function(req, res, next) {
         };
     }
 
-    Reservation.get(options).then(function(result) {
+    Reservation.get(options, true).then(function(result) {
         if (req.query.accept && req.query.accept === 'json') {
             res.json(result);
         } else {
+            console.log(result);
             res.render('reservations', {
                 page: 'reservations',
                 title: req.i18n.__('titles_2') + ' | ' + req.i18n.__('title'),
@@ -194,7 +191,7 @@ router.get('/users', function(req, res, next) {
 
 // GET /admin/config
 router.get('/config', function(req, res, next) {
-    var fileData = getFile('./' + configFileName + '.js'),
+    var fileData = JSON.parse(GetFile('./config/app.json')),
         configKeys = {
             emails: {
                 name: req.i18n.__('config_sections_1_title'),
@@ -252,7 +249,6 @@ router.get('/config', function(req, res, next) {
                 }
             }
         };
-    fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
     res.render('config', {
         page: 'config',
         title: req.i18n.__('titles_5') + ' | ' + req.i18n.__('title'),
@@ -264,8 +260,7 @@ router.get('/config', function(req, res, next) {
 
 // PUT /admin/config
 router.put('/config', function(req, res, next) {
-    var fileData = getFile('./' + configFileName + '.js');
-    fileData = JSON.parse(fileData.replace(/^module\.exports = /, '').replace(/;\n$/, ''));
+    var fileData = JSON.parse(GetFile('./config/app.json'));
     for (var k in req.body) {
         if (['tel', 'time'].indexOf(fileData.default[k].type) > -1) {
             fileData.custom[k] = parseInt(req.body[k]);
@@ -275,8 +270,8 @@ router.put('/config', function(req, res, next) {
             fileData.custom[k] = req.body[k];
         }
     }
-    fileData = JSON.stringify(fileData, null, 4).replace(/^/, 'module.exports = ').replace(/$/, ';\n');
-    fs.writeFileSync('./' + configFileName + '.js', fileData);
+    fileData = JSON.stringify(fileData, null, 4);
+    fs.writeFileSync('./config/app.json', fileData);
     res.json({ success: true });
 });
 

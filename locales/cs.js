@@ -62,8 +62,6 @@
 	"labels_grillCentreShortcut": "GC",
 	"labels_mobileGrill": "Mobilní gril",
 	"labels_mobileGrillShortcut": "MG",
-	"labels_priority": "Priorita",
-	"labels_priority_shortcut": "Pr",
 	"labels_from": "Od",
 	"labels_to": "Do",
 	"labels_date": "Datum",

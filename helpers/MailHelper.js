@@ -1,13 +1,16 @@
 var nodemailer = require('nodemailer'),
     sendgrid = require("sendgrid")("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"),
-    fs = require('fs'),
-    configCustom = require(__dirname + '/../config/app').custom;
+    fs = require('fs');
+
+var GetFile = require(__dirname + '/../helpers/GetFile');
 
 var MailError = require(__dirname + '/../errors/MailError');
 
 var transporter = nodemailer.createTransport();
 
 function getOptions(req, type) {
+    var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
+
     return {
         from: configCustom.SENDER_NAME + ' <' + configCustom.SENDER_EMAIL + '>',
         to: req.user.email,

@@ -27,7 +27,7 @@ html
                 li.table__row
                     span.listPdf__heading.text--strong.table__cell Telefon
                     if user
-                        span.table__cell= user.phone
+                        span.table__cell= user.phone.replace(/^00/, '+')
                     else
                         span.listPdf__line.table__cell
                 li.table__row

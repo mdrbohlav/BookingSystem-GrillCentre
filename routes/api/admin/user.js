@@ -14,6 +14,9 @@ function getData(req, data) {
     if (req.body.email) {
         data.email = req.body.email;
     }
+    if (req.body.phone) {
+        data.phone = req.body.phone;
+    }
     if (req.body.firstname) {
         data.firstname = req.body.firstname;
     }
@@ -36,9 +39,6 @@ function getData(req, data) {
         if (req.body.isAdmin) {
             data.isAdmin = req.body.isAdmin;
         }
-        if (req.body.priority) {
-            data.priority = req.body.priority;
-        }
     }
 
     return data;
@@ -49,6 +49,7 @@ router.post('/create', function(req, res, next) {
     var data = {
         password: req.body.password,
         email: req.body.email,
+        phone: req.body.phone,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         block: req.body.block,

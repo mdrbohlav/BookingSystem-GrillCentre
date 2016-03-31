@@ -58,11 +58,17 @@ block content
                                         <div class="day__num"><%= day.day %></div>
                                         <% for (var i in day.events) { %>
                                             <div class="day__event <%= day.events[i].class %>" title="<%= day.events[i].title %>">
-                                            <% if (day.events[i].name.length > 15) { %>
-                                                <%= day.events[i].name.substr(0, 15) %>…
-                                            <% } else { %>
-                                                <%= day.events[i].name %>
-                                            <% } %>
+                                            <%
+                                                if (#{user.isAdmin}) {
+                                                    if (day.events[i].name.length > 15) {
+                                            %>
+                                                        <%= day.events[i].name.substr(0, 15) %>…
+                                                    <% } else { %>
+                                                        <%= day.events[i].name %>
+                                            <%
+                                                    }
+                                                }
+                                            %>
                                             </div>
                                         <% } %>
                                     </div>
@@ -125,41 +131,42 @@ block content
                                                 label.t__label(for='accessory-#{index}')= accessory.nameEn
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') !{__('buttons_create')}
-    section.modal
-        .table.table--fullsize
-            button.modal__close.btn__close.icon.icon__cross(type='button')
-            .modal__content.table__cell
-                .container__md
-                    .box.modalReservation__centre
-                        h2.text__title.box__header.box__header--border !{__('modal_grillCentreReservationTitle')}
-                        .box__body
-                            h3.modalReservation__title.text__subtitle.text--default
-                            .row
-                                .col-xs-12.col-sm-6
-                                    .modalReservation__date.text__paragraph.margin--top-10
-                                        span.text--strong !{__('labels_date')}
-                                        span.value
-                                    .modalReservation__pickup.text__paragraph.margin--top-10
-                                        span.text--strong !{__('labels_pickup')}
-                                        span.value
-                                    .modalReservation__mobileGrill.text__paragraph.margin--top-10
-                                        span.text--strong !{__('labels_mobileGrill')}
-                                        span.value
-                                .col-xs-12.col-sm-6.margin--top-10
-                                    h4.text__paragraph !{__('modal_accessories')}
-                                    ul.modalReservation__accessories.text__paragraph--small
-                    .box.modalReservation__grill
-                        h2.text__title.box__header.box__header--border !{__('modal_mgReservationTitle')}
-                        .box__body
-                            h3.modalReservation__title.text__subtitle.text--default
-                            .row
-                                .col-xs-12.col-sm-6
-                                    .modalReservation__date.text__paragraph.margin--top-10
-                                        span.text--strong !{__('labels_date')}
-                                        span.value
-                                    .modalReservation__pickup.text__paragraph.margin--top-10
-                                        span.text--strong !{__('labels_pickup')}
-                                        span.value
+    if user.isAdmin
+        section.modal
+            .table.table--fullsize
+                button.modal__close.btn__close.icon.icon__cross(type='button')
+                .modal__content.table__cell
+                    .container__md
+                        .box.modalReservation__centre
+                            h2.text__title.box__header.box__header--border !{__('modal_grillCentreReservationTitle')}
+                            .box__body
+                                h3.modalReservation__title.text__subtitle.text--default
+                                .row
+                                    .col-xs-12.col-sm-6
+                                        .modalReservation__date.text__paragraph.margin--top-10
+                                            span.text--strong !{__('labels_date')}
+                                            span.value
+                                        .modalReservation__pickup.text__paragraph.margin--top-10
+                                            span.text--strong !{__('labels_pickup')}
+                                            span.value
+                                        .modalReservation__mobileGrill.text__paragraph.margin--top-10
+                                            span.text--strong !{__('labels_mobileGrill')}
+                                            span.value
+                                    .col-xs-12.col-sm-6.margin--top-10
+                                        h4.text__paragraph !{__('modal_accessories')}
+                                        ul.modalReservation__accessories.text__paragraph--small
+                        .box.modalReservation__grill
+                            h2.text__title.box__header.box__header--border !{__('modal_mgReservationTitle')}
+                            .box__body
+                                h3.modalReservation__title.text__subtitle.text--default
+                                .row
+                                    .col-xs-12.col-sm-6
+                                        .modalReservation__date.text__paragraph.margin--top-10
+                                            span.text--strong !{__('labels_date')}
+                                            span.value
+                                        .modalReservation__pickup.text__paragraph.margin--top-10
+                                            span.text--strong !{__('labels_pickup')}
+                                            span.value
 
 block scripts
     script.
@@ -187,21 +194,24 @@ block scripts
 
             makeRequest('/api/reservation', 'GET', data, function(res) {
                 var reservationsObj = res.reservations,
-                    usersObj = res.users,
                     reservationsArr = [];
-                for (var i in usersObj) {
-                    if (i in users) {
-                        continue;
+                if ('users' in res) {
+                    for (var i in res.users) {
+                        if (i in users) {
+                            continue;
+                        }
+                        users[i] = res.users[i];
                     }
-                    users[i] = usersObj[i];
                 }
                 for (var i = 0; i < reservationsObj.length; i++) {
                     if (reservationsObj[i].id in reservations || ['confirmed', 'finished'].indexOf(reservationsObj[i].state) === -1) {
                         continue;
                     }
-                    reservationsObj[i].from = moment(reservationsObj[i].from).add(calendar.month.local().utcOffset(), 'm').format();
-                    reservationsObj[i].to = moment(reservationsObj[i].to).subtract(calendar.month.local().utcOffset(), 'm').format();
-                    reservationsObj[i].name = users[reservationsObj[i].userId].fullName;
+                    reservationsObj[i].from = moment(reservationsObj[i].from).subtract(moment().local().utcOffset(), 'm').format();
+                    reservationsObj[i].to = moment(reservationsObj[i].to).subtract(moment().local().utcOffset(), 'm').format();
+                    if (reservationsObj[i].userId in users) {
+                        reservationsObj[i].name = users[reservationsObj[i].userId].fullName;
+                    }
                     reservations[reservationsObj[i].id] = reservationsObj[i];
                     reservationsArr.push(reservationsObj[i]);
                 }
@@ -322,6 +332,10 @@ block scripts
                 },
                 clickEvents: {
                     click: function (target) {
+                        if (!#{user.isAdmin}) {
+                            return false;
+                        }
+
                         var d = new Date(target.date.format()),
                             today = new Date(),
                             lastDay = new Date();
@@ -334,8 +348,8 @@ block scripts
                             var dayEvents = 0;
                             for (var i = 0; i < target.events.length; i++) {
                                 var tmp = moment();
-                                var start = moment(target.events[i].from).subtract(tmp.local().utcOffset() , 'm').format('LL'),
-                                    end = moment(target.events[i].to).subtract(tmp.local().utcOffset() , 'm').format('LL'),
+                                var start = moment(target.events[i].from).format('LL'),
+                                    end = moment(target.events[i].to).format('LL'),
                                     resDate = start;
                                 if (start !== end) {
                                     resDate += ' - ' + end;

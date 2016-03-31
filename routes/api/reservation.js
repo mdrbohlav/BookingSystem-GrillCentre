@@ -1,8 +1,8 @@
 var express = require('express'),
-    router = express.Router(),
-    configCustom = require(__dirname + '/../../config/app').custom;
+    router = express.Router();
 
-var ICalHelper = require(__dirname + '/../../helpers/ICalHelper'),
+var GetFile = require(__dirname + '/../../helpers/GetFile'),
+    ICalHelper = require(__dirname + '/../../helpers/ICalHelper'),
     Reservation = require(__dirname + '/../../api/reservation');
 
 var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError'),
@@ -13,6 +13,8 @@ var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError
 
 // POST /api/reservation/create
 router.post('/create', function(req, res, next) {
+    var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
+
     if (req.body['accessories[]'] && req.body.onlyMobileGrill) {
         next(new InvalidRequestError('Cannot add accessories when booking standalone mobile grill!'));
     }
@@ -84,11 +86,13 @@ router.post('/create', function(req, res, next) {
                     from: dateStartString,
                     to: dateEndString,
                     pickup: parseInt(req.body.pickup),
-                    userId: req.user.id,
-                    priority: req.user.priority
+                    userId: req.user.id
                 },
                 accessories = [];
 
+            if (req.body.comment) {
+                data.comment = req.body.comment;
+            }
             if (req.body.mobileGrill) {
                 data.mobileGrill = req.body.mobileGrill;
             }
@@ -146,7 +150,7 @@ router.get('/', function(req, res, next) {
         ];
     }
 
-    Reservation.get(options).then(function(result) {
+    Reservation.get(options, req.user.isAdmin).then(function(result) {
         res.json(result);
     }).catch(function(data) {
         if ('status' in data) {
