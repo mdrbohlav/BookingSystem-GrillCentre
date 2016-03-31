@@ -440,7 +440,7 @@ block scripts
 
             var month = moment();
             $('.month__current').attr('data-month', month.valueOf());
-            $('.month__selected').text(month.format('MMMM')).attr('data-month', month.valueOf());
+            $('.month__selected').text(month.format('MMMM YYYY')).attr('data-month', month.valueOf());
             $('.month__prev').text(month.subtract(1, 'months').format('MMMM')).attr('data-month', month.valueOf());
             $('.month__next').text(month.add(2, 'months').format('MMMM')).attr('data-month', month.valueOf());
 
@@ -455,7 +455,7 @@ block scripts
 
                 makeRequest('/admin/reservations?accept=json&month=' + val, 'GET', {}, function(res) {
                     var month = moment(parseInt(val));
-                    $('.month__selected').text(month.format('MMMM')).attr('data-month', month.valueOf());
+                    $('.month__selected').text(month.format('MMMM YYYY')).attr('data-month', month.valueOf());
                     $('.month__prev').text(month.subtract(1, 'months').format('MMMM')).attr('data-month', month.valueOf());
                     $('.month__next').text(month.add(2, 'months').format('MMMM')).attr('data-month', month.valueOf());
 
