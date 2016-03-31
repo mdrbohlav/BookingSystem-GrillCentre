@@ -411,10 +411,10 @@ block scripts
                 $('.modalUser__locale .value').text(user.locale[locale].name);
             }
 
-            var $list = $('#listRating');
+            var $list = $('#listRating'),
+                totalRating = 0;
 
             if (user.ratings.length) {
-                var totalRating = 0;
                 $list.html(getRatingTableHeading());
                 for (var i = 0; i <  user.ratings.length; i++) {
                     totalRating += user.ratings[i].value;
@@ -423,10 +423,10 @@ block scripts
                 if (totalRating > 0) {
                     totalRating = Math.round(totalRating / user.ratings.length) / 10;
                 }
-                $('.modalUser__ratingTotal').text(totalRating);
             } else {
                 $list.html(getRatingEmptyRow());
             }
+            $('.modalUser__ratingTotal').text(totalRating);
         }
 
         $(document).ready(function() {
