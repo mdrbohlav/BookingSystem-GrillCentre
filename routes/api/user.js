@@ -52,7 +52,9 @@ router.get('/', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -81,7 +83,9 @@ router.put('/', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -95,7 +99,9 @@ router.delete('/', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -115,7 +121,9 @@ router.get('/reservations/:state?', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });

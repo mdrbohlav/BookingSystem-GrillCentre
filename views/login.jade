@@ -8,7 +8,7 @@ block content
                     h1.text__title !{__('pages_login_title')}
                 .box__body
                     li.listLogin__item
-                        button#loginIs.btn.btn__orange--full.btn--block(type='button') !{__('buttons_isLogin')}
+                        a#loginIs.btn.btn__orange--full.btn--block(href='/auth/login/is/init') !{__('buttons_isLogin')}
                     li.listLogin__item.margin--top-25.expandable__container
                         button#loginIs.btn.btn__orange.btn--block.expandable__trigger(type='button') !{__('buttons_nativeLogin')}
                         form#login.form.form__login.expandable__content(method='POST', action='/auth/login/native')
@@ -29,10 +29,6 @@ block content
 block scripts
     script.
         $(document).ready(function() {
-            $('#loginIs').on('click', function() {
-                addNotification('notice', 'This feature is not suported yet.');
-            });
-
             $('#login').validate({
                 rules: {
                     email: {

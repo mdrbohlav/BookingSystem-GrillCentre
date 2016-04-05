@@ -49,7 +49,9 @@ router.get('/history', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -75,7 +77,9 @@ router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });

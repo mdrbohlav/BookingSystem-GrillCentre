@@ -12,6 +12,7 @@ var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     OAuth2Strategy = require('passport-oauth2'),
     AuthHelper = require(__dirname + '/helpers/AuthHelper'),
+    ApiRequest = require(__dirname + '/helpers/SiliconHillApiRequest'),
     ICalHelper = require(__dirname + '/helpers/ICalHelper'),
     FinishReservationHelper = require(__dirname + '/helpers/FinishReservationHelper');
 
@@ -91,11 +92,11 @@ var uglified = uglify.minify([
 });
 
 fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, function(err) {
-  if(err) {
-    console.log(err);
-  } else {
-    console.log("Script generated and saved.");
-  }      
+    if (err) {
+        console.log(err);
+    } else {
+        console.log("Script generated and saved.");
+    }
 });
 
 // Redis Store options
@@ -103,7 +104,8 @@ var redisOptions = {
     host: redisConfig.host,
     port: redisConfig.port,
     pass: redisConfig.password,
-    db: 0
+    db: 0,
+    ttl: 60 * 60 * 24 * 7
 };
 
 app.use(logger('dev'));
@@ -117,7 +119,8 @@ app.use(expressSession({
     secret: config.SECRET,
     store: new redisStore(redisOptions),
     saveUninitialized: true,
-    resave: true
+    resave: true,
+    unset: 'destroy'
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -156,7 +159,7 @@ app.use(function(req, res, next) {
     delete req.session.success;
     delete req.session.notice;
 
-    if (err) res.locals.error = typeof(err) === 'object' && 'message' in err ? err.message : err;
+    if (err) res.locals.error = typeof(err) === 'object' &&  'message' in err ? err.message : err;
     if (msg) res.locals.notice = msg;
     if (success) res.locals.success = success;
     if (req.user) res.locals.user = req.user;
@@ -185,28 +188,32 @@ passport.use('login-native', new LocalStrategy({
     });
 }));
 
-/*passport.use('login-is', new OAuth2Strategy({
-    authorizationURL: 'https://www.example.com/oauth2/authorize',
-    tokenURL: 'https://www.example.com/oauth2/token',
-    clientID: config.EXAMPLE_CLIENT_ID,
-    clientSecret: config.EXAMPLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/example/callback"
+passport.use('login-is', new OAuth2Strategy({
+    authorizationURL: 'https://is.sh.cvut.cz/oauth/authorize',
+    tokenURL: 'https://is.sh.cvut.cz/oauth/token',
+    clientID: config.OAUTH_CLIENT_ID,
+    clientSecret: config.OAUTH_CLIENT_SECRET,
+    callbackURL: "http://gc-dev.sh.cvut.cz/auth/login/is"
 }, function(accessToken, refreshToken, profile, done) {
-    console.log(profile);
-    AuthHelper.isAuth(accessToken, refreshToken, profile).then(function(user) {
-        if (user) {
-            req.session.success = 'You are successfully logged in ' + user.fullName + '!';
-            done(null, user);
-        }
-        if (!user) {
-            req.session.error = 'Could not log user in. Please try again.';
-            done(null, user);
-        }
+    ApiRequest('/v1/users/me').then(function(data, res) {
+        console.log("data", data);
+        AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
+            if (user) {
+                req.session.success = 'You are successfully logged in ' + user.fullName + '!';
+                done(null, user);
+            }
+            if (!user) {
+                req.session.error = 'Could not log user in. Please try again.';
+                done(null, user);
+            }
+        }).catch(function(err) {
+            req.session.error = err.customMessage;
+            done(null, false);
+        });
     }).catch(function(err) {
-        req.session.error = err.customMessage;
-        done (null, false);
+        console.log(err);
     });
-}));*/
+}));
 
 // passport session setup
 passport.serializeUser(function(user, done) {

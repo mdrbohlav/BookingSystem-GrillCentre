@@ -85,6 +85,7 @@
 	"labels_blockRoom": "Block/room",
 	"labels_added": "Granted",
 	"labels_comment": "Comment",
+	"labels_commentShortcut": "C",
 	"labels_notrated": "not rated",
 	"labels_yes": "yes",
 	"labels_no": "no",

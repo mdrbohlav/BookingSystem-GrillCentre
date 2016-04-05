@@ -78,10 +78,10 @@ module.exports.localAuth = function(email, password) {
 
 module.exports.isAuth = function(accessToken, refreshToken, profile) {
     return new Promise(function(resolve, reject) {
-        //User.upsert(profile).then(function(user) {
-        //    resolve(user);
-        //}).catch(function(err) {
-        //    reject(new InvalidRequestError(err.message));
-        //});
+        User.upsert(profile).then(function(user) {
+            resolve(user);
+        }).catch(function(err) {
+            reject(new InvalidRequestError(err.message));
+        });
     });
 };

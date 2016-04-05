@@ -85,6 +85,7 @@
 	"labels_blockRoom": "Blok/pokoj",
 	"labels_added": "Uděleno",
 	"labels_comment": "Komentář",
+	"labels_commentShortcut": "K",
 	"labels_notrated": "neohodnoceno",
 	"labels_yes": "ano",
 	"labels_no": "ne",

@@ -26,6 +26,7 @@ block content
                                             .table__cell !{__('labels_name')}
                                             .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
                                             .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                            .table__cell(title="#{__('labels_comment')}") !{__('labels_commentShortcut')}
                                             .table__cell !{__('labels_from')}
                                             .table__cell !{__('labels_to')}
                                             .table__cell !{__('labels_pickup')}
@@ -34,6 +35,7 @@ block content
                                         .table__cell= resUser.fullName
                                         .table__cell: span.icon(class= (!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
                                         .table__cell: span.icon(class= (reservation.mobileGrill ? 'icon__check' : 'icon__cross'))
+                                        .table__cell: span.icon(class= (reservation.comment ? 'icon__check' : 'icon__cross'))
                                         .table__cell(data-date='#{reservation.from}')
                                         .table__cell(data-date='#{reservation.to}')
                                         .table__cell #{Math.floor(reservation.pickup / 60)}:#{pad(reservation.pickup%60)}
@@ -60,12 +62,14 @@ block content
                                             .table__cell !{__('labels_name')}
                                             .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
                                             .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                            .table__cell(title="#{__('labels_comment')}") !{__('labels_commentShortcut')}
                                             .table__cell !{__('labels_from')}
                                             .table__cell !{__('labels_to')}
                                     li.reservation.table__row(data-id= reservation.id)
                                         .table__cell= resUser.fullName
                                         .table__cell: span.icon(class= (!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
                                         .table__cell: span.icon(class= (reservation.mobileGrill ? 'icon__check' : 'icon__cross'))
+                                        .table__cell: span.icon(class= (reservation.comment ? 'icon__check' : 'icon__cross'))
                                         .table__cell(data-date='#{reservation.from}')
                                         .table__cell(data-date='#{reservation.to}')
                                     - finishedCnt++
@@ -101,6 +105,7 @@ block content
                                             .table__cell !{__('labels_name')}
                                             .table__cell(title="#{__('labels_grillCentre')}") !{__('labels_grillCentreShortcut')}
                                             .table__cell(title="#{__('labels_mobileGrill')}") !{__('labels_mobileGrillShortcut')}
+                                            .table__cell(title="#{__('labels_comment')}") !{__('labels_commentShortcut')}
                                             .table__cell !{__('labels_state')}
                                             .table__cell !{__('labels_from')}
                                             .table__cell !{__('labels_to')}
@@ -109,6 +114,7 @@ block content
                                         .table__cell= resUser.fullName
                                         .table__cell: span.icon(class=(!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
                                         .table__cell: span.icon(class=(reservation.mobileGrill ? 'icon__check' : 'icon__cross'))
+                                        .table__cell: span.icon(class= (reservation.comment ? 'icon__check' : 'icon__cross'))
                                         .reservation__state.table__cell: span.icon(class=(reservation.state === 'draft' ? 'icon__pencil' : reservation.state === 'confirmed' ? 'icon__check' : reservation.state === 'finished' ? 'icon__flag' : 'icon__cross'), title= capitalizeFirstLetter(reservation.state))
                                         .table__cell(data-date='#{reservation.from}')
                                         .table__cell(data-date='#{reservation.to}')
@@ -243,6 +249,7 @@ block scripts
                 .append('<div class="table__cell">!{__('labels_name')}')
                 .append('<div class="table__cell" title="!{__('labels_grillCentre')}">!{__('labels_grillCentreShortcut')}')
                 .append('<div class="table__cell" title="!{__('labels_mobileGrill')}">!{__('labels_mobileGrillShortcut')}')
+                .append('<div class="table__cell" title="!{__('labels_comment')}">!{__('labels_commentShortcut')}')
                 .append('<div class="table__cell">!{__('labels_state')}')
                 .append('<div class="table__cell">!{__('labels_from')}')
                 .append('<div class="table__cell">!{__('labels_to')}')
@@ -258,6 +265,7 @@ block scripts
                 .append('<div class="table__cell">' + user.fullName)
                 .append('<div class="table__cell"><span class="icon icon__' + (!reservation.onlyMobileGrill ? 'check' : 'cross') + '">')
                 .append('<div class="table__cell"><span class="icon icon__' + (reservation.mobileGrill ? 'check' : 'cross') + '">')
+                .append('<div class="table__cell"><span class="icon icon__' + (reservation.comment ? 'check' : 'cross') + '">')
                 .append('<div class="reservation__state table__cell"><span class="icon icon__' + (reservation.state === 'draft' ? 'pencil' : reservation.state === 'confirmed' ? 'check' : reservation.state === 'finished' ? 'flag' : 'cross') + '" title="' + capitalizeFirstLetter(reservation.state) + '">')
                 .append('<div class="table__cell" data-date="' + reservation.from + '">' + start.format('LL'))
                 .append('<div class="table__cell" data-date="' + reservation.to + '">' + end.format('LL'));

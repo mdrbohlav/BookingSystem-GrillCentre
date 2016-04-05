@@ -61,7 +61,9 @@ router.post('/create', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -75,7 +77,9 @@ router.get('/:id', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -117,7 +121,9 @@ router.put('/:id', function(req, res, next) {
             if ('status' in data) {
                 next(data);
             } else {
-                next(new InvalidRequestError(data.errors));
+                for (var i = 0; i < data.errors.length; i++) {
+                    next(new InvalidRequestError(data.errors[i].message));
+                }
             }
         });
     } else {
@@ -138,7 +144,9 @@ router.put('/:id', function(req, res, next) {
             if ('status' in data) {
                 next(data);
             } else {
-                next(new InvalidRequestError(data.errors));
+                for (var i = 0; i < data.errors.length; i++) {
+                    next(new InvalidRequestError(data.errors[i].message));
+                }
             }
         });
     }
@@ -153,7 +161,9 @@ router.delete('/:id', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -173,7 +183,9 @@ router.get('/:id/reservations/:state?', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -187,7 +199,9 @@ router.get('/:id/ratings', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });

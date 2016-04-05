@@ -114,7 +114,9 @@ router.post('/create', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -156,7 +158,9 @@ router.get('/', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -173,7 +177,9 @@ router.get('/:id', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });
@@ -199,7 +205,9 @@ router.put('/:id/cancel', function(req, res, next) {
         if ('status' in data) {
             next(data);
         } else {
-            next(new InvalidRequestError(data.errors));
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
         }
     });
 });

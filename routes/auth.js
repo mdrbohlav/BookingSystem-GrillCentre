@@ -10,8 +10,11 @@ router.post('/login/native', passport.authenticate('login-native', {
     failureRedirect: '/login'
 }));
 
-// POST /auth/login/is
-router.post('/login/is', passport.authenticate('login-is', {
+// GET /auth/login/is/init
+router.get('/login/is/init', passport.authenticate('login-is'));
+
+// GET /auth/login/is
+router.get('/login/is', passport.authenticate('login-is', {
     successRedirect: '/',
     failureRedirect: '/login'
 }));
