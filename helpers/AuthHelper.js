@@ -6,9 +6,22 @@ var InvalidPasswordError = require(__dirname + '/../errors/InvalidPasswordError'
     InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError'),
     UnauthorizedError = require(__dirname + '/../errors/UnauthorizedError'),
     UserDoesnotExistError = require(__dirname + '/../errors/UserDoesnotExistError'),
-    UserBannedError = require(__dirname + '/../errors/UserBannedError');
+    UserBannedError = require(__dirname + '/../errors/UserBannedError'),
+    NotPaidError = require(__dirname + '/../errors/NotPaidError');
 
-var User = require(__dirname + '/../models').User;
+var User = require(__dirname + '/../models').User,
+    UserApi = require(__dirname + '/../api/user');
+
+function prepareISData(profile) {
+    return {
+        email: profile.email,
+        isId: profile.id,
+        phone: profile.phone,
+        firstname: profile.first_name,
+        lastname: profile.surname,
+        locale: profile.ui_language
+    };
+}
 
 // verify password
 function verifyPassword(password, passwordHash) {
@@ -78,8 +91,24 @@ module.exports.localAuth = function(email, password) {
 
 module.exports.isAuth = function(accessToken, refreshToken, profile) {
     return new Promise(function(resolve, reject) {
-        User.upsert(profile).then(function(user) {
-            resolve(user);
+        var today = new Date();
+        today.setUTCHours(23, 59, 59, 999);
+        var serviceExpire = new Date(profile.service.to);
+        serviceExpire.setUTCHours(23, 59, 59, 999);
+
+        if (today > serviceExpire) {
+            reject(new NotPaidError());
+        }
+
+        profile = prepareISData(profile);
+
+        User.upsert(profile).then(function(created) {
+            UserApi.getByEmail(profile.email).then(function(user) {
+                if (user.banned) {
+                    reject(new UserBannedError());
+                }
+                resolve(user);
+            });
         }).catch(function(err) {
             reject(new InvalidRequestError(err.message));
         });

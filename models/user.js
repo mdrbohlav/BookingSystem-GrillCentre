@@ -23,7 +23,15 @@ module.exports = function(sequelize, DataTypes) {
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true,
+            validate: {
+                isIs: function(val) {
+                    var isId = this.getDataValue('isId');
+                    if (!isId) {
+                        throw new Error('Password is required.');
+                    }
+                }
+            }
         },
         banned: {
             type: DataTypes.BOOLEAN,

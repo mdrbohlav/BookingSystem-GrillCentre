@@ -1,7 +1,7 @@
 var https = require('https'),
     config = require(__dirname + '/../config/global');
 
-module.exports = function(url) {
+module.exports = function(url, access_token) {
     return new Promise(function(resolve, reject) {
         var headers = {
             Accept: 'application/json'

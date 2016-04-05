@@ -105,7 +105,7 @@ var redisOptions = {
     port: redisConfig.port,
     pass: redisConfig.password,
     db: 0,
-    ttl: 60 * 60 * 24 * 7
+    ttl: 60 * 60 * 24
 };
 
 app.use(logger('dev'));
@@ -170,7 +170,7 @@ app.use(function(req, res, next) {
 // passport setup
 passport.use('login-native', new LocalStrategy({
     usernameField: 'email',
-    passReqToCallback: true // allows us to pass back the request to the callback
+    passReqToCallback: true
 }, function(req, email, password, done) {
     AuthHelper.localAuth(email, password).then(function(user) {
         if (user) {
@@ -193,11 +193,23 @@ passport.use('login-is', new OAuth2Strategy({
     tokenURL: 'https://is.sh.cvut.cz/oauth/token',
     clientID: config.OAUTH_CLIENT_ID,
     clientSecret: config.OAUTH_CLIENT_SECRET,
-    callbackURL: "http://gc-dev.sh.cvut.cz/auth/login/is"
-}, function(accessToken, refreshToken, profile, done) {
-    ApiRequest('/v1/users/me').then(function(data, res) {
-        console.log("data", data);
-        AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
+    callbackURL: "http://gc-dev.sh.cvut.cz/auth/login/is",
+    passReqToCallback: true
+}, function(req, accessToken, refreshToken, profile, done) {
+    var data = {};
+    ApiRequest('/v1/users/me?access_token=' + accessToken).then(function(profileData, res) {
+        data = JSON.parse(profileData);
+        return ApiRequest('/v1/services/mine?access_token=' + accessToken).then(function(servicesData, response) {
+            servicesData = JSON.parse(servicesData);
+            data.service = null;
+            for (var i = 0; i < servicesData.length; i++) {
+                if (servicesData[i].service.alias === 'zaklad') {
+                    data.service = servicesData[i].service;
+                }
+            }
+        });
+    }).then(function() {
+        return AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
             if (user) {
                 req.session.success = 'You are successfully logged in ' + user.fullName + '!';
                 done(null, user);

@@ -339,10 +339,6 @@ block scripts
                 },
                 clickEvents: {
                     click: function (target) {
-                        if (!#{user.isAdmin}) {
-                            return false;
-                        }
-
                         var d = new Date(target.date.format()),
                             today = new Date(),
                             lastDay = new Date();
@@ -350,6 +346,14 @@ block scripts
                         today.setHours(0, 0, 0, 0);
                         lastDay.setDate(lastDay.getDate() + #{reservationUpfront});
                         lastDay.setHours(23, 59, 59, 999);
+
+                        if (target.events.length === 0 && d >= today && (#{user.isAdmin} || d <= lastDay)) {
+                            date.set('select', new Date(target.date.format()));
+                        }
+
+                        if (!#{user.isAdmin}) {
+                            return false;
+                        }
 
                         if (target.events.length) {
                             var dayEvents = 0;
@@ -430,8 +434,6 @@ block scripts
                             }
 
                             showModal();
-                        } else if (d >= today && (#{user.isAdmin} || d <= lastDay)) {
-                            date.set('select', new Date(target.date.format()));
                         }
                     },
                     onMonthChange: function() {
