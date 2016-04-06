@@ -260,7 +260,7 @@ passport.use('login-is', new OAuth2Strategy({
             }
         });
     }).then(function() {
-        data.locale = i18n.getLocale();
+        data.locale = req.i18n.getLocale();
         return AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
             if (user) {
                 req.session.success = 'You are successfully logged in ' + user.fullName + '!';

@@ -19,6 +19,7 @@ module.exports = {
     create(data) {
         return AuthHelper.hashPassword(data.password).then(function(hash) {
             data.password = hash;
+            console.log(data);
             return User.findOrCreate({
                 where: {
                     email: data.email

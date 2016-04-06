@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
             }
         },
         phone: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false
         },
         password: {
@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
             validate: {
                 isIs: function(val) {
                     var isId = this.getDataValue('isId');
-                    if (!isId) {
+                    if (!isId && (!val || val === '')) {
                         throw new Error('Password is required.');
                     }
                 }

@@ -52,9 +52,17 @@ router.post('/create', function(req, res, next) {
         phone: req.body.phone,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
-        block: req.body.block,
-        room: req.body.room
+        locale: req.body.locale
     };
+    if ('block' in req.body) {
+        data.block = parseInt(req.body.block);
+    }
+    if ('room' in req.body) {
+        data.room = req.body.room;
+    }
+    if ('isAdmin' in req.body) {
+        data.isAdmin = req.body.isAdmin === 'true' ? true : false;
+    }
     User.create(data).then(function(user) {
         res.json(user);
     }).catch(function(data) {
