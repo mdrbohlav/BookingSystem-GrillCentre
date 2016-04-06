@@ -18,7 +18,7 @@ block content
                                 label.text__label(for='find-block') !{__('labels_block')}
                                 .field.field__select
                                     select#find-block(name='find-block')
-                                        option(val='') !{__('pages_users_all')}
+                                        option(value='') !{__('pages_users_all')}
                                         each i in [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
                                             option(val=i)= i
                             .field__container.col-xs-12.col-sm-6.margin--top-20
@@ -122,9 +122,9 @@ block content
                                     select#locale(name='locale')
                                         each locale in availableLocales
                                             if user && Object.keys(user.locale)[0] === locale
-                                                option(val= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
+                                                option(value= locale, selected)= isoLocales[locale].nativeName.split(',')[0]
                                             else
-                                                option(val= locale)= isoLocales[locale].name.split(',')[0]
+                                                option(value= locale)= isoLocales[locale].name.split(',')[0]
                             .field__container.col-xs-12.col-sm-6.margin--top-20
                                 .field__checkbox
                                     span.checkbox
@@ -142,9 +142,9 @@ block content
                                 label.text__label(for='block') !{__('labels_block')}
                                 .field.field__select
                                     select#block(name='block')
-                                        option(val='') !{__('pages_users_select')}
+                                        option(value='') !{__('pages_users_select')}
                                         each i in [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
-                                            option(val=i)= i
+                                            option(value=i)= i
                             .field__container.col-xs-12.col-sm-6.margin--top-20
                                 label.text__label(for='room') !{__('labels_room')}
                                 .field
