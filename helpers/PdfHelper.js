@@ -6,7 +6,7 @@ var RenderingPdfError = require(__dirname + '/../errors/RenderingPdfError');
 var session,
     jadeTemplate = jade.compileFile('public/templates/pdf-template.jade');
 
-function renderPdf(_session, req) {
+function renderPdf(_session, req, user) {
     return new Promise(function(resolve, reject) {
         var page;
 
@@ -35,7 +35,7 @@ function renderPdf(_session, req) {
             var style = req.protocol + '://' + req.get('host') + '/css/style.css';
 
             var html = jadeTemplate({
-                user: req.user,
+                user: user,
                 style: style
             });
 
@@ -45,7 +45,7 @@ function renderPdf(_session, req) {
                 }
 
                 var nowMs = new Date().getTime(),
-                    fileName = req.user.id + '-' + nowMs + '.pdf',
+                    fileName = user.id + '-' + nowMs + '.pdf',
                     filePath = 'public/others/';
                 wholePath = filePath + fileName;
 
@@ -106,10 +106,10 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 var PdfHelper = function() {
     var helper = {};
 
-    helper.getFile = function(req) {
+    helper.getFile = function(req, user) {
         return new Promise(function(resolve, reject) {
             createPhantomSession().then(function(session) {
-                renderPdf(session, req).then(function(wholePath) {
+                renderPdf(session, req, user).then(function(wholePath) {
                     resolve({
                         success: true,
                         file: wholePath

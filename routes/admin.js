@@ -210,10 +210,6 @@ router.get('/config', function(req, res, next) {
                         name: req.i18n.__('config_sections_1_labels_3'),
                         type: 'email'
                     },
-                    SEND_EMAILS: {
-                        name: req.i18n.__('config_sections_1_labels_1'),
-                        type: 'checkbox'
-                    },
                     PRERESERVATION_HEADING_CS: {
                         name: req.i18n.__('config_sections_1_labels_4'),
                         type: 'text'
@@ -277,6 +273,10 @@ router.get('/config', function(req, res, next) {
                     CANCELEDUSER_EN: {
                         name: req.i18n.__('config_sections_1_labels_19'),
                         type: 'textarea'
+                    },
+                    SEND_EMAILS: {
+                        name: req.i18n.__('config_sections_1_labels_1'),
+                        type: 'checkbox'
                     }
                 }
             },

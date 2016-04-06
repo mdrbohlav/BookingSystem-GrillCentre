@@ -32,13 +32,13 @@ function getSubjectAdmin(type, config) {
     return config.PRERESERVATION_HEADING_CS;
 }
 
-function sendAdmin(type, config) {
+function sendAdmin(type, config, date) {
     var email = new sendgrid.Email(),
         text = getTextAdmin(type, config),
         opt = {
             from: getFrom(config),
             to: config.SENDER_EMAIL,
-            subject: getSubject(type, config)
+            subject: getSubject(type, config).replace(/(\*datum\*|\*date\*)/, date)
         };
 
     email.addTo(opt.to);
@@ -81,7 +81,7 @@ function getSubject(type, config, locale) {
 var MailHelper = function() {
     var helper = {};
 
-    helper.send = function(user, type, filePath) {
+    helper.send = function(user, type, date, filePath) {
         return new Promise(function(resolve, reject) {
             var configCustom = JSON.parse(GetFile('./config/app.json')).custom,
                 email = new sendgrid.Email(),
@@ -89,7 +89,7 @@ var MailHelper = function() {
                 opt = {
                     from: getFrom(configCustom),
                     to: user.email,
-                    subject: getSubject(type, configCustom, user.locale)
+                    subject: getSubject(type, configCustom, date, user.locale).replace(/(\*datum\*|\*date\*)/, date)
                 };
 
             email.addTo(opt.to);
@@ -110,7 +110,7 @@ var MailHelper = function() {
                     });
 
                     sendgrid.send(email);
-                    sendAdmin(type, configCustom);
+                    sendAdmin(type, configCustom, date);
 
                     fs.unlink(filePath, function(err) {
                         if (err) {
@@ -121,7 +121,7 @@ var MailHelper = function() {
                 });
             } else {
                 sendgrid.send(email);
-                sendAdmin(type, configCustom);
+                sendAdmin(type, configCustom, date);
                 resolve({ success: true });
             }
         });

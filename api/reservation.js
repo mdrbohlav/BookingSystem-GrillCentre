@@ -11,11 +11,11 @@ var Reservation = require(__dirname + '/../models').Reservation,
     User = require(__dirname + '/user'),
     Accessory = require(__dirname + '/accessory');
 
-function processMail(req, state, pdfFile) {
+function processMail(user, type, date, pdfFile) {
     var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
 
     if (configCustom.SEND_EMAILS) {
-        return mail_helper.send(req, state, pdfFile.file).then(function(mailResponse) {
+        return mail_helper.send(user, type, date, pdfFile).then(function(mailResponse) {
             return { success: true };
         });
     } else {
@@ -23,9 +23,9 @@ function processMail(req, state, pdfFile) {
     }
 }
 
-function processPdfMail(req, state) {
-    return pdf_helper.getFile(req).then(function(pdfFile) {
-        return processMail(req, state, pdfFile);
+function processPdfMail(req, user, type, date) {
+    return pdf_helper.getFile(req, user).then(function(pdfFile) {
+        return processMail(user, type, date, pdfFile);
     });
 }
 
@@ -54,7 +54,7 @@ module.exports = {
                         plain.accessories.push(accessoriesData.accessories[i].get({ plain: true }));
                     }
                     return reservation.addAccessory(accessoriesData.accessories, { transaction: t }).then(function(response) {
-                        return mail_helper.send(req, plain.state).then(function(mailResponse) {
+                        return mail_helper.send(req.user, 'draft', plain.from).then(function(mailResponse) {
                             plain.mailSent = true;
                             return plain;
                         });
@@ -148,18 +148,25 @@ module.exports = {
                     id: id
                 }
             }, { transaction: t }).then(function(count) {
-                if ('state' in data && data.state === 'confirmed') {
-                    return Reservation.findById(id, { transaction: t }).then(function(reservation) {
-                        return User.getById(reservation.userId, { transaction: t }).then(function(user) {
-                            req.user = user.get({ plain: true });
-                            return processPdfMail(req, data.state).then(function(result) {
-                                return result;
-                            });
-                        });
-                    });
-                } else {
+                if (!('state' in data) || ['confirmed', 'canceled'].indexOf(data.state) < 0) {
                     return count;
                 }
+                return Reservation.findById(id, { transaction: t }).then(function(reservation) {
+                    reservation = reservation.get({ plain: true });
+                    return User.getById(reservation.userId, { transaction: t }).then(function(user) {
+                        user = user.get({ plain: true });
+                        if (data.state === 'canceled') {
+                            var type = data.stateChangedBy === user.id ? 'canceled_user' : 'canceled_admin';
+                            return mail_helper.send(user, type, reservation.from).then(function(mailResponse) {
+                                return { success: true };
+                            });
+                        } else {
+                            return processPdfMail(req, user, 'confirmed', reservation.from).then(function(result) {
+                                return result;
+                            });
+                        }
+                    });
+                });
             });
         });
     },

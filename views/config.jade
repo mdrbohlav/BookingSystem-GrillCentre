@@ -19,6 +19,11 @@ block content
                                                 span.checkbox
                                                     input(id= key, type= value.type, name= key, data-val='#{fileData.custom[key]}')
                                                 label.t__label(for= key)= value.name
+                                    else if value.type === 'textarea'
+                                        .field__container.col-xs-12.col-sm-6.margin--top-20
+                                            label.text__label(for= key)= value.name
+                                            .field
+                                                textarea(id= key, name= key, data-val= fileData.custom[key], required)
                                     else
                                         .field__container.col-xs-12.col-sm-6.margin--top-20
                                             label.text__label(for= key)= value.name
@@ -52,7 +57,7 @@ block scripts
                 });
             });
 
-            $('input[type="text"], input[type="email"]').each(function(i, element) {
+            $('input[type="text"], input[type="email"], textarea').each(function(i, element) {
                 var $element = $(element);
                 $element.val($element.attr('data-val'));
             });
@@ -77,7 +82,7 @@ block scripts
                     if (configDefault[key].type === 'time') {
                         var picker = $('#' + key).pickatime('picker');
                         picker.set('select', configDefault[key].value);
-                    } else if ([ 'text', 'email' ].indexOf(configDefault[key].type) > -1) {
+                    } else if ([ 'text', 'email', 'textarea' ].indexOf(configDefault[key].type) > -1) {
                         $('#' + key).val(configDefault[key].value);
                     } else if (configDefault[key].type === 'tel') {
                         $('#' + key).val(parseInt(configDefault[key].value));
@@ -120,7 +125,7 @@ block scripts
                     for (var key in configDefault) {
                         if (configDefault[key].type === 'time') {
                             data[key] = $('#' + key).pickatime('picker').get('select').pick;
-                        } else if (configDefault[key].type === 'text') {
+                        } else if (['text', 'email', 'textarea'].indexOf(configDefault[key].type) > -1) {
                             data[key] = $('#' + key).val();
                         } else if (configDefault[key].type === 'tel') {
                             data[key] = parseInt($('#' + key).val());

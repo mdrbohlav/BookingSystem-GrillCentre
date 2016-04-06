@@ -9,7 +9,7 @@
             "type": "tel"
         },
         "MAX_RESERVATION_LENGTH": {
-            "value": 3,
+            "value": 1,
             "type": "tel"
         },
         "MAX_RESERVATION_UPFRONT": {
@@ -17,7 +17,7 @@
             "type": "tel"
         },
         "SEND_EMAILS": {
-            "value": false,
+            "value": true,
             "type": "checkbox"
         },
         "KEY_PICKUP_FROM": {
@@ -41,35 +41,35 @@
             "type": "email"
         },
         "PRERESERVATION_HEADING_CS": {
-            "value": "[SiliconGrill] Nová rezervace na",
+            "value": "[SiliconGrill] Nová rezervace na *datum*",
             "type": "text"
         },
         "PRERESERVATION_HEADING_EN": {
-            "value": "[SiliconGrill] New reservation on",
+            "value": "[SiliconGrill] New reservation on *date*",
             "type": "text"
         },
         "CONFIRMATION_HEADING_CS": {
-            "value": "[SiliconGrill] Potvrzení rezervace na",
+            "value": "[SiliconGrill] Potvrzení rezervace na *datum*",
             "type": "text"
         },
         "CONFIRMATION_HEADING_EN": {
-            "value": "[SiliconGrill] Confirmed reservation on",
+            "value": "[SiliconGrill] Confirmed reservation on *date*",
             "type": "text"
         },
         "CANCELEDADMIN_HEADING_CS": {
-            "value": "[SiliconGrill] Zrušení rezervace na",
+            "value": "[SiliconGrill] Zrušení rezervace na *datum*",
             "type": "text"
         },
         "CANCELEDADMIN_HEADING_EN": {
-            "value": "[SiliconGrill] Canceled reservation on",
+            "value": "[SiliconGrill] Canceled reservation on *date*",
             "type": "text"
         },
         "CANCELEDUSER_HEADING_CS": {
-            "value": "[SiliconGrill] Zrušení rezervace na",
+            "value": "[SiliconGrill] Zrušení rezervace na *datum*",
             "type": "text"
         },
         "CANCELEDUSER_HEADING_EN": {
-            "value": "[SiliconGrill] Canceled reservation on",
+            "value": "[SiliconGrill] Canceled reservation on *date*",
             "type": "text"
         },
         "PRERESERVATION_CS": {
@@ -116,21 +116,21 @@
         "KEY_PICKUP_INTERVAL_MINS": 30,
         "SENDER_NAME": "Grill SiliconHill",
         "SENDER_EMAIL": "mettify@gmail.com",
-        "PRERESERVATION_HEADING_CS": "[SiliconGrill] Nová rezervace na",
-        "PRERESERVATION_HEADING_EN": "[SiliconGrill] New reservation on",
-        "CONFIRMATION_HEADING_CS": "[SiliconGrill] Potvrzení rezervace na",
-        "CONFIRMATION_HEADING_EN": "[SiliconGrill] Confirmed reservation on",
-        "CANCELEDADMIN_HEADING_CS": "[SiliconGrill] Zrušení rezervace na",
-        "CANCELEDADMIN_HEADING_EN": "[SiliconGrill] Canceled reservation on",
-        "CANCELEDUSER_HEADING_CS": "[SiliconGrill] Zrušení rezervace na",
-        "CANCELEDUSER_HEADING_EN": "[SiliconGrill] Canceled reservation on",
-        "PRERESERVATION_CS": "",
-        "PRERESERVATION_EN": "",
-        "CONFIRMATION_CS": "",
-        "CONFIRMATION_EN": "",
-        "CANCELEDADMIN_CS": "",
-        "CANCELEDADMIN_EN": "",
-        "CANCELEDUSER_CS": "",
-        "CANCELEDUSER_EN": ""
+        "PRERESERVATION_HEADING_CS": "[SiliconGrill] Nová rezervace na *datum*",
+        "PRERESERVATION_HEADING_EN": "[SiliconGrill] New reservation on *date*",
+        "CONFIRMATION_HEADING_CS": "[SiliconGrill] Potvrzení rezervace na *datum*",
+        "CONFIRMATION_HEADING_EN": "[SiliconGrill] Confirmed reservation on *date*",
+        "CANCELEDADMIN_HEADING_CS": "[SiliconGrill] Zrušení rezervace na *datum*",
+        "CANCELEDADMIN_HEADING_EN": "[SiliconGrill] Canceled reservation on *date*",
+        "CANCELEDUSER_HEADING_CS": "[SiliconGrill] Zrušení rezervace na *datum*",
+        "CANCELEDUSER_HEADING_EN": "[SiliconGrill] Canceled reservation on *date*",
+        "PRERESERVATION_CS": "a",
+        "PRERESERVATION_EN": "b",
+        "CONFIRMATION_CS": "c",
+        "CONFIRMATION_EN": "d",
+        "CANCELEDADMIN_CS": "e",
+        "CANCELEDADMIN_EN": "f",
+        "CANCELEDUSER_CS": "g",
+        "CANCELEDUSER_EN": "h"
     }
 }
