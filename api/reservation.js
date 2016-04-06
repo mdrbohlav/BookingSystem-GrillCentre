@@ -25,7 +25,7 @@ function processMail(user, type, date, pdfFile) {
 
 function processPdfMail(req, user, type, date) {
     return pdf_helper.getFile(req, user).then(function(pdfFile) {
-        return processMail(user, type, date, pdfFile);
+        return processMail(user, type, date, pdfFile.file);
     });
 }
 
@@ -37,7 +37,7 @@ module.exports = {
                 plain.accessories = [];
 
                 if (accessoriesArr.length === 0) {
-                    return mail_helper.send(req, plain.state).then(function(mailResponse) {
+                    return mail_helper.send(req.user, 'draft', plain.from).then(function(mailResponse) {
                         plain.mailSent = true;
                         return plain;
                     });
@@ -155,8 +155,9 @@ module.exports = {
                     reservation = reservation.get({ plain: true });
                     return User.getById(reservation.userId, { transaction: t }).then(function(user) {
                         user = user.get({ plain: true });
-                        if (data.state === 'canceled') {
+                        if (['canceled', 'rejected'].indexOf(data.state) > -1) {
                             var type = data.stateChangedBy === user.id ? 'canceled_user' : 'canceled_admin';
+                            console.log(type);
                             return mail_helper.send(user, type, reservation.from).then(function(mailResponse) {
                                 return { success: true };
                             });

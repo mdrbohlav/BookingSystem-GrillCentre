@@ -64,10 +64,12 @@ router.put('/:id/confirm', function(req, res, next) {
         console.log(data);
         if ('status' in data) {
             next(data);
-        } else {
+        } else if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else {
+            next(data);
         }
     });
 });

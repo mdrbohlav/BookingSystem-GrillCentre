@@ -27,6 +27,8 @@
 	"config_sections_2_labels_2": "Maximální počet rezervací na uživatele",
 	"config_sections_2_labels_3": "Maximální délka rezervace [dny]",
 	"config_sections_2_labels_4": "Rezervace dopředu [dny]",
+	"config_sections_2_labels_5": "Text výpůjční listiny [česky]",
+	"config_sections_2_labels_6": "Text výpůjční listiny [anglicky]",
 	"config_sections_3_title": "Vyzvednutí klíčů",
 	"config_sections_3_labels_1": "Minimální čas",
 	"config_sections_3_labels_2": "Maximální čas",

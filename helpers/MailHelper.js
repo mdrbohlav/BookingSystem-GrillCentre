@@ -1,6 +1,7 @@
 var nodemailer = require('nodemailer'),
     sendgrid = require("sendgrid")("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"),
-    fs = require('fs');
+    fs = require('fs'),
+    moment = require('moment');
 
 var GetFile = require(__dirname + '/../helpers/GetFile');
 
@@ -33,12 +34,13 @@ function getSubjectAdmin(type, config) {
 }
 
 function sendAdmin(type, config, date) {
+    moment.locale('cs');
     var email = new sendgrid.Email(),
         text = getTextAdmin(type, config),
         opt = {
             from: getFrom(config),
             to: config.SENDER_EMAIL,
-            subject: getSubject(type, config).replace(/(\*datum\*|\*date\*)/, date)
+            subject: getSubjectAdmin(type, config).replace(/(\*datum\*|\*date\*)/, moment(date).format('L'))
         };
 
     email.addTo(opt.to);
@@ -83,13 +85,15 @@ var MailHelper = function() {
 
     helper.send = function(user, type, date, filePath) {
         return new Promise(function(resolve, reject) {
+            locale = Object.keys(user.locale)[0];
+            moment.locale(locale);
             var configCustom = JSON.parse(GetFile('./config/app.json')).custom,
                 email = new sendgrid.Email(),
-                text = getText(type, configCustom, user.locale),
+                text = getText(type, configCustom, locale),
                 opt = {
                     from: getFrom(configCustom),
                     to: user.email,
-                    subject: getSubject(type, configCustom, date, user.locale).replace(/(\*datum\*|\*date\*)/, date)
+                    subject: getSubject(type, configCustom, locale).replace(/(\*datum\*|\*date\*)/, moment(date).format('L'))
                 };
 
             email.addTo(opt.to);
@@ -105,12 +109,11 @@ var MailHelper = function() {
                     }
 
                     email.addFile({
-                        filename: user.locale === 'cs' ? 'vypujcni_listina.pdf' : 'loan_agreement.pdf',
+                        filename: locale === 'cs' ? 'vypujcni_listina.pdf' : 'loan_agreement.pdf',
                         content: data
                     });
 
                     sendgrid.send(email);
-                    sendAdmin(type, configCustom, date);
 
                     fs.unlink(filePath, function(err) {
                         if (err) {

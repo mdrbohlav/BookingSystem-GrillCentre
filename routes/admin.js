@@ -76,7 +76,6 @@ router.get('/reservations', function(req, res, next) {
         if (req.query.accept && req.query.accept === 'json') {
             res.json(result);
         } else {
-            console.log(result);
             res.render('reservations', {
                 page: 'reservations',
                 title: req.i18n.__('titles_2') + ' | ' + req.i18n.__('title'),
@@ -298,6 +297,14 @@ router.get('/config', function(req, res, next) {
                     MAX_RESERVATION_UPFRONT: {
                         name: req.i18n.__('config_sections_2_labels_4'),
                         type: 'tel'
+                    },
+                    PDF_CS: {
+                        name: req.i18n.__('config_sections_2_labels_5'),
+                        type: 'textarea'
+                    },
+                    PDF_EN: {
+                        name: req.i18n.__('config_sections_2_labels_6'),
+                        type: 'textarea'
                     }
                 }
             },

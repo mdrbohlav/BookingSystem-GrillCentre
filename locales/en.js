@@ -27,6 +27,8 @@
 	"config_sections_2_labels_2": "Maximum reservations per user",
 	"config_sections_2_labels_3": "Maximal length of reservation [days]",
 	"config_sections_2_labels_4": "Reservation upfront [days]",
+	"config_sections_2_labels_5": "Text of the loan agreement [czech]",
+	"config_sections_2_labels_6": "Text of the loan agreement [English]",
 	"config_sections_3_title": "Key pickup",
 	"config_sections_3_labels_1": "Minimal time",
 	"config_sections_3_labels_2": "MAximal time",

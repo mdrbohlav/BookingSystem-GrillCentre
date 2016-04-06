@@ -103,6 +103,14 @@
         "CANCELEDUSER_EN": {
             "value": "",
             "type": "textarea"
+        },
+        "PDF_CS": {
+            "value": "",
+            "type": "textarea"
+        },
+        "PDF_EN": {
+            "value": "",
+            "type": "textarea"
         }
     },
     "custom": {
@@ -131,6 +139,8 @@
         "CANCELEDADMIN_CS": "e",
         "CANCELEDADMIN_EN": "f",
         "CANCELEDUSER_CS": "g",
-        "CANCELEDUSER_EN": "h"
+        "CANCELEDUSER_EN": "h",
+        "PDF_CS": "i",
+        "PDF_EN": "j"
     }
 }
