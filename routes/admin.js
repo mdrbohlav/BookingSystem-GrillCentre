@@ -203,16 +203,80 @@ router.get('/config', function(req, res, next) {
                 name: req.i18n.__('config_sections_1_title'),
                 fields: {
                     SENDER_NAME: {
-                        name: req.i18n.__('config_sections_1_labels_4'),
+                        name: req.i18n.__('config_sections_1_labels_2'),
                         type: 'text'
                     },
                     SENDER_EMAIL: {
-                        name: req.i18n.__('config_sections_1_labels_5'),
+                        name: req.i18n.__('config_sections_1_labels_3'),
                         type: 'email'
                     },
                     SEND_EMAILS: {
-                        name: req.i18n.__('config_sections_1_labels_3'),
+                        name: req.i18n.__('config_sections_1_labels_1'),
                         type: 'checkbox'
+                    },
+                    PRERESERVATION_HEADING_CS: {
+                        name: req.i18n.__('config_sections_1_labels_4'),
+                        type: 'text'
+                    },
+                    PRERESERVATION_HEADING_EN: {
+                        name: req.i18n.__('config_sections_1_labels_5'),
+                        type: 'text'
+                    },
+                    CONFIRMATION_HEADING_CS: {
+                        name: req.i18n.__('config_sections_1_labels_6'),
+                        type: 'text'
+                    },
+                    CONFIRMATION_HEADING_EN: {
+                        name: req.i18n.__('config_sections_1_labels_7'),
+                        type: 'text'
+                    },
+                    CANCELEDADMIN_HEADING_CS: {
+                        name: req.i18n.__('config_sections_1_labels_8'),
+                        type: 'text'
+                    },
+                    CANCELEDADMIN_HEADING_EN: {
+                        name: req.i18n.__('config_sections_1_labels_9'),
+                        type: 'text'
+                    },
+                    CANCELEDUSER_HEADING_CS: {
+                        name: req.i18n.__('config_sections_1_labels_10'),
+                        type: 'text'
+                    },
+                    CANCELEDUSER_HEADING_EN: {
+                        name: req.i18n.__('config_sections_1_labels_11'),
+                        type: 'text'
+                    },
+                    PRERESERVATION_CS: {
+                        name: req.i18n.__('config_sections_1_labels_12'),
+                        type: 'textarea'
+                    },
+                    PRERESERVATION_EN: {
+                        name: req.i18n.__('config_sections_1_labels_13'),
+                        type: 'textarea'
+                    },
+                    CONFIRMATION_CS: {
+                        name: req.i18n.__('config_sections_1_labels_14'),
+                        type: 'textarea'
+                    },
+                    CONFIRMATION_EN: {
+                        name: req.i18n.__('config_sections_1_labels_15'),
+                        type: 'textarea'
+                    },
+                    CANCELEDADMIN_CS: {
+                        name: req.i18n.__('config_sections_1_labels_16'),
+                        type: 'textarea'
+                    },
+                    CANCELEDADMIN_EN: {
+                        name: req.i18n.__('config_sections_1_labels_17'),
+                        type: 'textarea'
+                    },
+                    CANCELEDUSER_CS: {
+                        name: req.i18n.__('config_sections_1_labels_18'),
+                        type: 'textarea'
+                    },
+                    CANCELEDUSER_EN: {
+                        name: req.i18n.__('config_sections_1_labels_19'),
+                        type: 'textarea'
                     }
                 }
             },

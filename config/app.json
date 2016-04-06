@@ -37,8 +37,72 @@
             "type": "text"
         },
         "SENDER_EMAIL": {
-            "value": "test@email.com",
+            "value": "mettify@gmail.com",
             "type": "email"
+        },
+        "PRERESERVATION_HEADING_CS": {
+            "value": "[SiliconGrill] Nová rezervace na",
+            "type": "text"
+        },
+        "PRERESERVATION_HEADING_EN": {
+            "value": "[SiliconGrill] New reservation on",
+            "type": "text"
+        },
+        "CONFIRMATION_HEADING_CS": {
+            "value": "[SiliconGrill] Potvrzení rezervace na",
+            "type": "text"
+        },
+        "CONFIRMATION_HEADING_EN": {
+            "value": "[SiliconGrill] Confirmed reservation on",
+            "type": "text"
+        },
+        "CANCELEDADMIN_HEADING_CS": {
+            "value": "[SiliconGrill] Zrušení rezervace na",
+            "type": "text"
+        },
+        "CANCELEDADMIN_HEADING_EN": {
+            "value": "[SiliconGrill] Canceled reservation on",
+            "type": "text"
+        },
+        "CANCELEDUSER_HEADING_CS": {
+            "value": "[SiliconGrill] Zrušení rezervace na",
+            "type": "text"
+        },
+        "CANCELEDUSER_HEADING_EN": {
+            "value": "[SiliconGrill] Canceled reservation on",
+            "type": "text"
+        },
+        "PRERESERVATION_CS": {
+            "value": "",
+            "type": "textarea"
+        },
+        "PRERESERVATION_EN": {
+            "value": "",
+            "type": "textarea"
+        },
+        "CONFIRMATION_CS": {
+            "value": "",
+            "type": "textarea"
+        },
+        "CONFIRMATION_EN": {
+            "value": "",
+            "type": "textarea"
+        },
+        "CANCELEDADMIN_CS": {
+            "value": "",
+            "type": "textarea"
+        },
+        "CANCELEDADMIN_EN": {
+            "value": "",
+            "type": "textarea"
+        },
+        "CANCELEDUSER_CS": {
+            "value": "",
+            "type": "textarea"
+        },
+        "CANCELEDUSER_EN": {
+            "value": "",
+            "type": "textarea"
         }
     },
     "custom": {
@@ -51,6 +115,22 @@
         "KEY_PICKUP_TO": 1200,
         "KEY_PICKUP_INTERVAL_MINS": 30,
         "SENDER_NAME": "Grill SiliconHill",
-        "SENDER_EMAIL": "test@email.com"
+        "SENDER_EMAIL": "mettify@gmail.com",
+        "PRERESERVATION_HEADING_CS": "[SiliconGrill] Nová rezervace na",
+        "PRERESERVATION_HEADING_EN": "[SiliconGrill] New reservation on",
+        "CONFIRMATION_HEADING_CS": "[SiliconGrill] Potvrzení rezervace na",
+        "CONFIRMATION_HEADING_EN": "[SiliconGrill] Confirmed reservation on",
+        "CANCELEDADMIN_HEADING_CS": "[SiliconGrill] Zrušení rezervace na",
+        "CANCELEDADMIN_HEADING_EN": "[SiliconGrill] Canceled reservation on",
+        "CANCELEDUSER_HEADING_CS": "[SiliconGrill] Zrušení rezervace na",
+        "CANCELEDUSER_HEADING_EN": "[SiliconGrill] Canceled reservation on",
+        "PRERESERVATION_CS": "",
+        "PRERESERVATION_EN": "",
+        "CONFIRMATION_CS": "",
+        "CONFIRMATION_EN": "",
+        "CANCELEDADMIN_CS": "",
+        "CANCELEDADMIN_EN": "",
+        "CANCELEDUSER_CS": "",
+        "CANCELEDUSER_EN": ""
     }
 }
