@@ -18,8 +18,7 @@ function prepareISData(profile) {
         isId: profile.id,
         phone: profile.phone,
         firstname: profile.first_name,
-        lastname: profile.surname,
-        locale: profile.ui_language
+        lastname: profile.surname
     };
 }
 
@@ -107,7 +106,21 @@ module.exports.isAuth = function(accessToken, refreshToken, profile) {
                 if (user.banned) {
                     reject(new UserBannedError());
                 }
-                resolve(user);
+
+                if (created) {
+                    var data = {
+                        id: user.id,
+                        locale: profile.locale
+                    };
+                    UserApi.update(data).then(function(count) {
+                        if (count) {
+                            user.locale = profile.locale;
+                        }
+                        resolve(user);
+                    });
+                } else {
+                    resolve(user);
+                }
             });
         }).catch(function(err) {
             reject(new InvalidRequestError(err.message));

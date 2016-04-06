@@ -145,6 +145,57 @@ FinishReservationHelper.scheduleFinishReservations();
 // init ICal calendar
 ICalHelper.initCalendar();
 
+// locales
+Array.prototype.move = function(old_index, new_index) {
+    if (new_index >= this.length) {
+        var k = new_index - this.length;
+        while ((k--) + 1) {
+            this.push(undefined);
+        }
+    }
+    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+};
+
+var availableLocales = fs.readdirSync(__dirname + '/locales'),
+    csIndex = 0;
+for (var i = 0; i < availableLocales.length; i++) {
+    availableLocales[i] = availableLocales[i].replace(/\.js/, '');
+    if (availableLocales[i] === 'cs') {
+        csIndex = i;
+    }
+}
+
+if (csIndex > 0) {
+    availableLocales.move(csIndex, 0);
+}
+
+i18n.expressBind(app, {
+    locales: availableLocales,
+    defaultLocale: 'cs'
+});
+
+app.use(function(req, res, next) {
+    res.locals.isoLocales = isoLocales;
+    res.locals.availableLocales = availableLocales;
+    var locale = 'cs';
+    if (req.user) {
+        locale = Object.keys(req.user.locale)[0];
+    } else if (req.cookies.locale) {
+        locale = req.cookies.locale;
+    } else {
+        var tmp = req.headers['accept-language'].split(/[\s,;]/);
+        for (var i = 0; i < tmp.length; i++) {
+            if (availableLocales.indexOf(tmp[i]) > -1) {
+                locale = tmp[i];
+                break;
+            }
+        }
+    }
+    res.locals.locale = locale;
+    req.i18n.setLocale(locale);
+    next();
+});
+
 // session-persisted message middleware
 app.use(function(req, res, next) {
     var err = req.session.error,
@@ -209,6 +260,7 @@ passport.use('login-is', new OAuth2Strategy({
             }
         });
     }).then(function() {
+        data.locale = i18n.getLocale();
         return AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
             if (user) {
                 req.session.success = 'You are successfully logged in ' + user.fullName + '!';
@@ -243,57 +295,6 @@ passport.deserializeUser(function(obj, done) {
 //    res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
 //    next();
 //});
-
-
-// locales
-Array.prototype.move = function(old_index, new_index) {
-    if (new_index >= this.length) {
-        var k = new_index - this.length;
-        while ((k--) + 1) {
-            this.push(undefined);
-        }
-    }
-    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
-};
-
-var availableLocales = fs.readdirSync(__dirname + '/locales'),
-    csIndex = 0;
-for (var i = 0; i < availableLocales.length; i++) {
-    availableLocales[i] = availableLocales[i].replace(/\.js/, '');
-    if (availableLocales[i] === 'cs') {
-        csIndex = i;
-    }
-}
-
-if (csIndex > 0) {
-    availableLocales.move(csIndex, 0);
-}
-
-i18n.expressBind(app, {
-    locales: availableLocales
-});
-
-app.use(function(req, res, next) {
-    res.locals.isoLocales = isoLocales;
-    res.locals.availableLocales = availableLocales;
-    var locale = 'cs';
-    if (req.user) {
-        locale = Object.keys(req.user.locale)[0];
-    } else if (req.cookies.locale) {
-        locale = req.cookies.locale;
-    } else {
-        var tmp = req.headers['accept-language'].split(/[\s,;]/);
-        for (var i = 0; i < tmp.length; i++) {
-            if (availableLocales.indexOf(tmp[i]) > -1) {
-                locale = tmp[i];
-                break;
-            }
-        }
-    }
-    res.locals.locale = locale;
-    req.i18n.setLocale(locale);
-    next();
-});
 
 // routes require login
 var UnauthorizedError = require(__dirname + '/errors/UnauthorizedError');
