@@ -11,11 +11,11 @@ var Reservation = require(__dirname + '/../models').Reservation,
     User = require(__dirname + '/user'),
     Accessory = require(__dirname + '/accessory');
 
-function processMail(user, type, date, pdfFile) {
+function processMail(user, type, dates, pdfFile) {
     var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
 
     if (configCustom.SEND_EMAILS) {
-        return mail_helper.send(user, type, date, pdfFile).then(function(mailResponse) {
+        return mail_helper.send(user, type, dates, pdfFile).then(function(mailResponse) {
             return { success: true };
         });
     } else {
@@ -23,9 +23,9 @@ function processMail(user, type, date, pdfFile) {
     }
 }
 
-function processPdfMail(req, user, type, date) {
+function processPdfMail(req, user, type, dates) {
     return pdf_helper.getFile(req, user).then(function(pdfFile) {
-        return processMail(user, type, date, pdfFile.file);
+        return processMail(user, type, dates, pdfFile.file);
     });
 }
 
@@ -37,7 +37,11 @@ module.exports = {
                 plain.accessories = [];
 
                 if (accessoriesArr.length === 0) {
-                    return mail_helper.send(req.user, 'draft', plain.from).then(function(mailResponse) {
+                    var dates = {
+                        from: plain.from,
+                        to: plain.to
+                    };
+                    return mail_helper.send(req.user, 'draft', dates).then(function(mailResponse) {
                         plain.mailSent = true;
                         return plain;
                     });
@@ -54,7 +58,11 @@ module.exports = {
                         plain.accessories.push(accessoriesData.accessories[i].get({ plain: true }));
                     }
                     return reservation.addAccessory(accessoriesData.accessories, { transaction: t }).then(function(response) {
-                        return mail_helper.send(req.user, 'draft', plain.from).then(function(mailResponse) {
+                        var dates = {
+                            from: plain.from,
+                            to: plain.to
+                        };
+                        return mail_helper.send(req.user, 'draft', dates).then(function(mailResponse) {
                             plain.mailSent = true;
                             return plain;
                         });
@@ -155,14 +163,17 @@ module.exports = {
                     reservation = reservation.get({ plain: true });
                     return User.getById(reservation.userId, { transaction: t }).then(function(user) {
                         user = user.get({ plain: true });
+                        var dates = {
+                            from: reservation.from,
+                            to: reservation.to
+                        };
                         if (['canceled', 'rejected'].indexOf(data.state) > -1) {
                             var type = data.stateChangedBy === user.id ? 'canceled_user' : 'canceled_admin';
-                            console.log(type);
-                            return mail_helper.send(user, type, reservation.from).then(function(mailResponse) {
+                            return mail_helper.send(user, type, dates).then(function(mailResponse) {
                                 return { success: true };
                             });
                         } else {
-                            return processPdfMail(req, user, 'confirmed', reservation.from).then(function(result) {
+                            return processPdfMail(req, user, 'confirmed', dates).then(function(result) {
                                 return result;
                             });
                         }

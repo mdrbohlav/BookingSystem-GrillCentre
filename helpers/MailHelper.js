@@ -1,11 +1,12 @@
 var nodemailer = require('nodemailer'),
     sendgrid = require("sendgrid")("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"),
     fs = require('fs'),
-    moment = require('moment');
+    moment = require('moment'),
+    marked = require('marked');
 
-var GetFile = require(__dirname + '/../helpers/GetFile');
-
-var MailError = require(__dirname + '/../errors/MailError');
+var MailError = require(__dirname + '/../errors/MailError'),
+    GetFile = require(__dirname + '/../helpers/GetFile'),
+    Reservation = require(__dirname + '/../models').Reservation;
 
 var transporter = nodemailer.createTransport();
 
@@ -33,7 +34,7 @@ function getSubjectAdmin(type, config) {
     return config.PRERESERVATION_HEADING_CS;
 }
 
-function sendAdmin(type, config, date) {
+function sendAdmin(type, config, date, order) {
     moment.locale('cs');
     var email = new sendgrid.Email(),
         text = getTextAdmin(type, config),
@@ -47,7 +48,12 @@ function sendAdmin(type, config, date) {
     email.setFrom(opt.from);
     email.setSubject(opt.subject);
 
-    email.setHtml(text);
+    text = text.replace(/(\*datum\*|\*date\*)/, moment(date).format('L')).replace(/\n\r?/g, '<br>');
+    if (order) {
+        text = text.replace(/(\*poradi\*|\*order\*)/, order);
+    }
+
+    email.setHtml(marked(text));
 
     sendgrid.send(email);
 }
@@ -83,7 +89,7 @@ function getSubject(type, config, locale) {
 var MailHelper = function() {
     var helper = {};
 
-    helper.send = function(user, type, date, filePath) {
+    helper.send = function(user, type, dates, filePath) {
         return new Promise(function(resolve, reject) {
             locale = Object.keys(user.locale)[0];
             moment.locale(locale);
@@ -93,14 +99,14 @@ var MailHelper = function() {
                 opt = {
                     from: getFrom(configCustom),
                     to: user.email,
-                    subject: getSubject(type, configCustom, locale).replace(/(\*datum\*|\*date\*)/, moment(date).format('L'))
+                    subject: getSubject(type, configCustom, locale).replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
                 };
 
             email.addTo(opt.to);
             email.setFrom(opt.from);
             email.setSubject(opt.subject);
 
-            email.setHtml(text);
+            text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L')).replace(/\n\r?/g, '<br>');
 
             if (type === 'confirmed') {
                 fs.readFile(filePath, function(err, data) {
@@ -108,6 +114,7 @@ var MailHelper = function() {
                         reject(new MailError(err));
                     }
 
+                    email.setHtml(marked(text));
                     email.addFile({
                         filename: locale === 'cs' ? 'vypujcni_listina.pdf' : 'loan_agreement.pdf',
                         content: data
@@ -122,9 +129,59 @@ var MailHelper = function() {
                         resolve({ success: true });
                     });
                 });
+            } else if (type === 'draft') {
+                var dateStart = new Date(dates.from),
+                    dateEnd = new Date(dates.to);
+
+                dateStart.setUTCHours(0, 0, 0, 0);
+                dateEnd.setUTCHours(23, 59, 59, 999);
+
+                dateStartString = dateStart.toISOString();
+                dateEndString = dateEnd.toISOString();
+
+                var options = {
+                    where: {
+                        $and: [{
+                            $or: [{
+                                state: 'draft'
+                            }, {
+                                state: 'confirmed'
+                            }]
+                        }, {
+                            $or: [{
+                                $and: [
+                                    { from: { $lte: dateStartString } },
+                                    { to: { $gte: dateStartString } }
+                                ]
+                            }, {
+                                $and: [
+                                    { from: { $lte: dateEndString } },
+                                    { to: { $gte: dateEndString } }
+                                ]
+                            }, {
+                                $and: [
+                                    { from: { $gte: dateStartString } },
+                                    { to: { $lte: dateEndString } }
+                                ]
+                            }]
+                        }]
+                    }
+                };
+
+                Reservation.count(options).then(function(order) {
+                    order++;
+                    text = text.replace(/(\*poradi\*|\*order\*)/, order);
+                    email.setHtml(marked(text));
+                    sendgrid.send(email);
+                    sendAdmin(type, configCustom, dates.from, order);
+                    resolve({ success: true });
+                }).catch(function(err) {
+                    reject(err);
+                });
             } else {
+                email.setHtml(marked(text));
                 sendgrid.send(email);
-                sendAdmin(type, configCustom, date);
+                sendAdmin(type, configCustom, dates.from);
                 resolve({ success: true });
             }
         });

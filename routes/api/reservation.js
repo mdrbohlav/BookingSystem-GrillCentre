@@ -59,6 +59,11 @@ router.post('/create', function(req, res, next) {
                     { from: { $lte: dateEndString } },
                     { to: { $gte: dateEndString } }
                 ]
+            }, {
+                $and: [
+                    { from: { $gte: dateStartString } },
+                    { to: { $lte: dateEndString } }
+                ]
             }]
         }
     };
@@ -111,12 +116,15 @@ router.post('/create', function(req, res, next) {
             });
         });
     }).catch(function(data) {
+        console.log(data);
         if ('status' in data) {
             next(data);
-        } else {
+        } else if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else {
+            next(data);
         }
     });
 });

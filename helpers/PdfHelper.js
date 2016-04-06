@@ -1,5 +1,8 @@
 var phantom = require('phantom'),
-    jade = require('jade');
+    jade = require('jade'),
+    marked = require('marked');
+
+var GetFile = require(__dirname + '/../helpers/GetFile');
 
 var RenderingPdfError = require(__dirname + '/../errors/RenderingPdfError');
 
@@ -11,18 +14,21 @@ function renderPdf(_session, req, user) {
         var page;
 
         _session.createPage().then(function(_page) {
+            var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
+
             page = _page;
             page.setting('loadImages', true);
             page.setting('localToRemoteUrlAccessEnabled', true);
             page.setting('loadPlugins', false);
-            page.property('viewportSize', {
-                width: 800,
-                height: 600
-            });
             page.property('paperSize', {
                 format: 'A4',
                 orientation: 'portrait',
-                border: '1.5cm'
+                margin: {
+                    bottom: '1.5cm',
+                    top: '1.5cm',
+                    left: '2cm',
+                    right: '2cm'
+                }
             });
 
             page.property('onResourceRequested', function(rd, req) {
@@ -34,8 +40,25 @@ function renderPdf(_session, req, user) {
 
             var style = req.protocol + '://' + req.get('host') + '/css/style.css';
 
+            var text = Object.keys(user.locale)[0] === 'cs' ? configCustom.PDF_CS : configCustom.PDF_EN,
+                lastname = user.lastname ? user.lastname : '..........................................',
+                room = user.room ? user.room : '............',
+                block = user.block ? user.block : '............',
+                isId = user.isId ? user.isId : '........................',
+                phone = user.phone ? user.phone.replace(/^00/, '+') : '....................................';
+
+            text = text.replace(/(\*jmeno\*|\*name\*)/, user.firstname);
+            text = text.replace(/(\*prijmeni\*|\*surname\*)/, lastname);
+            text = text.replace(/\*email\*/, user.email);
+            text = text.replace(/(\*pokoj\*|\*room\*)/, room);
+            text = text.replace(/(\*blok\*|\*block\*)/, block);
+            text = text.replace(/\*uid\*/, isId);
+            text = text.replace(/(\*telefon\*|\*phone\*)/, phone);
+
+            console.log (marked(text));
+
             var html = jadeTemplate({
-                user: user,
+                text: marked(text),
                 style: style
             });
 
