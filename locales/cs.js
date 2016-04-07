@@ -38,7 +38,7 @@
 	"buttons_isLogin": "Přihlasit pomocí ISu",
 	"buttons_nativeLogin": "Přihlásit pomocí emailu",
 	"buttons_login": "Přihlásit",
-	"buttons_save": "Uožit",
+	"buttons_save": "Uložit",
 	"buttons_setDefault": "Nastavit výchozí hodnoty",
 	"buttons_create": "Vytvořit",
 	"buttons_cancel": "Zrušit",

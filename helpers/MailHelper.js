@@ -237,8 +237,11 @@ var MailHelper = function() {
                 text = getText(type, configCustom, locale),
                 opt = {
                     from: getFrom(configCustom),
-                    to: 'm.drbohlav@sh.cvut.cz', //user.email,
+                    to: user.email,
                     subject: getSubject(type, configCustom, locale).replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
+                    headers: {
+                        'x-grill': type
+                    }
                 };
 
             text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L')).replace(/\n\r?/g, '<br>');
