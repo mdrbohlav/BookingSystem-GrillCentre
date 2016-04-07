@@ -2,6 +2,8 @@
 	"title": "Gril centrum SiliconHill",
 	"siliconhill": "SiliconHill",
 	"description": "Rezervační systém pro grilovací centrum na strahovských kolejích u bloku 11.",
+	"config__sections_0_title": "Obecné",
+	"config_sections_0_labels_1": "Admin práva podle UID z ISu [oddělené ;]",
 	"config_sections_1_title": "Emaily",
 	"config_sections_1_labels_1": "Posílat emaily",
 	"config_sections_1_labels_2": "Jméno odesílatele",

@@ -532,11 +532,12 @@ block scripts
                             dateTo.clear();
                             $dateTo.parent().removeClass('error');
                         }
-                        if ($('#mobileGrill').prop('checked')) {
-                            $('#mobileGrill').trigger('click');
-                        }
                         $('.accessories input[type="checkbox"]').each(function(i, element) {
-                            if ($(element).prop('checked')) {
+                            if ($(element).attr('name') === 'mobileGrill') {
+                                if (!$(element).prop('checked')) {
+                                    $(element).trigger('click');
+                                }
+                            } else if ($(element).prop('checked')) {
                                 $(element).trigger('click');
                             }
                         });

@@ -7,19 +7,28 @@ var InvalidPasswordError = require(__dirname + '/../errors/InvalidPasswordError'
     UnauthorizedError = require(__dirname + '/../errors/UnauthorizedError'),
     UserDoesnotExistError = require(__dirname + '/../errors/UserDoesnotExistError'),
     UserBannedError = require(__dirname + '/../errors/UserBannedError'),
-    NotPaidError = require(__dirname + '/../errors/NotPaidError');
+    NotPaidError = require(__dirname + '/../errors/NotPaidError'),
+    GetFile = require(__dirname + '/../helpers/GetFile');
 
 var User = require(__dirname + '/../models').User,
     UserApi = require(__dirname + '/../api/user');
 
 function prepareISData(profile) {
-    return {
-        email: profile.email,
-        isId: profile.id,
-        phone: profile.phone,
-        firstname: profile.first_name,
-        lastname: profile.surname
-    };
+    var configCustom = JSON.parse(GetFile('./config/app.json')).custom,
+        adminIDs = configCustom.ADMIN_IS.split(';'),
+        data = {
+            email: profile.email,
+            isId: profile.id,
+            phone: profile.phone,
+            firstname: profile.first_name,
+            lastname: profile.surname
+        };
+
+    if (adminIDs.indexOf(profile.id.toString()) > -1) {
+        data.isAdmin = true;
+    }
+
+    return data;
 }
 
 // verify password

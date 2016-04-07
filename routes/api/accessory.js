@@ -16,12 +16,18 @@ router.get('/', function(req, res, next) {
     Accessory.get(where).then(function(result) {
         res.json(result);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -32,12 +38,18 @@ router.get('/:id', function(req, res, next) {
     Accessory.getById(id).then(function(accessory) {
         res.json(accessory);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });

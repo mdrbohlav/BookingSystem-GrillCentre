@@ -1,4 +1,5 @@
 var nodemailer = require('nodemailer'),
+    transporter = nodemailer.createTransport('smtp://smtp.sh.cvut.cz'),
     sendgrid = require("sendgrid")("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"),
     fs = require('fs'),
     moment = require('moment'),
@@ -35,27 +36,166 @@ function getSubjectAdmin(type, config) {
 }
 
 function sendAdmin(type, config, date, order) {
-    moment.locale('cs');
-    var email = new sendgrid.Email(),
-        text = getTextAdmin(type, config),
-        opt = {
-            from: getFrom(config),
-            to: config.SENDER_EMAIL,
-            subject: getSubjectAdmin(type, config).replace(/(\*datum\*|\*date\*)/, moment(date).format('L'))
-        };
+    return new Promise(function(resolve, reject) {
+        moment.locale('cs');
+        var text = getTextAdmin(type, config),
+            opt = {
+                from: getFrom(config),
+                to: config.SENDER_EMAIL,
+                subject: getSubjectAdmin(type, config).replace(/(\*datum\*|\*date\*)/, moment(date).format('L'))
+            };
 
-    email.addTo(opt.to);
-    email.setFrom(opt.from);
-    email.setSubject(opt.subject);
+        opt.html = text.replace(/(\*datum\*|\*date\*)/, moment(date).format('L')).replace(/\n\r?/g, '<br>');
+        if (order) {
+            opt.html = opt.html.replace(/(\*poradi\*|\*order\*)/, order);
+        }
+        opt.html = marked(opt.html);
 
-    text = text.replace(/(\*datum\*|\*date\*)/, moment(date).format('L')).replace(/\n\r?/g, '<br>');
-    if (order) {
-        text = text.replace(/(\*poradi\*|\*order\*)/, order);
-    }
+        function sendCb(err, json) {
+            if (err) {
+                reject(new MailError(err));
+            }
 
-    email.setHtml(marked(text));
+            resolve({ success: true });
+        }
 
-    sendgrid.send(email);
+        if (/@sh\.cvut\.cz$/.test(opt.to)) {
+            transporter.sendMail(opt, sendCb)
+        } else {
+            var email = new sendgrid.Email(opt);
+            sendgrid.send(email, sendCb);
+        }
+    });
+}
+
+function getOrderCountOptions(dateStartString, dateEndString) {
+    return {
+        where: {
+            $and: [{
+                $or: [{
+                    state: 'draft'
+                }, {
+                    state: 'confirmed'
+                }]
+            }, {
+                $or: [{
+                    $and: [
+                        { from: { $lte: dateStartString } },
+                        { to: { $gte: dateStartString } }
+                    ]
+                }, {
+                    $and: [
+                        { from: { $lte: dateEndString } },
+                        { to: { $gte: dateEndString } }
+                    ]
+                }, {
+                    $and: [
+                        { from: { $gte: dateStartString } },
+                        { to: { $lte: dateEndString } }
+                    ]
+                }]
+            }]
+        }
+    };
+}
+
+function sendDraft(type, dates, opt, config) {
+    return new Promise(function(resolve, reject) {
+        var dateStart = new Date(dates.from),
+            dateEnd = new Date(dates.to);
+
+        dateStart.setUTCHours(0, 0, 0, 0);
+        dateEnd.setUTCHours(23, 59, 59, 999);
+
+        dateStartString = dateStart.toISOString();
+        dateEndString = dateEnd.toISOString();
+
+        var options = getOrderCountOptions(dateStartString, dateEndString);
+
+        Reservation.count(options).then(function(order) {
+            order++;
+            opt.html = opt.html.replace(/(\*poradi\*|\*order\*)/, order);
+            opt.html = marked(opt.html);
+
+            function sendCb(err, json) {
+                if (err) {
+                    reject(new MailError(err));
+                }
+
+                sendAdmin(type, config, dates.from, order).then(function(res) {
+                    resolve({ success: true });
+                }).catch(function(err) {
+                    reject(new MailError(err));
+                });
+            }
+
+            if (/@sh\.cvut\.cz$/.test(opt.to)) {
+                transporter.sendMail(opt, sendCb);
+            } else {
+                var email = new sendgrid.Email(opt);
+                sendgrid.send(email, sendCb);
+            }
+        });
+    });
+}
+
+function sendConfirmed(filePath, opt) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(filePath, function(err, data) {
+            if (err) {
+                reject(new MailError(err));
+            }
+
+            opt.html = marked(opt.html);
+
+            var file = {
+                filename: locale === 'cs' ? 'vypujcni_listina.pdf' : 'loan_agreement.pdf',
+                content: data
+            };
+
+            function sendCb(err, json) {
+                if (err) {
+                    reject(new MailError(err));
+                }
+
+                resolve({ success: true });
+            }
+
+            if (/@sh\.cvut\.cz$/.test(opt.to)) {
+                opt.attachments = [file];
+                transporter.sendMail(opt, sendCb);
+            } else {
+                opt.files = [file];
+                var email = new sendgrid.Email(opt);
+                sendgrid.send(email, sendCb);
+            }
+        });
+    });
+}
+
+function sendCanceled(type, dates, opt, config) {
+    return new Promise(function(resolve, reject) {
+        opt.html = marked(opt.html);
+
+        function sendCb(err, json) {
+            if (err) {
+                reject(new MailError(err));
+            }
+
+            sendAdmin(type, config, dates.from).then(function(res) {
+                resolve({ success: true });
+            }).catch(function(err) {
+                reject(new MailError(err));
+            });
+        }
+
+        if (/@sh\.cvut\.cz$/.test(opt.to)) {
+            transporter.sendMail(opt, sendCb);
+        } else {
+            var email = new sendgrid.Email(opt);
+            sendgrid.send(email, sendCb);
+        }
+    });
 }
 
 function getText(type, config, locale) {
@@ -71,7 +211,7 @@ function getText(type, config, locale) {
 }
 
 function getFrom(config) {
-    return config.SENDER_NAME + ' <' + config.SENDER_EMAIL + '>';
+    return '"' + config.SENDER_NAME + '" <' + config.SENDER_EMAIL + '>';
 }
 
 function getSubject(type, config, locale) {
@@ -94,95 +234,34 @@ var MailHelper = function() {
             locale = Object.keys(user.locale)[0];
             moment.locale(locale);
             var configCustom = JSON.parse(GetFile('./config/app.json')).custom,
-                email = new sendgrid.Email(),
                 text = getText(type, configCustom, locale),
                 opt = {
                     from: getFrom(configCustom),
-                    to: user.email,
+                    to: 'm.drbohlav@sh.cvut.cz', //user.email,
                     subject: getSubject(type, configCustom, locale).replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
                 };
 
-            email.addTo(opt.to);
-            email.setFrom(opt.from);
-            email.setSubject(opt.subject);
-
             text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L')).replace(/\n\r?/g, '<br>');
+            opt.html = text;
 
-            if (type === 'confirmed') {
-                fs.readFile(filePath, function(err, data) {
-                    if (err) {
-                        reject(new MailError(err));
-                    }
-
-                    email.setHtml(marked(text));
-                    email.addFile({
-                        filename: locale === 'cs' ? 'vypujcni_listina.pdf' : 'loan_agreement.pdf',
-                        content: data
-                    });
-
-                    sendgrid.send(email);
-
-                    fs.unlink(filePath, function(err) {
-                        if (err) {
-                            reject(new MailError(err));
-                        }
-                        resolve({ success: true });
-                    });
+            if (type === 'draft') {
+                sendDraft(type, dates, opt, configCustom).then(function(res) {
+                    resolve(res);
+                }).catch(function(err) {
+                    reject(err);
                 });
-            } else if (type === 'draft') {
-                var dateStart = new Date(dates.from),
-                    dateEnd = new Date(dates.to);
-
-                dateStart.setUTCHours(0, 0, 0, 0);
-                dateEnd.setUTCHours(23, 59, 59, 999);
-
-                dateStartString = dateStart.toISOString();
-                dateEndString = dateEnd.toISOString();
-
-                var options = {
-                    where: {
-                        $and: [{
-                            $or: [{
-                                state: 'draft'
-                            }, {
-                                state: 'confirmed'
-                            }]
-                        }, {
-                            $or: [{
-                                $and: [
-                                    { from: { $lte: dateStartString } },
-                                    { to: { $gte: dateStartString } }
-                                ]
-                            }, {
-                                $and: [
-                                    { from: { $lte: dateEndString } },
-                                    { to: { $gte: dateEndString } }
-                                ]
-                            }, {
-                                $and: [
-                                    { from: { $gte: dateStartString } },
-                                    { to: { $lte: dateEndString } }
-                                ]
-                            }]
-                        }]
-                    }
-                };
-
-                Reservation.count(options).then(function(order) {
-                    order++;
-                    text = text.replace(/(\*poradi\*|\*order\*)/, order);
-                    email.setHtml(marked(text));
-                    sendgrid.send(email);
-                    sendAdmin(type, configCustom, dates.from, order);
-                    resolve({ success: true });
+            } else if (type === 'confirmed') {
+                sendConfirmed(filePath, opt).then(function(res) {
+                    resolve(res);
                 }).catch(function(err) {
                     reject(err);
                 });
             } else {
-                email.setHtml(marked(text));
-                sendgrid.send(email);
-                sendAdmin(type, configCustom, dates.from);
-                resolve({ success: true });
+                sendCanceled(type, dates, opt, configCustom).then(function(res) {
+                    resolve(res);
+                }).catch(function(err) {
+                    reject(err);
+                });
             }
         });
     };

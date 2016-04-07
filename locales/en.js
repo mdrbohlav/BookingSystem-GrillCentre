@@ -2,6 +2,8 @@
 	"title": "Grill centre SiliconHill",
 	"siliconhill": "SiliconHill",
 	"description": "Booking system for grill centre on Strahov dormitory at block number 11.",
+	"config__sections_0_title": "General",
+	"config_sections_0_labels_1": "Admin rights by UID from IS [separated with ;]",
 	"config_sections_1_title": "Emails",
 	"config_sections_1_labels_1": "Send emails",
 	"config_sections_1_labels_2": "Sender name",

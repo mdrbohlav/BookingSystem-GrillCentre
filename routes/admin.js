@@ -84,12 +84,18 @@ router.get('/reservations', function(req, res, next) {
             });
         }
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -104,12 +110,18 @@ router.get('/accessories', function(req, res, next) {
             data: result
         });
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -184,12 +196,17 @@ router.get('/users', function(req, res, next) {
         }
     }).catch(function(data) {
         console.log(data);
-        if ('status' in data) {
-            next(data);
-        } else {
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -198,6 +215,15 @@ router.get('/users', function(req, res, next) {
 router.get('/config', function(req, res, next) {
     var fileData = JSON.parse(GetFile('./config/app.json')),
         configKeys = {
+            general: {
+                name: req.i18n.__('config__sections_0_title'),
+                fields: {
+                    ADMIN_IS: {
+                        name: req.i18n.__('config_sections_0_labels_1'),
+                        type: 'text'
+                    }
+                }
+            },
             emails: {
                 name: req.i18n.__('config_sections_1_title'),
                 fields: {

@@ -36,7 +36,7 @@ block content
 
 block scripts
     script.
-        var configDefault = JSON.parse('#{JSON.stringify(fileData.default)}'.replace(/&quot;/g, '\"'));
+        var configDefault = !{JSON.stringify(fileData.default)};
 
         $(document).ready(function() {
             moment.locale('#{Object.keys(user.locale)[0]}');

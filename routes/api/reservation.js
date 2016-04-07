@@ -117,14 +117,17 @@ router.post('/create', function(req, res, next) {
         });
     }).catch(function(data) {
         console.log(data);
-        if ('status' in data) {
-            next(data);
-        } else if ('errors' in data) {
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
-        } else {
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
             next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -163,12 +166,18 @@ router.get('/', function(req, res, next) {
     Reservation.get(options, req.user.isAdmin).then(function(result) {
         res.json(result);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -182,12 +191,18 @@ router.get('/:id', function(req, res, next) {
         }
         res.json(reservation);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -210,12 +225,18 @@ router.put('/:id/cancel', function(req, res, next) {
             res.json(count);
         });
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });

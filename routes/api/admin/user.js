@@ -66,12 +66,18 @@ router.post('/create', function(req, res, next) {
     User.create(data).then(function(user) {
         res.json(user);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -82,12 +88,18 @@ router.get('/:id', function(req, res, next) {
     User.getById(id).then(function(user) {
         res.json(user);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -126,12 +138,18 @@ router.put('/:id', function(req, res, next) {
                 });
             }
         }).catch(function(data) {
-            if ('status' in data) {
-                next(data);
-            } else {
+            console.log(data);
+            if ('errors' in data) {
                 for (var i = 0; i < data.errors.length; i++) {
                     next(new InvalidRequestError(data.errors[i].message));
                 }
+            } else if ('status' in data) {
+                if (data.customMessage instanceof Array) {
+                    data.customMessage = data.customeMessage[0];
+                }
+                next(data);
+            } else {
+                next(new InvalidRequestError(data));
             }
         });
     } else {
@@ -149,12 +167,18 @@ router.put('/:id', function(req, res, next) {
                 res.json(count);
             }
         }).catch(function(data) {
-            if ('status' in data) {
-                next(data);
-            } else {
+            console.log(data);
+            if ('errors' in data) {
                 for (var i = 0; i < data.errors.length; i++) {
                     next(new InvalidRequestError(data.errors[i].message));
                 }
+            } else if ('status' in data) {
+                if (data.customMessage instanceof Array) {
+                    data.customMessage = data.customeMessage[0];
+                }
+                next(data);
+            } else {
+                next(new InvalidRequestError(data));
             }
         });
     }
@@ -166,12 +190,18 @@ router.delete('/:id', function(req, res, next) {
     User.delete(id).then(function(count) {
         res.json(count);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -188,12 +218,18 @@ router.get('/:id/reservations/:state?', function(req, res, next) {
     User.getReservations(id, options).then(function(reservations) {
         res.json(reservations);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });
@@ -204,12 +240,18 @@ router.get('/:id/ratings', function(req, res, next) {
     User.getRatings(id).then(function(ratings) {
         res.json(ratings);
     }).catch(function(data) {
-        if ('status' in data) {
-            next(data);
-        } else {
+        console.log(data);
+        if ('errors' in data) {
             for (var i = 0; i < data.errors.length; i++) {
                 next(new InvalidRequestError(data.errors[i].message));
             }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
         }
     });
 });

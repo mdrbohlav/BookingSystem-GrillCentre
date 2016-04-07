@@ -55,8 +55,6 @@ function renderPdf(_session, req, user) {
             text = text.replace(/\*uid\*/, isId);
             text = text.replace(/(\*telefon\*|\*phone\*)/, phone);
 
-            console.log (marked(text));
-
             var html = jadeTemplate({
                 text: marked(text),
                 style: style
