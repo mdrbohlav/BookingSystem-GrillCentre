@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer'),
     transporter = nodemailer.createTransport('smtp://smtp.sh.cvut.cz'),
-    sendgrid = require("sendgrid")("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"),
+    sendgrid = require("sendgrid")("API_KEY"),
     fs = require('fs'),
     moment = require('moment'),
     marked = require('marked');
