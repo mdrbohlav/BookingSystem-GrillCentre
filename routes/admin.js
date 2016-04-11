@@ -267,6 +267,14 @@ router.get('/config', function(req, res, next) {
                         name: req.i18n.__('config_sections_1_labels_11'),
                         type: 'text'
                     },
+                    NEWUSER_HEADING_CS: {
+                        name: req.i18n.__('config_sections_1_labels_20'),
+                        type: 'text'
+                    },
+                    NEWUSER_HEADING_EN: {
+                        name: req.i18n.__('config_sections_1_labels_21'),
+                        type: 'text'
+                    },
                     PRERESERVATION_CS: {
                         name: req.i18n.__('config_sections_1_labels_12'),
                         type: 'textarea'
@@ -297,6 +305,14 @@ router.get('/config', function(req, res, next) {
                     },
                     CANCELEDUSER_EN: {
                         name: req.i18n.__('config_sections_1_labels_19'),
+                        type: 'textarea'
+                    },
+                    NEWUSER_CS: {
+                        name: req.i18n.__('config_sections_1_labels_22'),
+                        type: 'textarea'
+                    },
+                    NEWUSER_EN: {
+                        name: req.i18n.__('config_sections_1_labels_23'),
                         type: 'textarea'
                     },
                     SEND_EMAILS: {

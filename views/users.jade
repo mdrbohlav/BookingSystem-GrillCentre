@@ -44,10 +44,13 @@ block content
                                         .table__cell !{__('labels_isId')}
                                         .table__cell !{__('labels_ban')}
                                         .table__cell !{__('labels_rating')}
+                                        .table__cell !{__('labels_remove')}
                                 li.user.table__row(data-id=user.id)
                                     .table__cell= user.fullName
                                     .user__admin.table__cell: span.icon(class='icon__' + (user.isAdmin ? 'check' : 'cross'))
-                                    .table__cell= user.isId
+                                    .table__cell
+                                        if user.isId
+                                            a(href='https://is.sh.cvut.cz/users/' + user.isId, target='_blank')= user.isId
                                     .user__ban.table__cell: span.icon(class='icon__' + (user.banned ? 'check' : 'cross'))
                                     .user__rating.table__cell
                                         if user.ratings.length > 0
@@ -58,6 +61,9 @@ block content
                                             |  #{Math.round(total / user.ratings.length) / 10}
                                         else
                                             span !{__('labels_notrated')}
+                                    .table__cell
+                                        if !user.isId
+                                            button.btn__remove.icon.icon__cross(type='button', data-id= user.id, title="#{__('buttons_delete')}")
                             if data.users.length === 0
                                 li.table__row.table__noborder
                                     .table__cell
@@ -300,13 +306,44 @@ block scripts
             });
         }
 
+        function removeBtnFunctionality($btn) {
+            $btn.on('click', function() {
+                if (!confirm('!{__('pages_users_confirm_1')}')) {
+                    return;
+                }
+
+                var $this = $(this),
+                    $row = $this.closest('.table__row'),
+                    id = $this.attr('data-id');
+
+                makeRequest('/api/admin/user/' + id, 'DELETE', {}, function(res) {
+                    addNotification('success', '!{__('success_user_deleted')}');
+                    $row.remove();
+                    if ($('#listUsers li:not(.table__heading)').length === 0) {
+                        $('#listUsers').html('<li class="table__row table__noborder"><div class="table__cell"><p class="text__paragraph text--center">!{__('pages_users_nothing')}</p></div></li>');
+                    }
+                }, function(res) {
+                    console.log(res);
+                    if (res instanceof Array) {
+                        for (var i = 0; i < res.length; i++) {
+                            addNotification('error', res[i].message);
+                        }
+                    } else {
+                        var msg = res.responseJSON.error.message;
+                        addNotification('error', msg);
+                    }
+                });
+            });
+        }
+
         function getUserTableHeading() {
             return $('<li class="table__row table__heading">')
                 .append('<div class="table__cell">!{__('labels_name')}')
                 .append('<div class="table__cell">!{__('labels_admin')}')
                 .append('<div class="table__cell">!{__('labels_isId')}')
                 .append('<div class="table__cell">!{__('labels_ban')}')
-                .append('<div class="table__cell">!{__('labels_rating')}');
+                .append('<div class="table__cell">!{__('labels_rating')}')
+                .append('<div class="table__cell">!{__('labels_remove')}');
         }
 
         function getUserRow(user) {
@@ -326,6 +363,13 @@ block scripts
                 $row.append('<div class="table__cell"><span class="icon icon__star text--yellow"></span> ' + totalRating);
             } else {
                 $row.append('<div class="table__cell">!{__('labels_notrated')}');
+            }
+            if (!user.isId) {
+                var $btn = $('<button class="btn__remove icon icon__cross" type="button" data-id="' + user.id + '" title="!{__('buttons_remove')}"></button>');
+                $row.append($('<div class="table__cell"></div>').append($btn));
+                removeBtnFunctionality($btn);
+            } else {
+                $row.append('<div class="table__cell"></div>');
             }
             userDetailFunctionality($row);
             return $row;
@@ -469,6 +513,13 @@ block scripts
             });
 
             paginationFunctionality();
+
+            //=================================================================
+            // Delete native user
+            //=================================================================
+            $('.btn__remove').each(function(i, element) {
+                removeBtnFunctionality($(element));
+            });
 
             //=================================================================
             // Ban user

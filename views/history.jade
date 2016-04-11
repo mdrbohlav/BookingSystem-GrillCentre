@@ -121,6 +121,10 @@ block scripts
 
         function cancelBtnFunctionality($btn) {
             $btn.on('click', function() {
+                if (!confirm('!{__('pages_history_confirm_1')}')) {
+                    return;
+                }
+
                 var $this = $(this),
                     $row = $this.closest('.table__row'),
                     id = $this.attr('data-id');

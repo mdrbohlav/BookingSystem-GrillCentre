@@ -150,6 +150,11 @@ module.exports = {
     },
 
     update(id, data, req) {
+        var rejectionComment = null;
+        if ('rejectionComment' in data) {
+            rejectionComment = data.rejectionComment;
+            delete data.rejectionComment;
+        }
         return sequelize.transaction(function(t) {
             return Reservation.update(data, {
                 where: {
@@ -168,8 +173,8 @@ module.exports = {
                             to: reservation.to
                         };
                         if (['canceled', 'rejected'].indexOf(data.state) > -1) {
-                            var type = data.stateChangedBy === user.id ? 'canceled_user' : 'canceled_admin';
-                            return mail_helper.send(user, type, dates).then(function(result) {
+                            var type = data.state === 'canceled' ? 'canceled_user' : 'canceled_admin';
+                            return mail_helper.send(user, type, dates, null, rejectionComment).then(function(result) {
                                 return result;
                             });
                         } else {
@@ -195,4 +200,4 @@ module.exports = {
             });
         });
     }
-}
+};

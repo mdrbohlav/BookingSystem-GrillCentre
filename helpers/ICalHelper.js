@@ -3,23 +3,42 @@ var ical = require('ical-generator');
 var User = require(__dirname + '/../models').User,
     Reservation = require(__dirname + '/../models').Reservation;
 
-var options = {
+var opt = {
     domain: 'gc.sh.cvut.cz',
     prodId: {
-        company: 'SiliconHill',
-        product: 'Grill Centre',
-        language: 'EN'
+        company: 'Silicon Hill',
+        product: 'Grilovací centrum',
+        language: 'CS'
     },
-    name: 'SiliconHill Grill Centre',
-    url: 'http://gc.sh.cvut:3000/reservations.ical',
-    timezone: 'Europe/Prague',
+    name: 'Grilovací centrum Silicon Hill',
+    timezone: 'Europe/Prague'
 };
 
-var calendar = ical(options);
+function pad(n) {
+    return n < 10 ? '0' + n : n;
+}
 
-function createEvent(id, start, summary, description, organizer) {
+function createEvent(calendar, user, reservation) {
+    var id = reservation.id,
+        start = new Date(reservation.from),
+        summary = '[GC] ' + user.fullName,
+        description = '',
+        organizer = {
+            name: user.fullName,
+            email: user.email
+        };
+
+    description += 'Výpůjčitel: ' + user.fullName + '\n';
+    description += 'Email: ' + user.email + '\n';
+    if (user.phone) {
+        description += 'Telefon: ' + user.phone.replace(/^00/, '+') + '\n';
+    }
+    description += 'Čas vyzvednutí: ' + Math.floor(reservation.pickup / 60) + ':' + pad(reservation.pickup % 60) + '\n';
+    if (reservation.comment) {
+        description += 'Komentář: ' + reservation.comment + '\n';
+    }
+
     calendar.createEvent({
-        id: id,
         start: start,
         timestamp: new Date(),
         summary: summary,
@@ -29,34 +48,59 @@ function createEvent(id, start, summary, description, organizer) {
     });
 }
 
-function initCalendar() {
-    var options = {
-        where: {
-            $or: [
-                { state: 'confirmed' },
-                { state: 'finished' }
-            ]
-        }
+var ICalHelper = function() {
+    var helper = {};
+
+    helper.createDraft = function() {
+        opt.name += ' - předrezervace';
+        opt.url = 'http://gc-dev.sh.cvut.cz/reservations-draft.ical';
+        var calendar = ical(opt),
+            options = {
+                where: {
+                    state: 'draft'
+                }
+            };
+
+        return Reservation.findAll(options).then(function(reservations) {
+            return reservations.reduce(function(sequence, reservation) {
+                return sequence.then(function() {
+                    return User.findById(reservation.userId);
+                }).then(function(user) {
+                    createEvent(calendar, user, reservation);
+                });
+            }, Promise.resolve());
+        }).then(function() {
+            return calendar;
+        });
     };
 
-    calendar.clear();
+    helper.createConfirmedFinished = function() {
+        opt.name += ' - potvrzené rezervace';
+        opt.url = 'http://gc-dev.sh.cvut.cz/reservations.ical';
+        var calendar = ical(opt),
+            options = {
+                where: {
+                    $or: [
+                        { state: 'confirmed' },
+                        { state: 'finished' }
+                    ]
+                }
+            };
 
-    Reservation.findAll(options).then(function(reservations) {
-        return reservations.reduce(function(sequence, reservation) {
-            return sequence.then(function() {
-                return User.findById(reservation.userId);
-            }).then(function(user) {
-                var id = reservation.id,
-                    start = new Date(reservation.from),
-                    summary = user.fullName + ' reservation',
-                    description = 'Key pickup time: ' + Math.floor(reservation.pickup / 60) + ':' + reservation.pickup % 60,
-                    organizer = user.fullName + ' <' + user.email + '>';
-                createEvent(id, start, summary, description, organizer);
-            });
-        }, Promise.resolve());
-    });
-}
+        return Reservation.findAll(options).then(function(reservations) {
+            return reservations.reduce(function(sequence, reservation) {
+                return sequence.then(function() {
+                    return User.findById(reservation.userId);
+                }).then(function(user) {
+                    createEvent(calendar, user, reservation);
+                });
+            }, Promise.resolve());
+        }).then(function() {
+            return calendar;
+        });
+    };
 
-module.exports.calendar = calendar;
-module.exports.createEvent = createEvent;
-module.exports.initCalendar = initCalendar;
+    return helper;
+};
+
+module.exports = ICalHelper;

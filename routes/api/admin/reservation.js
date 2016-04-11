@@ -2,7 +2,6 @@ var express = require('express'),
     router = express.Router();
 
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
-    ICalHelper = require(__dirname + '/../../../helpers/ICalHelper'),
     Reservation = require(__dirname + '/../../../api/reservation'),
     User = require(__dirname + '/../../../api/user');
 
@@ -53,7 +52,6 @@ router.put('/:id/confirm', function(req, res, next) {
                         summary = user.fullName + ' reservation',
                         description = 'Key pickup time: ' + Math.floor(reservation.pickup / 60) + ':' + reservation.pickup % 60,
                         organizer = user.fullName + ' <' + user.email + '>';
-                    ICalHelper.createEvent(id, start, summary, description, organizer);
                     return updatedRows;
                 });
             });
@@ -84,8 +82,10 @@ router.put('/:id/reject', function(req, res, next) {
             state: 'rejected',
             stateChangedBy: req.user.id
         };
+    if (req.body.rejectionComment) {
+        data.rejectionComment = req.body.rejectionComment;
+    }
     Reservation.update(id, data).then(function(count) {
-        ICalHelper.initCalendar();
         res.json(count);
     }).catch(function(data) {
         console.log(data);
@@ -112,7 +112,6 @@ router.put('/:id/cancel', function(req, res, next) {
             stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {
-        ICalHelper.initCalendar();
         res.json(count);
     }).catch(function(data) {
         console.log(data);

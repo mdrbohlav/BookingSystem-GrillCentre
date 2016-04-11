@@ -116,7 +116,7 @@ module.exports.isAuth = function(accessToken, refreshToken, profile) {
                     reject(new UserBannedError());
                 }
 
-                if (created) {
+                if (created && profile.locale) {
                     var data = {
                         id: user.id,
                         locale: profile.locale

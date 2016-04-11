@@ -143,9 +143,9 @@ function showModal() {
 
     if (!$modal.is(':visible')) {
 
-        function updateAfterHide() {
+        updateAfterHide = function() {
             setBodyOverflowHidden();
-        }
+        };
 
         $modal.velocity('fadeIn', {
             complete: function() {
@@ -164,10 +164,10 @@ function hideModal() {
 
     if ($modal.is(':visible')) {
 
-        function updateAfterHide() {
+        updateAfterHide = function() {
             removeBodyOverflowHidden();
             $modalContent.removeAttr('style');
-        }
+        };
 
         $modal.velocity('fadeOut', {
             complete: function() {
@@ -260,14 +260,10 @@ function animateScale($element) {
 
 $(document).ready(function() {
 
-    $window.on('load', function() {
-        $('.hero').each(function(i, element) {
-            $(element).removeAttr('style');
-            $(element).css('height', $(element).outerHeight());
-        });
-    });
-
     $window.on('resize orientationchange', function() {
+        if ($window.width() >= 1024) {
+            $mainNav.removeAttr('style');
+        }
         if (!$mainNavTrigger.hasClass('is-active') && !$('header').hasClass('nav--up')) {
             return;
         }

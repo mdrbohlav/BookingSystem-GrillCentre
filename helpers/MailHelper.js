@@ -53,6 +53,7 @@ function sendAdmin(type, config, date, order) {
 
         function sendCb(err, json) {
             if (err) {
+                console.log("sendAdmin", err);
                 reject(new MailError(err));
             }
 
@@ -60,7 +61,7 @@ function sendAdmin(type, config, date, order) {
         }
 
         if (/@sh\.cvut\.cz$/.test(opt.to)) {
-            transporter.sendMail(opt, sendCb)
+            transporter.sendMail(opt, sendCb);
         } else {
             var email = new sendgrid.Email(opt);
             sendgrid.send(email, sendCb);
@@ -119,6 +120,7 @@ function sendDraft(type, dates, opt, config) {
 
             function sendCb(err, json) {
                 if (err) {
+                    console.log("sendDraft", err);
                     reject(new MailError(err));
                 }
 
@@ -143,6 +145,7 @@ function sendConfirmed(filePath, opt) {
     return new Promise(function(resolve, reject) {
         fs.readFile(filePath, function(err, data) {
             if (err) {
+                console.log("sendConfirmed fs", err);
                 reject(new MailError(err));
             }
 
@@ -155,6 +158,7 @@ function sendConfirmed(filePath, opt) {
 
             function sendCb(err, json) {
                 if (err) {
+                    console.log("sendConfirmed", err);
                     reject(new MailError(err));
                 }
 
@@ -179,6 +183,7 @@ function sendCanceled(type, dates, opt, config) {
 
         function sendCb(err, json) {
             if (err) {
+                console.log("sendCanceled", err);
                 reject(new MailError(err));
             }
 
@@ -198,6 +203,26 @@ function sendCanceled(type, dates, opt, config) {
     });
 }
 
+function sendGeneral(opt) {
+    return new Promise(function(resolve, reject) {
+        function sendCb(err, json) {
+            if (err) {
+                console.log("sendGeneral", err);
+                reject(new MailError(err));
+            }
+
+            resolve({ success: true });
+        }
+
+        if (/@sh\.cvut\.cz$/.test(opt.to)) {
+            transporter.sendMail(opt, sendCb);
+        } else {
+            var email = new sendgrid.Email(opt);
+            sendgrid.send(email, sendCb);
+        }
+    });
+}
+
 function getText(type, config, locale) {
     if (type === 'confirmed') {
         return locale === 'cs' ? config.CONFIRMATION_CS : config.CONFIRMATION_EN;
@@ -205,6 +230,8 @@ function getText(type, config, locale) {
         return locale === 'cs' ? config.CANCELEDADMIN_CS : config.CANCELEDADMIN_EN;
     } else if (type === 'canceled_user') {
         return locale === 'cs' ? config.CANCELEDUSER_CS : config.CANCELEDUSER_EN;
+    } else if (type === 'new_user') {
+        return locale === 'cs' ? config.NEWUSER_CS : config.NEWUSER_EN;
     }
 
     return locale === 'cs' ? config.PRERESERVATION_CS : config.PRERESERVATION_EN;
@@ -221,6 +248,8 @@ function getSubject(type, config, locale) {
         return locale === 'cs' ? config.CANCELEDADMIN_HEADING_CS : config.CANCELEDADMIN_HEADING_EN;
     } else if (type === 'canceled_user') {
         return locale === 'cs' ? config.CANCELEDUSER_HEADING_CS : config.CANCELEDUSER_HEADING_EN;
+    } else if (type === 'new_user') {
+        return locale === 'cs' ? config.NEWUSER_HEADING_CS : config.NEWUSER_HEADING_EN;
     }
 
     return locale === 'cs' ? config.PRERESERVATION_HEADING_CS : config.PRERESERVATION_HEADING_EN;
@@ -229,7 +258,7 @@ function getSubject(type, config, locale) {
 var MailHelper = function() {
     var helper = {};
 
-    helper.send = function(user, type, dates, filePath) {
+    helper.send = function(user, type, dates, filePath, rejectionComment, password) {
         return new Promise(function(resolve, reject) {
             locale = Object.keys(user.locale)[0];
             moment.locale(locale);
@@ -238,13 +267,23 @@ var MailHelper = function() {
                 opt = {
                     from: getFrom(configCustom),
                     to: user.email,
-                    subject: getSubject(type, configCustom, locale).replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
+                    subject: getSubject(type, configCustom, locale),
                     headers: {
                         'x-grill': type
                     }
                 };
 
-            text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L')).replace(/\n\r?/g, '<br>');
+            text = text.replace(/\n\r?/g, '<br>');
+            if (dates) {
+                text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'));
+                opt.subject = opt.subject.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
+            }
+            if (rejectionComment) {
+                text = text.replace(/(\*komentar\*|\*comment\*)/, rejectionComment);
+            }
+            if (password) {
+                text = text.replace(/(\*heslo\*|\*password\*)/, password);
+            }
             opt.html = text;
 
             if (type === 'draft') {
@@ -259,8 +298,14 @@ var MailHelper = function() {
                 }).catch(function(err) {
                     reject(err);
                 });
-            } else {
+            } else if (['canceled_user', 'canceled_admin'].indexOf(type) > -1) {
                 sendCanceled(type, dates, opt, configCustom).then(function(res) {
+                    resolve(res);
+                }).catch(function(err) {
+                    reject(err);
+                });
+            } else {
+                sendGeneral(opt).then(function(res) {
                     resolve(res);
                 }).catch(function(err) {
                     reject(err);

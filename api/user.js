@@ -1,6 +1,9 @@
+var sequelize = require(__dirname + '/../models/index').sequelize;
 var isoLocales = require(__dirname + '/../config/isoLocales');
 
 var AuthHelper = require(__dirname + '/../helpers/AuthHelper');
+var MailHelper = require(__dirname + '/../helpers/MailHelper'),
+    mail_helper = new MailHelper();
 
 var EmailExistsError = require(__dirname + '/../errors/EmailExistsError'),
     UserDoesnotExistError = require(__dirname + '/../errors/UserDoesnotExistError');
@@ -18,23 +21,30 @@ function processUserUpdate(data) {
 module.exports = {
     create(data) {
         return AuthHelper.hashPassword(data.password).then(function(hash) {
-            data.password = hash;
-            console.log(data);
-            return User.findOrCreate({
-                where: {
-                    email: data.email
-                },
-                defaults: data
-            }).spread(function(user, created) {
-                if (!created) {
-                    throw new EmailExistsError();
-                }
+            return sequelize.transaction(function(t) {
+                password = data.password;
+                data.password = hash;
+                data = {
+                    where: {
+                        email: data.email
+                    },
+                    defaults: data,
+                    transaction: t
+                };
+                return User.findOrCreate(data).spread(function(user, created) {
+                    if (!created) {
+                        throw new EmailExistsError();
+                    }
 
-                user = user.get({ plain: true });
-                var locale = user.locale;
-                user.locale = {};
-                user.locale[locale] = isoLocales[locale];
-                return user;
+                    user = user.get({ plain: true });
+                    var locale = user.locale;
+                    user.locale = {};
+                    user.locale[locale] = isoLocales[locale];
+
+                    return mail_helper.send(user, 'new_user', null, null, null, password).then(function(mailResponse) {
+                        return user;
+                    });
+                });
             });
         });
     },
@@ -50,9 +60,9 @@ module.exports = {
             return data.rows.reduce(function(sequence, user) {
                 return sequence.then(function() {
                     return user.getRatings().then(function(ratings) {
-                        var plain = user.get({ plain: true });
+                        var plain = user.get({  plain: true });
                         plain.ratings = [];
-                        for (var i = 0; i < ratings.length; i ++) {
+                        for (var i = 0; i < ratings.length; i++) {
                             plain.ratings.push(ratings[i].get({ plin: true }));
                         }
                         var locale = plain.locale;
@@ -73,10 +83,10 @@ module.exports = {
             return user.getRatings().then(function(ratings) {
                 var plain = user;
                 if (!raw) {
-                    plain = user.get({ plain: true });
+                    plain = user.get({  plain: true });
                 }
                 plain.ratings = [];
-                for (var i = 0; i < ratings.length; i ++) {
+                for (var i = 0; i < ratings.length; i++) {
                     plain.ratings.push(ratings[i].get({ plin: true }));
                 }
                 var locale = plain.locale;
@@ -98,9 +108,9 @@ module.exports = {
             }
 
             return user.getRatings().then(function(ratings) {
-                var plain = user.get({ plain: true });
+                var plain = user.get({  plain: true });
                 plain.ratings = [];
-                for (var i = 0; i < ratings.length; i ++) {
+                for (var i = 0; i < ratings.length; i++) {
                     plain.ratings.push(ratings[i].get({ plin: true }));
                 }
                 var locale = plain.locale;
@@ -183,4 +193,4 @@ module.exports = {
             });
         });
     }
-}
+};

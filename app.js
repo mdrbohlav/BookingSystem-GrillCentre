@@ -142,9 +142,6 @@ app.use(function(req, res, next) {
 // schedule checking unfinished reservations on start and at midnight
 FinishReservationHelper.scheduleFinishReservations();
 
-// init ICal calendar
-ICalHelper.initCalendar();
-
 // locales
 Array.prototype.move = function(old_index, new_index) {
     if (new_index >= this.length) {
@@ -256,6 +253,7 @@ passport.use('login-is', new OAuth2Strategy({
             for (var i = 0; i < servicesData.length; i++) {
                 if (servicesData[i].service.alias === 'zaklad') {
                     data.service = servicesData[i].service;
+                    break;
                 }
             }
         });

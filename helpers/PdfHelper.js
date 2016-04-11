@@ -35,7 +35,7 @@ function renderPdf(_session, req, user) {
                 console.log("pdf requested: ", rd[0]["url"]);
             });
             page.property('onResourceReceived', function(rd) {
-                rd.stage == "end" && console.log("pdf loaded: ", rd["url"]);
+                rd.stage = "end" && console.log("pdf loaded: ", rd["url"]);
             });
 
             var style = req.protocol + '://' + req.get('host') + '/css/style.css';
@@ -82,7 +82,7 @@ function renderPdf(_session, req, user) {
             });
         }).catch(function(e) {
             try {
-                if (page != null) {
+                if (page !== null) {
                     page.close(); // try close the page in case it opened but never rendered a pdf due to other issues
                 }
             } catch (e) {
@@ -91,7 +91,7 @@ function renderPdf(_session, req, user) {
             reject(new RenderingPdfError(e.toString()));
         });
     });
-};
+}
 
 function createPhantomSession() {
     return new Promise(function(resolve, reject) {
@@ -104,7 +104,7 @@ function createPhantomSession() {
             });
         }
     });
-};
+}
 
 function exitHandler(options, err) {
     if (session) {
@@ -140,7 +140,7 @@ var PdfHelper = function() {
                 });
             });
         });
-    }
+    };
 
     return helper;
 };

@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    section.hero.table.table--fullsize
+    section.hero.table
         .table__cell
             .hero__content
                 h1.text__mainTitle.separator__after !{__('pages_index_title')}
@@ -13,9 +13,12 @@ block content
                     h2.text__title !{__('pages_index_calendarTitle')}
                 .box__body
                     .row
-                        .col-xs-12.col-sm-6.text--yellow !{__('pages_index_legend_1')}
-                        .col-xs-12.col-sm-6.text--red !{__('pages_index_legend_2')}
-                        .col-xs-12.col-sm-6.text--orange !{__('pages_index_legend_3')}
+                        .col-xs-12.col-sm-6.margin--top-5
+                            .day__event.grill !{__('pages_index_legend_1')}
+                        .col-xs-12.col-sm-6.margin--top-5
+                            .day__event.centre !{__('pages_index_legend_2')}
+                        .col-xs-12.col-sm-6.margin--top-5
+                            .day__event.both !{__('pages_index_legend_3')}
                     .calendar.margin--top-15
                         script#calendar-template(type="text/template").
                             <div class="calendar__controls text--center">
@@ -76,7 +79,7 @@ block content
                                 </div>
                             </div>
                             <button class="calendar__today text__paragraph text--center" type="button">!{__('buttons_currentMonth')}</button>
-            .box
+            #new-reservation.box
                 .box__header.box__header--border
                     h2.text__title !{__('pages_index_newReservationTitle')}
                 .box__body
@@ -502,13 +505,18 @@ block scripts
                     start = moment(new Date(start)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
                     end = start;
 
-                    if (#{reservationLength} > 1) {
+                    if (#{reservationLength} > 1 || #{user.isAdmin}) {
                         end = $('[name="date-to"]').pickadate('picker').get('select').pick;
                         end = moment(new Date(end)).add(moment().utcOffset(), 'm').utc().format().replace(/\+00:00/, 'Z');
                     }
                     data.from = start;
                     data.to = end;
                     data.pickup = $('#pickup').pickatime('picker').get('select').pick;
+
+                    if ($('#comment').val() !== '') {
+                        data.comment = $('#comment').val();
+                    }
+
                     data.mobileGrill = $('#mobileGrill').prop('checked');
 
                     if ($('[data-res-type="grill"]').hasClass('active')) {

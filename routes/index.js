@@ -2,7 +2,8 @@ var express = require('express'),
     router = express.Router();
 
 var ICalHelper = require(__dirname + '/../helpers/ICalHelper'),
-    GetFile = require(__dirname + '/../helpers/GetFile'),
+    ical_helper = new ICalHelper();
+var GetFile = require(__dirname + '/../helpers/GetFile'),
     Accessory = require(__dirname + '/../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
@@ -54,9 +55,46 @@ router.get('/login', function(req, res, next) {
     });
 });
 
+// GET /reservations-draft.ical
+router.get('/reservations-draft.ical', function(req, res, next) {
+    ical_helper.createDraft().then(function(calendar) {
+        calendar.serve(res);
+    }).catch(function(data) {
+        console.log(data);
+        if ('errors' in data) {
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
+        }
+    });
+});
+
 // GET /reservations.ical
 router.get('/reservations.ical', function(req, res, next) {
-    ICalHelper.calendar.serve(res);
+    ical_helper.createConfirmedFinished().then(function(calendar) {
+        calendar.serve(res);
+    }).catch(function(data) {
+        console.log(data);
+        if ('errors' in data) {
+            for (var i = 0; i < data.errors.length; i++) {
+                next(new InvalidRequestError(data.errors[i].message));
+            }
+        } else if ('status' in data) {
+            if (data.customMessage instanceof Array) {
+                data.customMessage = data.customeMessage[0];
+            }
+            next(data);
+        } else {
+            next(new InvalidRequestError(data));
+        }
+    });
 });
 
 // GET /update-locale/:locale/:returnUrl

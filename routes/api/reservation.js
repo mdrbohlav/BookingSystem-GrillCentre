@@ -2,7 +2,6 @@ var express = require('express'),
     router = express.Router();
 
 var GetFile = require(__dirname + '/../../helpers/GetFile'),
-    ICalHelper = require(__dirname + '/../../helpers/ICalHelper'),
     Reservation = require(__dirname + '/../../api/reservation');
 
 var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError'),
@@ -104,10 +103,10 @@ router.post('/create', function(req, res, next) {
             if (req.body.onlyMobileGrill) {
                 data.onlyMobileGrill = req.body.onlyMobileGrill;
             } else if (req.body['accessories[]']) {
-                accessories = req.body['accessories[]'];
+                accessories = [];
 
-                for (var i = 0; i < accessories.length; i++) {
-                    accessories[i] = parseInt(accessories[i]);
+                for (var i = 0; i < req.body['accessories[]'].length; i++) {
+                    accessories.push(parseInt(req.body['accessories[]'][i]));
                 }
             }
 
@@ -221,7 +220,6 @@ router.put('/:id/cancel', function(req, res, next) {
         }
 
         return Reservation.update(id, data).then(function(count) {
-            ICalHelper.initCalendar();
             res.json(count);
         });
     }).catch(function(data) {

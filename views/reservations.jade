@@ -16,11 +16,19 @@ block content
                 .box__header.box__header--border
                     h2.text__title !{__('pages_reservations_titles_1')}
                 .box__body
-                    .table__wrapper
+                    .row
+                        .col-xs-12.col-sm-6.margin--top-5
+                            .day__event.grill !{__('pages_index_legend_1')}
+                        .col-xs-12.col-sm-6.margin--top-5
+                            .day__event.centre !{__('pages_index_legend_2')}
+                        .col-xs-12.col-sm-6.margin--top-5
+                            .day__event.both !{__('pages_index_legend_3')}
+                    .table__wrapper.margin--top-15
                         ul#listWaitingReservations.listReservations.table.table__styled.table--fullsize.table--responsive.text--center
                             each reservation in data.reservations
                                 if reservation.state === 'draft' && new Date(reservation.from) >= today
                                     - var resUser = data.users[reservation.userId]
+                                    - var eventClass = reservation.onlyMobileGrill ? 'grill' : !reservation.mobileGrill ? 'centre' : 'both'
                                     if draftCnt === 0
                                         li.table__row.table__heading
                                             .table__cell !{__('labels_name')}
@@ -31,7 +39,7 @@ block content
                                             .table__cell !{__('labels_to')}
                                             .table__cell !{__('labels_pickup')}
                                             .table__cell !{__('labels_action')}
-                                    li.reservation.table__row(data-id= reservation.id)
+                                    li.reservation.table__row(data-id= reservation.id, class= eventClass)
                                         .table__cell= resUser.fullName
                                         .table__cell: span.icon(class= (!reservation.onlyMobileGrill ? 'icon__check' : 'icon__cross'))
                                         .table__cell: span.icon(class= (reservation.mobileGrill ? 'icon__check' : 'icon__cross'))
@@ -345,6 +353,7 @@ block scripts
         function setModalReservation(id) {
             var tmp = moment();
             var reservation = reservations[id],
+                user = users[reservation.userId],
                 start = moment(reservation.from).subtract(tmp.local().utcOffset() , 'm').format('LL'),
                 end = moment(reservation.to).subtract(tmp.local().utcOffset() , 'm').format('LL'),
                 resDate = start;
@@ -525,11 +534,18 @@ block scripts
             });
 
             $('.btn__reject').on('click', function() {
+                if (!confirm('!{__('pages_reservations_confirm_1')}')) {
+                    return;
+                }
                 var $this = $(this),
                     $row = $this.closest('.table__row'),
-                    id = $this.attr('data-id');
+                    id = $this.attr('data-id'),
+                    reason = prompt('!{__('pages_reservations_prompt_1')}'),
+                    data = {
+                        rejectionComment: reason ? reason : ''
+                    };
 
-                makeRequest('/api/admin/reservation/' + id + '/reject', 'PUT', {}, function(res) {
+                makeRequest('/api/admin/reservation/' + id + '/reject', 'PUT', data, function(res) {
                     addNotification('success', '!{__('success_reservation_rejected')}');
                     $row.remove();
                     if ($('#listWaitingReservations li:not(.table__heading)').length === 0) {

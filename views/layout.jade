@@ -38,7 +38,9 @@ html
                 nav.nav__main
                     ul.text--center
                         - var homeLink = page === 'index' ? '#' : '/'
+                        - var newReservation = page === 'index' ? '#new-reservation' : '/#new-reservation'
                         - var historyLink = page === 'history' ? '#' : '/user/history'
+                        li: a.text__nav(href= newReservation) !{__('navigation_0')}
                         li: a.text__nav(href= homeLink, class=(page === 'index' ? 'active' : '')) !{__('navigation_1')}
                         li: a.text__nav(href= historyLink, class=(page === 'history' ? 'active' : '')) !{__('navigation_2')}
                         if user.isAdmin

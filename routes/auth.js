@@ -5,19 +5,25 @@ var express = require('express'),
 var AuthHelper = require(__dirname + '/../helpers/AuthHelper');
 
 // POST /auth/login/native
-router.post('/login/native', passport.authenticate('login-native', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-}));
+router.post('/login/native', passport.authenticate('login-native', { failureRedirect: '/login' }), function(req, res, next) {
+    if (req.user.isAdmin) {
+        res.redirect('/admin/reservations');
+    }
+
+    res.redirect('/');
+});
 
 // GET /auth/login/is/init
 router.get('/login/is/init', passport.authenticate('login-is'));
 
 // GET /auth/login/is
-router.get('/login/is', passport.authenticate('login-is', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-}));
+router.get('/login/is', passport.authenticate('login-is', { failureRedirect: '/login' }), function(req, res, next) {
+    if (req.user.isAdmin) {
+        res.redirect('/admin/reservations');
+    }
+
+    res.redirect('/');
+});
 
 // GET /auth/logout
 router.get('/logout', function(req, res, next) {

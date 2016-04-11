@@ -1,4 +1,28 @@
 .reservation
+    &.centre
+        .table__cell
+            &:first-child
+                border-left 5px solid $color-gc
+            
+            &:last-child
+                border-right 5px solid $color-gc
+            
+    &.grill
+        .table__cell
+            &:first-child
+                border-left 5px solid $color-mg
+            
+            &:last-child
+                border-right 5px solid $color-mg
+            
+    &.both
+        .table__cell
+            &:first-child
+                border-left 5px solid $color-both
+            
+            &:last-child
+                border-right 5px solid $color-both
+            
     &__action
         button
             margin 2px 5px
