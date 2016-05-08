@@ -5,7 +5,8 @@ var express = require('express'),
 var GetFile = require(__dirname + '/../helpers/GetFile'),
     Reservation = require(__dirname + '/../api/reservation'),
     User = require(__dirname + '/../api/user'),
-    Accessory = require(__dirname + '/../api/accessory');
+    Accessory = require(__dirname + '/../api/accessory'),
+    Notification = require(__dirname + '/../api/notification');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
@@ -23,8 +24,8 @@ router.get('/reservations', function(req, res, next) {
             m = date.getMonth();
         var firstDay = new Date(y, m, 1);
         var lastDay = new Date(y, m + 1, 0);
-        firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset()*60000);
-        lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset()*60000);
+        firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset() * 60000);
+        lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset() * 60000);
         firstDay.setUTCHours(0, 0, 0, 0);
         lastDay.setUTCHours(23, 59, 59, 999);
 
@@ -47,8 +48,8 @@ router.get('/reservations', function(req, res, next) {
             m = date.getMonth();
         var firstDay = new Date(y, m, 1);
         var lastDay = new Date(y, m + 1, 0);
-        firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset()*60000);
-        lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset()*60000);
+        firstDay = new Date(firstDay.getTime() - firstDay.getTimezoneOffset() * 60000);
+        lastDay = new Date(lastDay.getTime() - lastDay.getTimezoneOffset() * 60000);
         firstDay.setUTCHours(0, 0, 0, 0);
         lastDay.setUTCHours(23, 59, 59, 999);
 

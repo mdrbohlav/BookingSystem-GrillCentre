@@ -5,6 +5,22 @@ block content
         .container__md
             .box
                 .box__header.box__header--border
+                    h2.text__title !{__('pages_config_title_2')}
+                .box__body
+                    form#delete-notification.form.form__notification.margin--top-15(class= (notification ? '' : 'hidden'), method='DELETE', action='/api/admin/notification')
+                        input#notification-id(type='hidden', name='notification_id', value= (notification ? notification.id : ''))
+                        .form__footer.text--center
+                            button.btn.btn__orange--full(type='submit') !{__('buttons_remove_notification')}
+                    form#notification.form.form__notification.margin--top-15(method='POST', action='/api/admin/notification')
+                        .fieldset.row
+                            .field__container.col-xs-12
+                                label.text__label(for='notification-msg') !{__('labels_notification_msg')}
+                                .field
+                                    input#notification-msg(type='text', name='notification-msg', required)
+                        .form__footer.text--center.margin--top-40
+                            button.btn.btn__orange(type='submit') !{__('buttons_add_notification')}
+            .box
+                .box__header.box__header--border
                     h2.text__title !{__('pages_config_title')}
                 .box__body
                     form#config.form.form__config(method='PUT', action='/admin/config')
@@ -91,6 +107,63 @@ block scripts
                             $('#' + key).trigger('click');
                         }
                     }
+                }
+            });
+
+            $('#delete-notification').validate({
+                submitHandler: function(form) {
+                    var data = {
+                        id: $('#notification-id').val()
+                    };
+
+                    var url = $(form).attr('action'),
+                        method = $(form).attr('method');
+                    makeRequest(url, method, data, function(res) {
+                        $('footer .note').remove();
+                        $('#notificaiton-id').val('');
+                        $('#delete-notification').addClass('hidden');
+                        addNotification('success', '!{__('success_notification_removed')}');
+                    }, function(res) {
+                        console.log(res);
+                        addNotification('error', 'Something went worng, please try again.');
+                    });
+                }
+            });
+
+            $('#notification').validate({
+                rules: {
+                    'notification_msg': {
+                        required: true
+                    }
+                },
+                errorPlacement: function() {
+                    return false;
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).parent().addClass('error');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).parent().removeClass('error');
+                },
+                submitHandler: function(form) {
+                    var data = {
+                        content: $('#notification-msg').val()
+                    };
+
+                    console.log(data);
+
+                    var url = $(form).attr('action'),
+                        method = $(form).attr('method');
+                    makeRequest(url, method, data, function(res) {
+                        var $notification = $('<div class="note"><p>' + res.content + '</p></div>');
+                        $('footer').prepend($notification);
+                        $('#notificaiton-id').val(res.id);
+                        $('#delete-notification').removeClass('hidden');
+                        addNotification('success', '!{__('success_notification_added')}');
+                    }, function(res) {
+                        console.log(res);
+                        addNotification('error', 'Something went worng, please try again.');
+                    });
                 }
             });
 

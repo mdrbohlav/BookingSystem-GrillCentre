@@ -36,7 +36,8 @@ var index = require(__dirname + '/routes/index'),
     apiAdminUser = require(__dirname + '/routes/api/admin/user'),
     apiAdminUsers = require(__dirname + '/routes/api/admin/users'),
     apiAdminReservation = require(__dirname + '/routes/api/admin/reservation'),
-    apiAdminAccessory = require(__dirname + '/routes/api/admin/accessory');
+    apiAdminAccessory = require(__dirname + '/routes/api/admin/accessory'),
+    apiAdminNotification = require(__dirname + '/routes/api/admin/notification');
 
 var app = express();
 
@@ -220,6 +221,19 @@ app.use(function(req, res, next) {
     next();
 });
 
+// get notification
+app.use(function(req, res, next) {
+    var notification = models.Notification.findOne().then(function(notification) {
+        if (notification) {
+            res.locals.notification = notification;
+        }
+        next();
+    }).catch(function(err) {
+        console.log("notification err", err);
+        next();
+    });
+});
+
 // passport setup
 passport.use('login-native', new LocalStrategy({
     usernameField: 'email',
@@ -356,6 +370,7 @@ app.use('/api/admin/user', apiAdminUser);
 app.use('/api/admin/users', apiAdminUsers);
 app.use('/api/admin/reservation', apiAdminReservation);
 app.use('/api/admin/accessory', apiAdminAccessory);
+app.use('/api/admin/notification', apiAdminNotification);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

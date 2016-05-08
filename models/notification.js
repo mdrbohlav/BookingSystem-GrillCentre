@@ -10,6 +10,22 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false,
             defaultValue: true
         }
+    }, {
+      defaultScope: {
+        where: {
+          active: true
+        }
+      },
+      scopes: {
+        all: {
+          where: {}
+        },
+        inactive: {
+          where: {
+            active: false
+          }
+        }
+      }
     });
     return Notification;
 };

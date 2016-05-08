@@ -63,9 +63,11 @@ html
         if [ 'login' ].indexOf(page) === -1
             .footer__placeholder
         footer.footer--up
-            .note
-                p note
+            if notification
+                .note
+                    p= notification.content
             ul.links
+                li: a(href='http://www.siliconhill.cz/', target='_blank') SiliconHill
                 li: a(href='http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum', target='_blank') Wiki
             .locales
                 label(for='locale') Language: 
