@@ -1,15 +1,15 @@
 {
     "default": {
         "ADMIN_IS": {
-            "value": "23348",
+            "value": "9634;22088;23348;22253;23771;18183",
             "type": "text"
         },
         "MAX_PRERESERVATIONS_DAY": {
-            "value": 10,
+            "value": 5,
             "type": "tel"
         },
         "MAX_RESERVATIONS_USER": {
-            "value": 10,
+            "value": 1,
             "type": "tel"
         },
         "MAX_RESERVATION_LENGTH": {
@@ -25,7 +25,7 @@
             "type": "checkbox"
         },
         "KEY_PICKUP_FROM": {
-            "value": 1020,
+            "value": 480,
             "type": "time"
         },
         "KEY_PICKUP_TO": {
@@ -33,7 +33,7 @@
             "type": "time"
         },
         "KEY_PICKUP_INTERVAL_MINS": {
-            "value": 30,
+            "value": 60,
             "type": "tel"
         },
         "SENDER_NAME": {
@@ -41,7 +41,7 @@
             "type": "text"
         },
         "SENDER_EMAIL": {
-            "value": "mettify@gmail.com",
+            "value": "grill@sh.cvut.cz",
             "type": "email"
         },
         "PRERESERVATION_HEADING_CS": {
@@ -77,11 +77,11 @@
             "type": "text"
         },
         "PRERESERVATION_CS": {
-            "value": "Byla vytvořena **PŘEDBĚŽNÁ REZERVACE** Grilovacího centra na ***datum***. Rezervace zatím není platná, je nutno počkat na její potvrzení správcem.\n\nTato rezervace je *poradi*. v pořadí na vybranný termín, aktuální stav je v rezervačním systému.\n\nOficiální akce pořádané SH, SU, kluby SU nebo součástmi ČVUT mají přednost. V případě pořádání oficiální akce nám pošli oznámení s popisem akce a kontakty na pořadatele.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
+            "value": "Byla vytvořena **PŘEDBĚŽNÁ REZERVACE** Grilovacího centra na ***datum***. Rezervace zatím není platná, je nutno počkat na její potvrzení správcem.\n\nTato rezervace je *poradi*. v pořadí na vybranný termín, aktuální stav je v rezervačním systému.\n\nDetaily:\n- Výpůjčitel: *jmeno* *prijmeni*\n- Komentář: *komentar*\n\nOficiální akce pořádané SH, SU, kluby SU nebo součástmi ČVUT mají přednost. V případě pořádání oficiální akce nám pošli oznámení s popisem akce a kontakty na pořadatele.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
             "type": "textarea"
         },
         "PRERESERVATION_EN": {
-            "value": "Byla vytvořena **PŘEDBĚŽNÁ REZERVACE** Grilovacího centra na ***datum***. Rezervace zatím není platná, je nutno počkat na její potvrzení správcem.\n\nTato rezervace je *poradi*. v pořadí na vybranný termín, aktuální stav je v rezervačním systému.\n\nOficiální akce pořádané SH, SU, kluby SU nebo součástmi ČVUT mají přednost. V případě pořádání oficiální akce nám pošli oznámení s popisem akce a kontakty na pořadatele.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
+            "value": "Byla vytvořena **PŘEDBĚŽNÁ REZERVACE** Grilovacího centra na ***date***. Rezervace zatím není platná, je nutno počkat na její potvrzení správcem.\n\nTato rezervace je *order*. v pořadí na vybranný termín, aktuální stav je v rezervačním systému.\n\nDetaily:\n- Výpůjčitel: *firstname* *lastname*\n- Komentář: *comment*\n\nOficiální akce pořádané SH, SU, kluby SU nebo součástmi ČVUT mají přednost. V případě pořádání oficiální akce nám pošli oznámení s popisem akce a kontakty na pořadatele.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
             "type": "textarea"
         },
         "CONFIRMATION_CS": {
@@ -89,15 +89,15 @@
             "type": "textarea"
         },
         "CONFIRMATION_EN": {
-            "value": "Rezervace Grilovacího centra na ***datum*** je platná. Odepiš **na tento** email 24h až 48h před začátkem akce a domluv se na předání klíčů (v době letních prázdnin o den dříve). Bez domluvy bude rezervace zrušena v den akce.\n\nV příloze najdeš **Výpujční listinu**, tu si **vytiskni** a **přines** s sebou. Klíče může převzít pouze osoba, která rezervaci provedla.\n\nZvláštní požadavky řeš se správci s dostatečným předstihem, drobná pozornost pro správce vždy potěší a řešení usnadní.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
+            "value": "Rezervace Grilovacího centra na ***date*** je platná. Odepiš **na tento** email 24h až 48h před začátkem akce a domluv se na předání klíčů (v době letních prázdnin o den dříve). Bez domluvy bude rezervace zrušena v den akce.\n\nV příloze najdeš **Výpujční listinu**, tu si **vytiskni** a **přines** s sebou. Klíče může převzít pouze osoba, která rezervaci provedla.\n\nZvláštní požadavky řeš se správci s dostatečným předstihem, drobná pozornost pro správce vždy potěší a řešení usnadní.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
             "type": "textarea"
         },
         "CANCELEDADMIN_CS": {
-            "value": "Rezervace Grilovacího centra na ***datum*** byla zrušena správcem. Důvod: *komentar*\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
+            "value": "Rezervace Grilovacího centra na ***datum*** byla zrušena správcem. Důvod: *komentar_zamitnuti*\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
             "type": "textarea"
         },
         "CANCELEDADMIN_EN": {
-            "value": "Rezervace Grilovacího centra na ***datum*** byla zrušena správcem. Důvod: *komentar*\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
+            "value": "Rezervace Grilovacího centra na ***date*** byla zrušena správcem. Důvod: *reject_comment*\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
             "type": "textarea"
         },
         "CANCELEDUSER_CS": {
@@ -105,7 +105,7 @@
             "type": "textarea"
         },
         "CANCELEDUSER_EN": {
-            "value": "Rezervace Grilovacího centra na ***datum*** byla úspěšně zrušena.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
+            "value": "Rezervace Grilovacího centra na ***date*** byla úspěšně zrušena.\n\nKontakt: <grill@sh.cvut.cz>\n\nInformace: <http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum>",
             "type": "textarea"
         },
         "PDF_CS": {
@@ -135,14 +135,14 @@
     },
     "custom": {
         "ADMIN_IS": "9634;22088;23348;22253;23771;18183",
-        "MAX_PRERESERVATIONS_DAY": 10,
-        "MAX_RESERVATIONS_USER": 10,
-        "MAX_RESERVATION_LENGTH": 2,
+        "MAX_PRERESERVATIONS_DAY": 5,
+        "MAX_RESERVATIONS_USER": 1,
+        "MAX_RESERVATION_LENGTH": 1,
         "MAX_RESERVATION_UPFRONT": 40,
         "SEND_EMAILS": true,
-        "KEY_PICKUP_FROM": 1020,
+        "KEY_PICKUP_FROM": 480,
         "KEY_PICKUP_TO": 1200,
-        "KEY_PICKUP_INTERVAL_MINS": 30,
+        "KEY_PICKUP_INTERVAL_MINS": 60,
         "SENDER_NAME": "Grill SiliconHill",
         "SENDER_EMAIL": "mettify@gmail.com",
         "PRERESERVATION_HEADING_CS": "[SiliconGrill] Nová rezervace na *datum*",

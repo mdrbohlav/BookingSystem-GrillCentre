@@ -61,17 +61,7 @@ block content
                                         <div class="day__num"><%= day.day %></div>
                                         <% for (var i in day.events) { %>
                                             <div class="day__event <%= day.events[i].class %>" title="<%= day.events[i].title %>">
-                                            <%
-                                                if (#{user.isAdmin}) {
-                                                    if (day.events[i].name.length > 15) {
-                                            %>
-                                                        <%= day.events[i].name.substr(0, 15) %>…
-                                                    <% } else { %>
-                                                        <%= day.events[i].name %>
-                                            <%
-                                                    }
-                                                }
-                                            %>
+                                                <%= day.events[i].name %>
                                             </div>
                                         <% } %>
                                     </div>
@@ -229,6 +219,11 @@ block scripts
                 loadedMonths[moment(startInterval).month()] = true;
                 loadedMonths[moment(endInterval).month()] = true;
                 calendar.addEvents(reservationsArr);
+                $('.day__event').dotdotdot({
+                    ellipsis: '…',
+                    wrap: 'letter',
+                    height: 14
+                });
             });
         }
 
@@ -441,6 +436,11 @@ block scripts
                         }
                     },
                     onMonthChange: function() {
+                        $('.day__event').dotdotdot({
+                            ellipsis: '…',
+                            wrap: 'letter',
+                            height: 14
+                        });
                         loadReservations(this);
                     }
                 },

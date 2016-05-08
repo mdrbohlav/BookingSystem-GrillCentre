@@ -69,6 +69,7 @@ var uglified = uglify.minify([
     path.join(__dirname, 'bower_components/jquery/dist/jquery.js'),
     path.join(__dirname, 'bower_components/velocity/velocity.js'),
     path.join(__dirname, 'bower_components/jquery-validation/dist/jquery.validate.js'),
+    path.join(__dirname, 'bower_components/jQuery.dotdotdot/src/jquery.dotdotdot.js'),
     path.join(__dirname, 'bower_components/console-polyfill/index.js'),
     path.join(__dirname, 'bower_components/es5-shim/es5-shim.js'),
     path.join(__dirname, 'bower_components/underscore/underscore.js'),
