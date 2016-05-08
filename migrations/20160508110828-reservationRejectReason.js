@@ -6,7 +6,8 @@ module.exports = {
             'Reservations',
             'rejectReason', {
                 type: Sequelize.TEXT,
-                allowNull: true
+                allowNull: false,
+                defaultValue: ''
             }
         );
     },

@@ -16,7 +16,7 @@ block content
                             .field__container.col-xs-12
                                 label.text__label(for='notification-msg') !{__('labels_notification_msg')}
                                 .field
-                                    input#notification-msg(type='text', name='notification-msg', required)
+                                    input#notification-msg(type='text', name='notification-msg', value= (notification ? notification.content : ''), required)
                         .form__footer.text--center.margin--top-40
                             button.btn.btn__orange(type='submit') !{__('buttons_add_notification')}
             .box
@@ -57,7 +57,7 @@ block scripts
         $(document).ready(function() {
             moment.locale('#{Object.keys(user.locale)[0]}');
             
-            $('input[type="time"]').each(function(i, element) {
+            $('#config input[type="time"]').each(function(i, element) {
                 var $element = $(element);
                 $element.val('');
                 $element.pickatime({
@@ -73,17 +73,17 @@ block scripts
                 });
             });
 
-            $('input[type="text"], input[type="email"], textarea').each(function(i, element) {
+            $('#config input[type="text"], #config input[type="email"], #config textarea').each(function(i, element) {
                 var $element = $(element);
                 $element.val($element.attr('data-val'));
             });
 
-            $('input[type="tel"]').each(function(i, element) {
+            $('#config input[type="tel"]').each(function(i, element) {
                 var $element = $(element);
                 $element.val(parseInt($element.attr('data-val')));
             });
 
-            $('input[type="checkbox"]').each(function(i, element) {
+            $('#config input[type="checkbox"]').each(function(i, element) {
                 var $element = $(element);
                 if ($element.attr('data-val') === 'true') {
                     $element.trigger('click');
@@ -150,14 +150,13 @@ block scripts
                         content: $('#notification-msg').val()
                     };
 
-                    console.log(data);
-
                     var url = $(form).attr('action'),
                         method = $(form).attr('method');
                     makeRequest(url, method, data, function(res) {
                         var $notification = $('<div class="note"><p>' + res.content + '</p></div>');
+                        $('footer .note').remove();
                         $('footer').prepend($notification);
-                        $('#notificaiton-id').val(res.id);
+                        $('#notification-id').val(res.id);
                         $('#delete-notification').removeClass('hidden');
                         addNotification('success', '!{__('success_notification_added')}');
                     }, function(res) {

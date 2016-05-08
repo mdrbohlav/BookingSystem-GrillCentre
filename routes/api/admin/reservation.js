@@ -88,7 +88,7 @@ router.put('/:id/reject', function(req, res, next) {
             stateChangedBy: req.user.id
         };
     if (req.body.rejectionComment) {
-        data.rejectionComment = req.body.rejectionComment;
+        data.rejectReason = req.body.rejectionComment;
     }
     Reservation.update(id, data).then(function(count) {
         res.json(count);

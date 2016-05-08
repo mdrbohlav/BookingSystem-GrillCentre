@@ -69,7 +69,8 @@ module.exports = function(sequelize, DataTypes) {
         },
         comment: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: false,
+            defaultValue: ''
         },
         state: {
             type: DataTypes.ENUM,
@@ -90,7 +91,8 @@ module.exports = function(sequelize, DataTypes) {
         },
         rejectReason: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: false,
+            defaultValue: ''
         }
     }, {
         classMethods: {

@@ -43,10 +43,10 @@ function getOrderCountOptions(dateStartString, dateEndString) {
     };
 }
 
-function sendDraft(type, dates, opt, config) {
+function sendDraft(type, reservation, opt, config) {
     return new Promise(function(resolve, reject) {
-        var dateStart = new Date(dates.from),
-            dateEnd = new Date(dates.to);
+        var dateStart = new Date(reservation.from),
+            dateEnd = new Date(reservation.to);
 
         dateStart.setUTCHours(0, 0, 0, 0);
         dateEnd.setUTCHours(23, 59, 59, 999);
@@ -213,7 +213,7 @@ function getSubject(type, config, locale) {
 var MailHelper = function() {
     var helper = {};
 
-    helper.send = function(user, type, dates, filePath, rejectionComment, password) {
+    helper.send = function(user, type, reservation, filePath, password) {
         return new Promise(function(resolve, reject) {
             locale = Object.keys(user.locale)[0];
             moment.locale(locale);
@@ -232,12 +232,11 @@ var MailHelper = function() {
             text.replace(/(\*jmeno\*|\*firstname\*)/, user.firstname);
             text.replace(/(\*prijmeni\*|\*lastname\*)/, user.lastname);
 
-            if (dates) {
-                text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'));
-                opt.subject = opt.subject.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
-            }
-            if (rejectionComment) {
-                text = text.replace(/(\*komentar\*|\*comment\*)/, rejectionComment);
+            if (reservation) {
+                text = text.replace(/(\*datum\*|\*date\*)/, moment(reservation.from).format('L'));
+                opt.subject = opt.subject.replace(/(\*datum\*|\*date\*)/, moment(reservation.from).format('L'))
+                text = text.replace(/(\*komentar\*|\*comment\*)/, reservation.comment);
+                text = text.replace(/(\*komentar_zamitnuti\*|\*reject_comment\*)/, reservation.rejectReason);
             }
             if (password) {
                 text = text.replace(/(\*heslo\*|\*password\*)/, password);
@@ -245,7 +244,7 @@ var MailHelper = function() {
             opt.html = text;
 
             if (type === 'draft') {
-                sendDraft(type, dates, opt, configCustom).then(function(res) {
+                sendDraft(type, reservation, opt, configCustom).then(function(res) {
                     resolve(res);
                 }).catch(function(err) {
                     reject(err);
@@ -257,7 +256,7 @@ var MailHelper = function() {
                     reject(err);
                 });
             } else if (['canceled_user', 'canceled_admin'].indexOf(type) > -1) {
-                sendCanceled(type, dates, opt, configCustom).then(function(res) {
+                sendCanceled(type, reservation, opt, configCustom).then(function(res) {
                     resolve(res);
                 }).catch(function(err) {
                     reject(err);

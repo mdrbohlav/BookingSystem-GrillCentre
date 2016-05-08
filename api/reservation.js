@@ -11,11 +11,11 @@ var Reservation = require(__dirname + '/../models').Reservation,
     User = require(__dirname + '/user'),
     Accessory = require(__dirname + '/accessory');
 
-function processMail(user, type, dates, pdfFile) {
+function processMail(user, type, reservation, pdfFile) {
     var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
 
     if (configCustom.SEND_EMAILS) {
-        return mail_helper.send(user, type, dates, pdfFile).then(function(mailResponse) {
+        return mail_helper.send(user, type, reservation, pdfFile).then(function(mailResponse) {
             return { success: true };
         });
     } else {
@@ -23,9 +23,9 @@ function processMail(user, type, dates, pdfFile) {
     }
 }
 
-function processPdfMail(req, user, type, dates) {
+function processPdfMail(req, user, type, reservation) {
     return pdf_helper.getFile(req, user).then(function(pdfFile) {
-        return processMail(user, type, dates, pdfFile.file);
+        return processMail(user, type, reservation, pdfFile.file);
     });
 }
 
@@ -41,7 +41,7 @@ module.exports = {
                         from: plain.from,
                         to: plain.to
                     };
-                    return mail_helper.send(req.user, 'draft', dates).then(function(mailResponse) {
+                    return mail_helper.send(req.user, 'draft', plain).then(function(mailResponse) {
                         plain.mailSent = true;
                         return plain;
                     });
@@ -62,7 +62,7 @@ module.exports = {
                             from: plain.from,
                             to: plain.to
                         };
-                        return mail_helper.send(req.user, 'draft', dates).then(function(mailResponse) {
+                        return mail_helper.send(req.user, 'draft', plain).then(function(mailResponse) {
                             plain.mailSent = true;
                             return plain;
                         });
@@ -150,11 +150,6 @@ module.exports = {
     },
 
     update(id, data, req) {
-        var rejectionComment = null;
-        if ('rejectionComment' in data) {
-            rejectionComment = data.rejectionComment;
-            delete data.rejectionComment;
-        }
         return sequelize.transaction(function(t) {
             return Reservation.update(data, {
                 where: {
@@ -174,7 +169,7 @@ module.exports = {
                         };
                         if (['canceled', 'canceled_admin', 'rejected'].indexOf(data.state) > -1) {
                             var type = data.state === 'canceled' ? 'canceled_user' : 'canceled_admin';
-                            return mail_helper.send(user, type, dates, null, rejectionComment).then(function(result) {
+                            return mail_helper.send(user, type, reservation).then(function(result) {
                                 return result;
                             });
                         } else {

@@ -41,7 +41,7 @@ module.exports = {
                     user.locale = {};
                     user.locale[locale] = isoLocales[locale];
 
-                    return mail_helper.send(user, 'new_user', null, null, null, password).then(function(mailResponse) {
+                    return mail_helper.send(user, 'new_user', null, null, password).then(function(mailResponse) {
                         return user;
                     });
                 });
