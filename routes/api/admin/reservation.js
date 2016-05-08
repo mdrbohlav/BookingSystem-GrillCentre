@@ -113,9 +113,12 @@ router.put('/:id/reject', function(req, res, next) {
 router.put('/:id/cancel', function(req, res, next) {
     var id = req.params.id,
         data = {
-            state: 'canceled_admin',
+            state: 'rejected',
             stateChangedBy: req.user.id
         };
+    if (req.body.rejectionComment) {
+        data.rejectReason = req.body.rejectionComment;
+    }
     Reservation.update(id, data).then(function(count) {
         res.json(count);
     }).catch(function(data) {

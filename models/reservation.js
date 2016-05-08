@@ -69,12 +69,12 @@ module.exports = function(sequelize, DataTypes) {
         },
         comment: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true,
             defaultValue: ''
         },
         state: {
             type: DataTypes.ENUM,
-            values: ['draft', 'confirmed', 'rejected', 'canceled', 'canceled_admin', 'finished'],
+            values: ['draft', 'confirmed', 'rejected', 'canceled', 'finished'],
             allowNull: false,
             defaultValue: 'draft',
             validate: {

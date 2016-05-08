@@ -360,11 +360,18 @@ block scripts
 
         function cancelBtnFunctionality($btn) {
             $btn.on('click', function() {
+                if (!confirm('!{__('pages_reservations_confirm_1')}')) {
+                    return;
+                }
                 var $this = $(this),
                     $row = $this.closest('.table__row'),
-                    id = $this.attr('data-id');
+                    id = $this.attr('data-id'),
+                    reason = prompt('!{__('pages_reservations_prompt_1')}'),
+                    data = {
+                        rejectionComment: reason ? reason : ''
+                    };
 
-                makeRequest('/api/admin/reservation/' + id + '/cancel', 'PUT', {}, function(res) {
+                makeRequest('/api/admin/reservation/' + id + '/cancel', 'PUT', data, function(res) {
                     addNotification('success', '!{__('success_reservation_canceled')}');
                     $this.remove();
                     $row.find('.reservation__state span').removeClass('icon__flag').removeClass('icon__check').addClass('icon__cross').attr('title', 'Canceled');
