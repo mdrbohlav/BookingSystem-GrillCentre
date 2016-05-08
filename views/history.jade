@@ -192,7 +192,7 @@ block scripts
             var $cancel,
                 today = new Date();
             today.setUTCHours(0, 0, 0, 0);
-            if (reservation.state === 'draft' && reservation.from > today) {
+            if (['draft', 'confirmed'].indexOf(reservation.state) > -1 && new Date(reservation.from) > today) {
                 $cancel = $('<button class="btn__cancel icon icon__cross" type="button" data-id="' + reservation.id + '" title="#{__('buttons_cancel')}">');
                 cancelBtnFunctionality($cancel);
             }

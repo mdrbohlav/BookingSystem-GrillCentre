@@ -277,7 +277,7 @@ passport.use('login-is', new OAuth2Strategy({
     }).then(function() {
         data.locale = req.i18n.getLocale();
         return AuthHelper.isAuth(accessToken, refreshToken, data);
-    }) then(function(user) {
+    }).then(function(user) {
         if (user) {
             req.session.success = 'You are successfully logged in ' + user.fullName + '!';
         } else {
