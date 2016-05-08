@@ -2,6 +2,11 @@
 
 module.exports = function(sequelize, DataTypes) {
     var User = sequelize.define("User", {
+        lastLogin: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: "1970-01-01T00:00:00.001Z"
+        },
         isAdmin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,

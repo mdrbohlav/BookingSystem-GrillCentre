@@ -10,6 +10,34 @@ block content
         - }
         .container__md
             .box
+                .box__header.box__header--border
+                    h2.text__title !{__('pages_reservations_titles_4')}
+                .box__body
+                    form.form
+                        .fieldset.row
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='order-by') !{__('labels_order_by')}
+                                .field.field__select
+                                    select#order-by(name='order-by')
+                                        if ordering.by === 'createdAt'
+                                            option(value='createdAd', selected) !{__('labels_order_created')}
+                                            option(value='from') !{__('labels_order_from')}
+                                        else
+                                            option(value='createdAt') !{__('labels_order_created')}
+                                            option(value='from', selected) !{__('labels_order_from')}
+                            .field__container.col-xs-12.col-sm-6.margin--top-20
+                                label.text__label(for='order') !{__('labels_order')}
+                                .field.field__select
+                                    select#order(name='order')
+                                        if ordering.type === 'ASC'
+                                            option(value='ASC', selected) !{__('labels_asc')}
+                                            option(value='DESC') !{__('labels_desc')}
+                                        else
+                                            option(value='ASC') !{__('labels_asc')}
+                                            option(value='DESC', selected) !{__('labels_desc')}
+                        .form__footer.text--center.margin--top-40
+                            button.btn.btn__orange(type='submit') !{__('buttons_order')}
+            .box
                 - var draftCnt = 0
                 - var today = new Date()
                 - today.setUTCHours(0, 0, 0, 0)

@@ -12,11 +12,22 @@ var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
 // GET /admin/reservations
 router.get('/reservations', function(req, res, next) {
-    var options = {
-        order: [ 
-            ['createdAt', 'ASC']
-        ],
-    };
+    var options = {},
+        ordering = {
+            by: req.query['order-by'] ? req.query['order-by'] : 'from',
+            type: req.query.order ? req.query.order : 'ASC'
+        };
+
+    if (['from', 'createdAt'].indexOf(ordering.by) === -1) {
+        ordering.by = 'from'
+    }
+    if (['ASC', 'DESC'].indexOf(ordering.type) === -1) {
+        ordering.type = 'ASC'
+    }
+
+    options.order = [ 
+        [ordering.by, ordering.type]
+    ];
 
     if (req.query.month) {
         var date = new Date(parseInt(req.query.month)),
@@ -81,7 +92,8 @@ router.get('/reservations', function(req, res, next) {
                 page: 'reservations',
                 title: req.i18n.__('titles_2') + ' | ' + req.i18n.__('title'),
                 description: req.i18n.__('description'),
-                data: result
+                data: result,
+                ordering: ordering
             });
         }
     }).catch(function(data) {
@@ -130,6 +142,9 @@ router.get('/accessories', function(req, res, next) {
 // GET /admin/users
 router.get('/users', function(req, res, next) {
     var options = {
+        order: [
+            ['lastLogin', 'DESC']
+        ],
         where: {},
         limit: 20,
         offset: 0

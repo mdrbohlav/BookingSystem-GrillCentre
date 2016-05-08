@@ -82,6 +82,17 @@ module.exports.localAuth = function(email, password) {
             if (user.banned) {
                 reject(new UserBannedError());
             }
+            var lastLogin = new Date().toISOString();
+            return User.update({
+                lastLogin: lastLogin
+            }, {
+                where: {
+                    id: user.id
+                }
+            }).then(function(count) {
+                return user;
+            });
+        }).then(function(user) {
             user = user.get({ plain: true });
             verifyPassword(password, user.password).then(function(result) {
                 var locale = user.locale;
@@ -109,6 +120,7 @@ module.exports.isAuth = function(accessToken, refreshToken, profile) {
         }
 
         profile = prepareISData(profile);
+        profile.lastLogin = new Date().toISOString();
 
         User.upsert(profile).then(function(created) {
             UserApi.getByEmail(profile.email).then(function(user) {
