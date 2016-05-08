@@ -34,7 +34,7 @@ html
         link(rel='stylesheet', href='/css/style.css')
     body(class=(page ? 'page__' + page : ''))
         if user
-            header
+            header.header--down
                 nav.nav__main
                     ul.text--center
                         - var homeLink = page === 'index' ? '#' : '/'
@@ -62,7 +62,7 @@ html
 
         if [ 'login' ].indexOf(page) === -1
             .footer__placeholder
-        footer
+        footer.footer--up
             .note
                 p note
             ul.links

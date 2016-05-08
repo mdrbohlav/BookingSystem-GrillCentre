@@ -8,9 +8,9 @@ var AuthHelper = require(__dirname + '/../helpers/AuthHelper');
 router.post('/login/native', passport.authenticate('login-native', { failureRedirect: '/login' }), function(req, res, next) {
     if (req.user.isAdmin) {
         res.redirect('/admin/reservations');
+    } else {
+        res.redirect('/');
     }
-
-    res.redirect('/');
 });
 
 // GET /auth/login/is/init
@@ -20,9 +20,9 @@ router.get('/login/is/init', passport.authenticate('login-is'));
 router.get('/login/is', passport.authenticate('login-is', { failureRedirect: '/login' }), function(req, res, next) {
     if (req.user.isAdmin) {
         res.redirect('/admin/reservations');
+    } else {
+        res.redirect('/');
     }
-
-    res.redirect('/');
 });
 
 // GET /auth/logout

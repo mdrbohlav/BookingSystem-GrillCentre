@@ -264,11 +264,11 @@ $(document).ready(function() {
         if ($window.width() >= 1024) {
             $mainNav.removeAttr('style');
         }
-        if (!$mainNavTrigger.hasClass('is-active') && !$('header').hasClass('nav--up')) {
+        if (!$mainNavTrigger.hasClass('is-active') &&  !$('header').hasClass('nav--up')) {
             return;
         }
         if ($window.width() < 1024 && $('header').hasClass('nav--up')) {
-            $('header').removeClass('nav--up');
+            $('header').removeClass('header--up');
         } else if ($window.width() >= 1024 && $mainNav.hasClass('is-active')) {
             $mainNav.removeAttr('style');
             $trigger.removeClass('is-active');
@@ -293,26 +293,30 @@ $(document).ready(function() {
     //=================================================================
     // Header and footer display/hide on scroll
     //=================================================================
-    var didScroll;
+    var didScroll = false;
     var lastScrollTop = 0;
     var delta = 5;
     var navbarHeight = $('header').outerHeight();
 
-    $(window).scroll(function(event) {
-        didScroll = true;
+    $window.on('load', function(event) {
+        lastScrollTop = $window.scrollTop();
+        $window.on('scroll', function(event) {
+            didScroll = true;
+        });
     });
 
     setInterval(function() {
-        if (didScroll) {
-            hasScrolled();
-            didScroll = false;
+        if (!didScroll) {
+            return;
         }
+        hasScrolled();
+        didScroll = false;
     }, 250);
 
     function hasScrolled() {
-        var st = $(this).scrollTop();
+        var st = $window.scrollTop();
 
-        if (Math.abs(lastScrollTop - st) <= delta) {
+        if (Math.abs(lastScrollTop - st) <= delta)  {
             return;
         }
 
@@ -322,7 +326,7 @@ $(document).ready(function() {
             }
             $('footer').removeClass('footer--up').addClass('footer--down');
         } else {
-            if (st + $(window).height() < $(document).height()) {
+            if (st + $window.height() < $(document).height()) {
                 if ($window.width() >= 1024) {
                     $('header').removeClass('header--up').addClass('header--down');
                 }

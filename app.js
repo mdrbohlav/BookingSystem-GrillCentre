@@ -264,15 +264,13 @@ passport.use('login-is', new OAuth2Strategy({
         });
     }).then(function() {
         data.locale = req.i18n.getLocale();
-        return AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
+        AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
             if (user) {
                 req.session.success = 'You are successfully logged in ' + user.fullName + '!';
-                done(null, user);
-            }
-            if (!user) {
+            } else {
                 req.session.error = 'Could not log user in. Please try again.';
-                done(null, user);
             }
+            done(null, user);
         }).catch(function(err) {
             req.session.error = err.customMessage;
             done(null, false);

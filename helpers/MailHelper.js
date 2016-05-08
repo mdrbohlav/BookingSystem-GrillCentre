@@ -1,6 +1,7 @@
 var nodemailer = require('nodemailer'),
+    conf = require(__dirname + '/../config/global'),
     transporter = nodemailer.createTransport('smtp://smtp.sh.cvut.cz'),
-    sendgrid = require("sendgrid")("API_KEY"),
+    sendgrid = require("sendgrid")(conf.SENDRIG_API_KEY),
     fs = require('fs'),
     moment = require('moment'),
     marked = require('marked');
@@ -10,64 +11,6 @@ var MailError = require(__dirname + '/../errors/MailError'),
     Reservation = require(__dirname + '/../models').Reservation;
 
 var transporter = nodemailer.createTransport();
-
-function getTextAdmin(type, config) {
-    if (type === 'confirmed') {
-        return config.CONFIRMATION_CS;
-    } else if (type === 'canceled_admin') {
-        return config.CANCELEDADMIN_CS;
-    } else if (type === 'canceled_user') {
-        return config.CANCELEDUSER_CS;
-    }
-
-    return config.PRERESERVATION_CS;
-}
-
-function getSubjectAdmin(type, config) {
-    if (type === 'confirmed') {
-        return config.CONFIRMATION_HEADING_CS;
-    } else if (type === 'canceled_admin') {
-        return config.CANCELEDADMIN_HEADING_CS;
-    } else if (type === 'canceled_user') {
-        return config.CANCELEDUSER_HEADING_CS;
-    }
-
-    return config.PRERESERVATION_HEADING_CS;
-}
-
-function sendAdmin(type, config, date, order) {
-    return new Promise(function(resolve, reject) {
-        moment.locale('cs');
-        var text = getTextAdmin(type, config),
-            opt = {
-                from: getFrom(config),
-                to: config.SENDER_EMAIL,
-                subject: getSubjectAdmin(type, config).replace(/(\*datum\*|\*date\*)/, moment(date).format('L'))
-            };
-
-        opt.html = text.replace(/(\*datum\*|\*date\*)/, moment(date).format('L')).replace(/\n\r?/g, '<br>');
-        if (order) {
-            opt.html = opt.html.replace(/(\*poradi\*|\*order\*)/, order);
-        }
-        opt.html = marked(opt.html);
-
-        function sendCb(err, json) {
-            if (err) {
-                console.log("sendAdmin", err);
-                reject(new MailError(err));
-            }
-
-            resolve({ success: true });
-        }
-
-        if (/@sh\.cvut\.cz$/.test(opt.to)) {
-            transporter.sendMail(opt, sendCb);
-        } else {
-            var email = new sendgrid.Email(opt);
-            sendgrid.send(email, sendCb);
-        }
-    });
-}
 
 function getOrderCountOptions(dateStartString, dateEndString) {
     return {
@@ -114,24 +57,26 @@ function sendDraft(type, dates, opt, config) {
         var options = getOrderCountOptions(dateStartString, dateEndString);
 
         Reservation.count(options).then(function(order) {
+            var isIs = /@sh\.cvut\.cz$/.test(opt.to);
+
             order++;
             opt.html = opt.html.replace(/(\*poradi\*|\*order\*)/, order);
             opt.html = marked(opt.html);
+            opt.to.push(getRecipient(config.SENDER_NAME, config.SENDER_EMAIL));
 
             function sendCb(err, json) {
                 if (err) {
                     console.log("sendDraft", err);
+                    if (typeof(err) === 'object') {
+                        err = err[0];
+                    }
                     reject(new MailError(err));
                 }
 
-                sendAdmin(type, config, dates.from, order).then(function(res) {
-                    resolve({ success: true });
-                }).catch(function(err) {
-                    reject(new MailError(err));
-                });
+                resolve({ success: true });
             }
 
-            if (/@sh\.cvut\.cz$/.test(opt.to)) {
+            if (isIs) {
                 transporter.sendMail(opt, sendCb);
             } else {
                 var email = new sendgrid.Email(opt);
@@ -159,6 +104,9 @@ function sendConfirmed(filePath, opt) {
             function sendCb(err, json) {
                 if (err) {
                     console.log("sendConfirmed", err);
+                    if (typeof(err) === 'object') {
+                        err = err[0];
+                    }
                     reject(new MailError(err));
                 }
 
@@ -179,22 +127,24 @@ function sendConfirmed(filePath, opt) {
 
 function sendCanceled(type, dates, opt, config) {
     return new Promise(function(resolve, reject) {
+        var isIs = /@sh\.cvut\.cz$/.test(opt.to);
+
         opt.html = marked(opt.html);
+        opt.to.push(getRecipient(config.SENDER_NAME, config.SENDER_EMAIL));
 
         function sendCb(err, json) {
             if (err) {
                 console.log("sendCanceled", err);
+                if (typeof(err) === 'object') {
+                    err = err[0];
+                }
                 reject(new MailError(err));
             }
 
-            sendAdmin(type, config, dates.from).then(function(res) {
-                resolve({ success: true });
-            }).catch(function(err) {
-                reject(new MailError(err));
-            });
+            resolve({ success: true });
         }
 
-        if (/@sh\.cvut\.cz$/.test(opt.to)) {
+        if (isIs) {
             transporter.sendMail(opt, sendCb);
         } else {
             var email = new sendgrid.Email(opt);
@@ -208,6 +158,9 @@ function sendGeneral(opt) {
         function sendCb(err, json) {
             if (err) {
                 console.log("sendGeneral", err);
+                if (typeof(err) === 'object') {
+                    err = err[0];
+                }
                 reject(new MailError(err));
             }
 
@@ -237,8 +190,8 @@ function getText(type, config, locale) {
     return locale === 'cs' ? config.PRERESERVATION_CS : config.PRERESERVATION_EN;
 }
 
-function getFrom(config) {
-    return '"' + config.SENDER_NAME + '" <' + config.SENDER_EMAIL + '>';
+function getRecipient(name, email) {
+    return '"' + name + '" <' + email + '>';
 }
 
 function getSubject(type, config, locale) {
@@ -265,15 +218,18 @@ var MailHelper = function() {
             var configCustom = JSON.parse(GetFile('./config/app.json')).custom,
                 text = getText(type, configCustom, locale),
                 opt = {
-                    from: getFrom(configCustom),
-                    to: user.email,
+                    from: getRecipient(configCustom.SENDER_NAME, configCustom.SENDER_EMAIL),
+                    to: [ getRecipient(user.fullName, user.email) ],
                     subject: getSubject(type, configCustom, locale),
                     headers: {
-                        'x-grill': type
+                        'X-Grill': type
                     }
                 };
 
             text = text.replace(/\n\r?/g, '<br>');
+            text.replace(/(\*jmeno\*|\*firstname\*)/, user.firstname);
+            text.replace(/(\*prijmeni\*|\*lastname\*)/, user.lastname);
+
             if (dates) {
                 text = text.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'));
                 opt.subject = opt.subject.replace(/(\*datum\*|\*date\*)/, moment(dates.from).format('L'))
