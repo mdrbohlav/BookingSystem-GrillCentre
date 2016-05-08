@@ -31,6 +31,11 @@ router.put('/:id/confirm', function(req, res, next) {
                         { from: { $lte: reservation.to } },
                         { to: { $gte: reservation.to } }
                     ]
+                }, {
+                    $and: [
+                        { from: { $gte: reservation.from } },
+                        { to: { $lte: reservation.to } }
+                    ]
                 }]
             }
         };
@@ -108,7 +113,7 @@ router.put('/:id/reject', function(req, res, next) {
 router.put('/:id/cancel', function(req, res, next) {
     var id = req.params.id,
         data = {
-            state: 'canceled',
+            state: 'canceled_admin',
             stateChangedBy: req.user.id
         };
     Reservation.update(id, data).then(function(count) {

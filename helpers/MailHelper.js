@@ -57,7 +57,7 @@ function sendDraft(type, dates, opt, config) {
         var options = getOrderCountOptions(dateStartString, dateEndString);
 
         Reservation.count(options).then(function(order) {
-            var isIs = /@sh\.cvut\.cz$/.test(opt.to);
+            var isIs = /@sh\.cvut\.cz$/.test(opt.to[0]);
 
             order++;
             opt.html = opt.html.replace(/(\*poradi\*|\*order\*)/, order);
@@ -110,10 +110,12 @@ function sendConfirmed(filePath, opt) {
                     reject(new MailError(err));
                 }
 
+                fs.unlink(filePath);
+
                 resolve({ success: true });
             }
 
-            if (/@sh\.cvut\.cz$/.test(opt.to)) {
+            if (/@sh\.cvut\.cz$/.test(opt.to[0])) {
                 opt.attachments = [file];
                 transporter.sendMail(opt, sendCb);
             } else {
@@ -127,7 +129,7 @@ function sendConfirmed(filePath, opt) {
 
 function sendCanceled(type, dates, opt, config) {
     return new Promise(function(resolve, reject) {
-        var isIs = /@sh\.cvut\.cz$/.test(opt.to);
+        var isIs = /@sh\.cvut\.cz$/.test(opt.to[0]);
 
         opt.html = marked(opt.html);
         opt.to.push(getRecipient(config.SENDER_NAME, config.SENDER_EMAIL));
@@ -167,7 +169,7 @@ function sendGeneral(opt) {
             resolve({ success: true });
         }
 
-        if (/@sh\.cvut\.cz$/.test(opt.to)) {
+        if (/@sh\.cvut\.cz$/.test(opt.to[0])) {
             transporter.sendMail(opt, sendCb);
         } else {
             var email = new sendgrid.Email(opt);

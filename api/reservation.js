@@ -161,7 +161,7 @@ module.exports = {
                     id: id
                 }
             }, { transaction: t }).then(function(count) {
-                if (!('state' in data) || ['confirmed', 'canceled', 'rejected'].indexOf(data.state) < 0) {
+                if (!('state' in data) || ['confirmed', 'canceled', 'canceled_admin', 'rejected'].indexOf(data.state) < 0) {
                     return count;
                 }
                 return Reservation.findById(id, { transaction: t }).then(function(reservation) {
@@ -172,7 +172,7 @@ module.exports = {
                             from: reservation.from,
                             to: reservation.to
                         };
-                        if (['canceled', 'rejected'].indexOf(data.state) > -1) {
+                        if (['canceled', 'canceled_admin', 'rejected'].indexOf(data.state) > -1) {
                             var type = data.state === 'canceled' ? 'canceled_user' : 'canceled_admin';
                             return mail_helper.send(user, type, dates, null, rejectionComment).then(function(result) {
                                 return result;

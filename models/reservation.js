@@ -73,7 +73,7 @@ module.exports = function(sequelize, DataTypes) {
         },
         state: {
             type: DataTypes.ENUM,
-            values: ['draft', 'confirmed', 'rejected', 'canceled', 'finished'],
+            values: ['draft', 'confirmed', 'rejected', 'canceled', 'canceled_admin', 'finished'],
             allowNull: false,
             defaultValue: 'draft',
             validate: {
