@@ -174,10 +174,10 @@ router.get('/users', function(req, res, next) {
         options.where.block = parseInt(req.query.block);
     }
     if (req.query.limit) {
-        options.limit = req.query.limit;
+        options.limit = parseInt(req.query.limit);
     }
     if (req.query.offset) {
-        options.offset = req.query.offset;
+        options.offset = parseInt(req.query.offset);
     }
 
     User.get(options).then(function(result) {

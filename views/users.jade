@@ -276,6 +276,8 @@ block scripts
             }
 
             makeRequest(url, 'GET', {}, function(res) {
+                generatePagination(res.pagination.offset / res.pagination.limit + 1, Math.ceil(res.total / res.pagination.limit));
+
                 users = arrayToObject(res.users, 'id');;
                 if (res.users.length === 0) {
                     $list.html(getUserEmptyRow());
@@ -302,7 +304,7 @@ block scripts
             $('.pagination button').on('click', function() {
                 var $this = $(this),
                     page = parseInt($this.attr('data-page'));
-                loadPage(page, true);
+                loadPage(page, true, '/admin/users?accept=json');
             });
         }
 
@@ -658,6 +660,7 @@ block scripts
                 if (firstLoad) {
                     if (window.history.state && Object.keys(window.history.state).length) {
                         var url = window.location.pathname + '?accept=json' + window.location.search.replace(/\?/, '&');
+                        console.log(url);
                         loadPage(window.history.state.page, false, url);
                     } else {
                         var page = 1;

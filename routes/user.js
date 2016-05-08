@@ -24,10 +24,10 @@ router.get('/history', function(req, res, next) {
         };
 
     if (req.query.limit) {
-        options.limit = req.query.limit;
+        options.limit = parseInt(req.query.limit);
     }
     if (req.query.offset) {
-        options.offset = req.query.offset;
+        options.offset = parseInt(req.query.offset);
     }
 
     User.getReservations(id, options).then(function(result) {
