@@ -467,7 +467,7 @@ block scripts
         }
 
         function userDetailFunctionality($btn) {
-            $btn.on('click', function() {
+            $btn.on('click', function(event) {
                 var $row = $(this),
                     id = $row.attr('data-id'),
                     ignore = $row.find('button').toArray();

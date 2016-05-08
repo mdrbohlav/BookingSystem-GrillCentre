@@ -373,7 +373,7 @@ block scripts
         }
 
         function reservationDetailFunctionality($btn) {
-            $btn.on('click', function() {
+            $btn.on('click', function(event) {
                 var $row = $(this),
                     id = $row.attr('data-id'),
                     ignore = $row.find('button').toArray();
