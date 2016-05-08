@@ -2,3 +2,4 @@
 /bower_components
 dump.rdb
 /public/others
+/config/global.js
