@@ -60,18 +60,21 @@ html
                 .header__placeholder.visible-md.visible-lg
         block content
 
-        if availableLocales && availableLocales.length > 1
-            if [ 'login' ].indexOf(page) === -1
-                .footer__placeholder
-            footer
-                .locales
-                    label(for='locale') Language: 
-                    select#locale(name='locales')
-                        each loc in availableLocales
-                            if loc === locale
-                                option(value= loc, selected)= isoLocales[loc].nativeName.split(',')[0]
-                            else
-                                option(value= loc)= isoLocales[loc].nativeName.split(',')[0]
+        if [ 'login' ].indexOf(page) === -1
+            .footer__placeholder
+        footer
+            .note
+                p note
+            ul.links
+                li: a(href='http://wiki.siliconhill.cz/KLUB:Sluzby:Grilovac%C3%AD_centrum', target='_blank') Wiki
+            .locales
+                label(for='locale') Language: 
+                select#locale(name='locales')
+                    each loc in availableLocales
+                        if loc === locale
+                            option(value= loc, selected)= isoLocales[loc].nativeName.split(',')[0]
+                        else
+                            option(value= loc)= isoLocales[loc].nativeName.split(',')[0]
 
         script(src="/js/app.min.js")
         if user && Object.keys(user.locale)[0] === 'cs'

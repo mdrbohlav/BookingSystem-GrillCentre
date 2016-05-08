@@ -87,6 +87,10 @@ module.exports = function(sequelize, DataTypes) {
         stateChangedBy: {
             type: DataTypes.INTEGER,
             allowNull: true
+        },
+        rejectReason: {
+            type: DataTypes.TEXT,
+            allowNull: true
         }
     }, {
         classMethods: {

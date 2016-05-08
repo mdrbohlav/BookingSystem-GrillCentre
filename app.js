@@ -6,7 +6,8 @@ var express = require('express'),
     expressSession = require('express-session'),
     redisStore = require('connect-redis')(expressSession),
     i18n = require('i18n-2'),
-    isoLocales = require(__dirname + '/config/isoLocales');
+    isoLocales = require(__dirname + '/config/isoLocales'),
+    moment = require('moment');
 
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
@@ -108,7 +109,11 @@ var redisOptions = {
     ttl: 60 * 60 * 24
 };
 
-app.use(logger('dev'));
+logger.token('customDate', function(req, res) {
+    return '[' + moment().format('gggg-MM-DD HH:mm:ss.SSS') + ']';
+});
+
+app.use(logger(':customDate - :method :url :status :response-time ms - :res[content-length]'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
