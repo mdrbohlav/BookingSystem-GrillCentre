@@ -242,12 +242,10 @@ passport.use('login-native', new LocalStrategy({
     AuthHelper.localAuth(email, password).then(function(user) {
         if (user) {
             req.session.success = req.i18n.__('success_logged_in') + user.fullName + '!';
-            done(null, user);
-        }
-        if (!user) {
+        } else {
             req.session.error = 'Could not log in. Please try again.';
-            done(null, user);
         }
+        done(null, user);
     }).catch(function(err) {
         console.log(err);
         req.session.error = err.customMessage;
@@ -278,19 +276,18 @@ passport.use('login-is', new OAuth2Strategy({
         });
     }).then(function() {
         data.locale = req.i18n.getLocale();
-        AuthHelper.isAuth(accessToken, refreshToken, data).then(function(user) {
-            if (user) {
-                req.session.success = 'You are successfully logged in ' + user.fullName + '!';
-            } else {
-                req.session.error = 'Could not log user in. Please try again.';
-            }
-            done(null, user);
-        }).catch(function(err) {
-            req.session.error = err.customMessage;
-            done(null, false);
-        });
+        return AuthHelper.isAuth(accessToken, refreshToken, data);
+    }) then(function(user) {
+        if (user) {
+            req.session.success = 'You are successfully logged in ' + user.fullName + '!';
+        } else {
+            req.session.error = 'Could not log user in. Please try again.';
+        }
+        done(null, user);
     }).catch(function(err) {
         console.log(err);
+        req.session.error = err.customMessage;
+        done(null, false);
     });
 }));
 
@@ -302,14 +299,6 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
-
-// enable CORS
-//app.use(function(req, res, next) {
-//    res.header("Access-Control-Allow-Origin", /*config.AdminUrl*/ "*");
-//    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//    res.header("Access-Control-Allow-Methods", "DELETE,GET,HEAD,POST,PUT,PATCH,OPTIONS,TRACE");
-//    next();
-//});
 
 // routes require login
 var UnauthorizedError = require(__dirname + '/errors/UnauthorizedError');
@@ -335,7 +324,7 @@ app.get('/admin*', function(req, res, next) {
         if (req.user.isAdmin) {
             next();
         } else {
-            next(new UnauthorizedError()); // render error page with Unauthorized error
+            res.send(new UnauthorizedError()); // render error page with Unauthorized error
         }
     }).catch(function(err) {
         res.redirect('/login');
@@ -354,7 +343,7 @@ app.get('/api/admin*', function(req, res, next) {
     if (req.user.isAdmin) {
         next();
     } else {
-        next(new UnauthorizedError());
+        res.send(new UnauthorizedError());
     }
 });
 

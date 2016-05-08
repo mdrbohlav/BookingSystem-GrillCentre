@@ -229,8 +229,8 @@ var MailHelper = function() {
                 };
 
             text = text.replace(/\n\r?/g, '<br>');
-            text.replace(/(\*jmeno\*|\*firstname\*)/, user.firstname);
-            text.replace(/(\*prijmeni\*|\*lastname\*)/, user.lastname);
+            text = text.replace(/(\*jmeno\*|\*firstname\*)/, user.firstname);
+            text = text.replace(/(\*prijmeni\*|\*lastname\*)/, user.lastname);
 
             if (reservation) {
                 text = text.replace(/(\*datum\*|\*date\*)/, moment(reservation.from).format('L'));

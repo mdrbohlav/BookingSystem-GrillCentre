@@ -15,7 +15,7 @@ router.post('/create', function(req, res, next) {
     var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
 
     if (req.body['accessories[]'] && req.body.onlyMobileGrill) {
-        next(new InvalidRequestError('Cannot add accessories when booking standalone mobile grill!'));
+        res.send(new InvalidRequestError('Cannot add accessories when booking standalone mobile grill!'));
     }
 
     var dateUpfront = new Date(),
@@ -38,11 +38,11 @@ router.post('/create', function(req, res, next) {
     dateEndMs = dateEnd.getTime();
 
     if (dateStart > dateUpfront && !req.user.isAdmin) {
-        next(new MaxReservationUpfrontError());
+        res.send(new MaxReservationUpfrontError());
     }
 
     if (dateEndMs - dateStartMs > configCustom.MAX_RESERVATION_LENGTH * MS_PER_DAY && !req.user.isAdmin) {
-        next(new MaxReservationLengthError());
+        res.send(new MaxReservationLengthError());
     }
 
     var options = {
@@ -69,7 +69,7 @@ router.post('/create', function(req, res, next) {
 
     Reservation.count(options).then(function(countReservations) {
         if (countReservations >= configCustom.MAX_PRERESERVATIONS_DAY && !req.user.isAdmin) {
-            next(new MaxReservationsError());
+            throw new MaxReservationsError();
         }
 
         delete options.where.$and;
@@ -83,7 +83,7 @@ router.post('/create', function(req, res, next) {
 
         return Reservation.count(options).then(function(countUserReservations) {
             if (countUserReservations >= configCustom.MAX_RESERVATIONS_USER && !req.user.isAdmin) {
-                next(new MaxReservationsError(true));
+                throw new MaxReservationsError(true);
             }
 
             var data = {
@@ -143,7 +143,7 @@ router.get('/', function(req, res, next) {
     endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
 
     if (startInterval.toString() === 'Invalid Date' || endInterval.toString() === 'Invalid Date') {
-        next(new InvalidRequestError('Invalid date format!'));
+        res.send(new InvalidRequestError('Invalid date format!'));
     }
 
     startInterval.setUTCHours(0, 0, 0, 0);
@@ -186,7 +186,7 @@ router.get('/:id', function(req, res, next) {
     var id = req.params.id;
     Reservation.getById(id).then(function(reservation) {
         if (!req.user.isAdmin && reservation.userId !== req.user.id) {
-            next(new InvalidRequestError());
+            res.send(new InvalidRequestError());
         }
         res.json(reservation);
     }).catch(function(data) {

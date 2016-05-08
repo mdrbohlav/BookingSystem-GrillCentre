@@ -71,7 +71,7 @@ router.put('/', function(req, res, next) {
         id: req.user.id
     };
     if (req.user.email !== 'm.drbohlav1@gmail.com' && !req.user.isAdmin &&  (req.body.isAdmin || req.body.priority)) {
-        next(new UnauthorizedError());
+        res.send(new UnauthorizedError());
     }
     data = getData(req, data);
 
@@ -80,7 +80,7 @@ router.put('/', function(req, res, next) {
         return User.getById(id, true).then(function(user) {
             req.logIn(user, function(err) {
                 if (err) {
-                    next(err);
+                    throw err;
                 }
                 res.json(count);
             });

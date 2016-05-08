@@ -120,14 +120,14 @@ router.put('/:id', function(req, res, next) {
 
         User.count(options).then(function(count) {
             if (count < 2) {
-                next(new MinimumAdminsError());
+                throw new MinimumAdminsError();
             } else {
                 return User.update(data).then(function(count) {
                     if (req.user.id === req.params.id) {
                         return User.getById(id).then(function(user) {
                             req.logIn(user, function(err) {
                                 if (err) {
-                                    next(err);
+                                    throw err;
                                 }
                                 res.json(count);
                             });
@@ -158,7 +158,7 @@ router.put('/:id', function(req, res, next) {
                 return User.getById(id).then(function(user) {
                     req.logIn(user, function(err) {
                         if (err) {
-                            next(err);
+                            throw err;
                         }
                         res.json(count);
                     });

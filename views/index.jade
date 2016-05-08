@@ -302,6 +302,7 @@ block scripts
             
             date = $date.pickadate('picker');
             if (!#{user.isAdmin}) {
+                date.set('min', true);
                 date.set('max', #{reservationUpfront});
             }
 
