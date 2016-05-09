@@ -144,7 +144,7 @@
         "KEY_PICKUP_TO": 1200,
         "KEY_PICKUP_INTERVAL_MINS": 60,
         "SENDER_NAME": "Grill SiliconHill",
-        "SENDER_EMAIL": "mettify@gmail.com",
+        "SENDER_EMAIL": "m.drbohlav@sh.cvut.cz",
         "PRERESERVATION_HEADING_CS": "[SiliconGrill] Nová rezervace na *datum*",
         "PRERESERVATION_HEADING_EN": "[SiliconGrill] New reservation on *date*",
         "CONFIRMATION_HEADING_CS": "[SiliconGrill] Potvrzení rezervace na *datum*",

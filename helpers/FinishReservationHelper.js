@@ -7,8 +7,6 @@ var Reservation = require(__dirname + '/../models').Reservation;
 function checkUnfinishedReservations() {
     return new Promise(function(resolve, reject) {
         var today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
-        today.toISOString();
 
         var options = {
             where: {
@@ -39,12 +37,12 @@ function checkUnfinishedReservations() {
 }
 
 module.exports.scheduleFinishReservations = function() {
-    checkUnfinishedReservations().then(function() {}).catch(function(err) {
+    checkUnfinishedReservations().catch(function(err) {
         console.log(err);
     });
 
     schedule.scheduleJob('05 00 * * *', function() {
-        checkUnfinishedReservations().then(function() {}).catch(function(err) {
+        checkUnfinishedReservations().catch(function(err) {
             console.log(err);
         });
     });

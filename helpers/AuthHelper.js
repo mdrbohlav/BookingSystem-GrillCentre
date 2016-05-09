@@ -77,10 +77,10 @@ module.exports.localAuth = function(email, password) {
             }
         }).then(function(user) {
             if (!user) {
-                reject(new UserDoesnotExistError());
+                throw new UserDoesnotExistError();
             }
             if (user.banned) {
-                reject(new UserBannedError());
+                throw new UserBannedError();
             }
             var lastLogin = new Date().toISOString();
             return User.update({
@@ -94,16 +94,18 @@ module.exports.localAuth = function(email, password) {
             });
         }).then(function(user) {
             user = user.get({ plain: true });
-            verifyPassword(password, user.password).then(function(result) {
+            return verifyPassword(password, user.password).then(function(result) {
                 var locale = user.locale;
                 user.locale = {};
                 user.locale[locale] = isoLocales[locale];
-                resolve(user);
+                return user;
             }).catch(function(data) {
-                reject(new InvalidPasswordError());
+                throw new InvalidPasswordError();
             });
+        }).then(function(user) {
+            resolve(user);
         }).catch(function(err) {
-            reject(new InvalidRequestError(err.message));
+            reject(err);
         });
     });
 };
@@ -123,9 +125,9 @@ module.exports.isAuth = function(accessToken, refreshToken, profile) {
         profile.lastLogin = new Date().toISOString();
 
         User.upsert(profile).then(function(created) {
-            UserApi.getByEmail(profile.email).then(function(user) {
+            return UserApi.getByEmail(profile.email).then(function(user) {
                 if (user.banned) {
-                    reject(new UserBannedError());
+                    throw new UserBannedError();
                 }
 
                 if (created && profile.locale) {
@@ -133,18 +135,20 @@ module.exports.isAuth = function(accessToken, refreshToken, profile) {
                         id: user.id,
                         locale: profile.locale
                     };
-                    UserApi.update(data).then(function(count) {
+                    return UserApi.update(data).then(function(count) {
                         if (count) {
                             user.locale = profile.locale;
                         }
-                        resolve(user);
+                        return user;
                     });
                 } else {
-                    resolve(user);
+                    return user;
                 }
             });
+        }).then(function(user) {
+            resolve(user);
         }).catch(function(err) {
-            reject(new InvalidRequestError(err.message));
+            reject(err);
         });
     });
 };

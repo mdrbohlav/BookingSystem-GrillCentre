@@ -1,5 +1,5 @@
 .field__checkbox
-    display inline-block
+    display inline-table
     margin 5px 15px 0
     position relative
     
@@ -7,9 +7,7 @@
         padding 22px 0 7px
 
 .checkbox
-    border 1px solid $color-grey-1
-    border-radius 50%
-    display inline-block
+    display table-cell
     position relative
     top -1px
     vertical-align middle
@@ -17,16 +15,20 @@
         
     &:before
         background-color transparent
+        border 1px solid $color-grey-1
         border-radius 50%
+        bottom 0
+        box-shadow inset 0 0 0 1px $color-white
         content ''
         display inline-block
         left 1px
+        margin auto
         position absolute
         top 1px
-        size(8px)
+        size(10px)
         
     & + label
-        display inline-block
+        display table-cell
         padding-left 10px
         vertical-align middle
         opacity(1)
