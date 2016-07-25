@@ -1,12 +1,16 @@
+// # Uživatelé
 var express = require('express'),
     router = express.Router();
 
+// [Helper pro autentizaci](../../../helpers/AuthHelper.html)
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    // [API pro uživatele](../../../api/user.html)
     User = require(__dirname + '/../../../api/user');
 
 var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError');
 
-// GET /api/admin/users
+// ## Získání všech uživatelů
+// `GET /api/admin/users`
 router.get('/', function(req, res, next) {
     var options = {
         where: {},
@@ -45,4 +49,5 @@ router.get('/', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

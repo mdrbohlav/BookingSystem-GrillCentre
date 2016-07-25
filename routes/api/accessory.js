@@ -1,11 +1,14 @@
+// # Příslušenství
 var express = require('express'),
     router = express.Router();
 
+// [API pro příslušenství](../../api/accessory.html)
 var Accessory = require(__dirname + '/../../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError');
 
-// GET /api/accessory
+// ## Získání všech příslušenství
+// `GET /api/accessory`
 router.get('/', function(req, res, next) {
     var where = {};
     if (req.query.available) {
@@ -32,7 +35,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// GET /api/accessory/:id
+// ## `GET /api/accessory/:id`
 router.get('/:id', function(req, res, next) {
     var id = req.params.id;
     Accessory.getById(id).then(function(accessory) {
@@ -54,4 +57,5 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

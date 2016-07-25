@@ -1,11 +1,14 @@
+//# Oznámení
 var express = require('express');
 var router = express.Router();
 
+// [API pro oznámení](../../../api/notification.html)
 var Notification = require(__dirname + '/../../../api/notification');
 
 var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError');
 
-// POST /api/admin/notification
+// ## Vytvoření oznámení
+// `POST /api/admin/notification`
 router.post('/', function(req, res, next) {
     var data = {
         content: req.body.content
@@ -30,7 +33,8 @@ router.post('/', function(req, res, next) {
     });
 });
 
-// DELETE /api/admin/notification
+// ## Smazání oznámení
+// `DELETE /api/admin/notification`
 router.delete('/', function(req, res, next) {
     var data = {
         id: req.body.id,
@@ -56,4 +60,5 @@ router.delete('/', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

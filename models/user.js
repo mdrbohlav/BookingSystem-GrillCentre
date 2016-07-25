@@ -1,3 +1,4 @@
+// # Model uživatele
 "use strict";
 
 module.exports = function(sequelize, DataTypes) {

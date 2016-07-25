@@ -5,7 +5,7 @@ block content
         .table__cell.table--middle
             ul.listLogin.box.box--biggerShadow
                 .box__header.box__header--border
-                    h1.text__title !{__('pages_login_title')}
+                    h1.text__title= __('pages_login_title')
                 .box__body
                     li.listLogin__item
                         a#loginIs.btn.btn__orange--full.btn--block(href='/auth/login/is/init') !{__('buttons_isLogin')}

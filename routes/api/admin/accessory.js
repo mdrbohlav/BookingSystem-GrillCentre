@@ -1,12 +1,16 @@
+// # Příslušenství
 var express = require('express');
 var router = express.Router();
 
+// [Helper pro autentizaci](../../../helpers/AuthHelper.html)
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    // [API pro příslušenství](../../../api/accessory.html)
     Accessory = require(__dirname + '/../../../api/accessory');
 
 var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError');
 
-// POST /api/admin/accessory/create
+// ## Vytvoření příslušenství
+// `POST /api/admin/accessory/create`
 router.post('/create', function(req, res, next) {
     var data = {
         name: req.body.name,
@@ -32,13 +36,17 @@ router.post('/create', function(req, res, next) {
     });
 });
 
-// PUT /api/admin/accessory/:id
+// ## Upravení příslušenství
+// `PUT /api/admin/accessory/:id`
 router.put('/:id', function(req, res, next) {
     var data = {
         id: req.params.id
     };
     if (req.body.name) {
         data.name = req.body.name;
+    }
+    if (req.body.nameEn) {
+        data.nameEn = req.body.nameEn;
     }
     if (req.body.available) {
         data.available = req.body.available;
@@ -63,7 +71,8 @@ router.put('/:id', function(req, res, next) {
     });
 });
 
-// DELETE /api/admin/accessory/:id
+// ## Smazání příslušenství
+// `DELETE /api/admin/accessory/:id`
 router.delete('/:id', function(req, res, next) {
     var id = req.params.id;
     Accessory.delete(id).then(function(count) {
@@ -85,4 +94,5 @@ router.delete('/:id', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

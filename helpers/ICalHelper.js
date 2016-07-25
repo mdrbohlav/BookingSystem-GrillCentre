@@ -1,8 +1,12 @@
+// # Generování iCal
 var ical = require('ical-generator');
 
+// [Model uživatele](../models/user.html)
 var User = require(__dirname + '/../models').User,
+    // [Model rezervace](../models/reservation.html)
     Reservation = require(__dirname + '/../models').Reservation;
 
+// Obecné nastavení kalendáře.
 var opt = {
     domain: 'gc.sh.cvut.cz',
     prodId: {
@@ -14,11 +18,14 @@ var opt = {
     timezone: 'Europe/Prague'
 };
 
+// ## Funkce na přidání 0 před jednociferné číslo.
 function pad(n) {
     return n < 10 ? '0' + n : n;
 }
 
+// ## Funkce na vytvoření záznamu.
 function createEvent(calendar, user, reservation) {
+    // Nastavení hodnot záznamu v kalendáři.
     var id = reservation.id,
         start = new Date(reservation.from),
         summary = '[GC] ' + user.fullName,
@@ -38,6 +45,7 @@ function createEvent(calendar, user, reservation) {
         description += 'Komentář: ' + reservation.comment + '\n';
     }
 
+    // Přidání záznamu do kalendáře.
     calendar.createEvent({
         start: start,
         timestamp: new Date(),
@@ -48,12 +56,15 @@ function createEvent(calendar, user, reservation) {
     });
 }
 
+// ## Objekt helperu
 var ICalHelper = function() {
     var helper = {};
 
+    // ### Funkce získání draft kalendáře 
     helper.createDraft = function() {
+        // Dodatečné nastavení kalendáře.
         opt.name += ' - předrezervace';
-        opt.url = 'http://gc-dev.sh.cvut.cz/reservations-draft.ical';
+        opt.url = 'https://gc.sh.cvut.cz/reservations-draft.ical';
         var calendar = ical(opt),
             options = {
                 where: {
@@ -61,6 +72,7 @@ var ICalHelper = function() {
                 }
             };
 
+        // Dotaz na všechny předrezervace a jejich uživatele.
         return Reservation.findAll(options).then(function(reservations) {
             return reservations.reduce(function(sequence, reservation) {
                 return sequence.then(function() {
@@ -74,9 +86,11 @@ var ICalHelper = function() {
         });
     };
 
+    // ### Funkce získání confirmed/finished kalendáře 
     helper.createConfirmedFinished = function() {
+        // Dodatečné nastavení kalendáře.
         opt.name += ' - potvrzené rezervace';
-        opt.url = 'http://gc-dev.sh.cvut.cz/reservations.ical';
+        opt.url = 'https://gc.sh.cvut.cz/reservations.ical';
         var calendar = ical(opt),
             options = {
                 where: {
@@ -87,6 +101,7 @@ var ICalHelper = function() {
                 }
             };
 
+        // Dotaz na všechny potvrzené a skončené rezrvace a jejich uživatele.
         return Reservation.findAll(options).then(function(reservations) {
             return reservations.reduce(function(sequence, reservation) {
                 return sequence.then(function() {
@@ -103,4 +118,5 @@ var ICalHelper = function() {
     return helper;
 };
 
+// ## Export ICalHelperu
 module.exports = ICalHelper;

@@ -1,3 +1,5 @@
+// # Hlavní soubor aplikace
+// Zde se nastavují všechny potřebné služby, knihovny a proměnné
 var express = require('express'),
     path = require('path'),
     logger = require('morgan'),
@@ -7,15 +9,23 @@ var express = require('express'),
     redisStore = require('connect-redis')(expressSession),
     i18n = require('i18n-2'),
     isoLocales = require(__dirname + '/config/isoLocales'),
-    moment = require('moment');
+    moment = require('moment'); 
 
 var passport = require('passport'),
+    // Lokální strategie pro autentizaci
     LocalStrategy = require('passport-local').Strategy,
+    // Oauth 2.0 strategie pro autentizaci
     OAuth2Strategy = require('passport-oauth2'),
+    // [Helper pro autentizaci](helpers/AuthHelper.html)
     AuthHelper = require(__dirname + '/helpers/AuthHelper'),
+    // [Helper pro SilicoHill API požadavky](helpers/SiliconHillApiRequest.html)
     ApiRequest = require(__dirname + '/helpers/SiliconHillApiRequest'),
+    // [Helper pro generování iCal](helpers/ICalHelper.html)
     ICalHelper = require(__dirname + '/helpers/ICalHelper'),
-    FinishReservationHelper = require(__dirname + '/helpers/FinishReservationHelper');
+    // [Helper pro kontrolu skončených rezervací](helpers/FinishReservationHelper.html)
+    FinishReservationHelper = require(__dirname + '/helpers/FinishReservationHelper'),
+    UserDoesNotHaveServiceError = require(__dirname + '/errors/UserDoesNotHaveServiceError'),
+    UnauthorizedError = require(__dirname + '/errors/UnauthorizedError');
 
 var config = require(__dirname + '/config/global'),
     redisConfig = require(__dirname + '/config/redis'),
@@ -26,29 +36,44 @@ var stylus = require('stylus'),
     fs = require('fs'),
     uglify = require("uglify-js");
 
+// [Základní routy](routes/index.html)
 var index = require(__dirname + '/routes/index'),
+    // [Routy pro autentizaci](routes/auth.html)
     auth = require(__dirname + '/routes/auth'),
+    // [Routy pro uživatele](routes/user.html)
     user = require(__dirname + '/routes/user'),
+    // [Routy pro admina](routes/admin.html)
     admin = require(__dirname + '/routes/admin'),
+    // [API routy pro uživatele](routes/api/user.html)
     apiUser = require(__dirname + '/routes/api/user'),
+    // [API routy pro rezervace](routes/api/reservation.html)
     apiReservation = require(__dirname + '/routes/api/reservation'),
+    // [API routy pro příslušenství](routes/api/accessory.html)
     apiAccessory = require(__dirname + '/routes/api/accessory'),
+    // [Admin API routy pro uživatele](routes/api/admin/user.html)
     apiAdminUser = require(__dirname + '/routes/api/admin/user'),
+    // [Admin API routy pro uživatele 2](routes/api/admin/users.html)
     apiAdminUsers = require(__dirname + '/routes/api/admin/users'),
+    // [Admin API routy pro rezervace](routes/api/admin/reservation.html)
     apiAdminReservation = require(__dirname + '/routes/api/admin/reservation'),
+    // [Admin API routy pro příslušenství](routes/api/admin/accessory.html)
     apiAdminAccessory = require(__dirname + '/routes/api/admin/accessory'),
+    // [Admin API routy pro notifikace](routes/api/admin/notification.html)
     apiAdminNotification = require(__dirname + '/routes/api/admin/notification');
 
 var app = express();
 
-// Postgres setup
+// Nastavení PostgresSQL
 var models = require(__dirname + '/models');
 
-// view engine setup
+// Nastavení šablonovacího systému na Jade
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// stylus setup
+// ## Nastavení Stylusu
+// Funkce, která zajistí kompilaci Stylus souborů, jejich kompresi a
+// použití knihovny nib, která doplní vendor prefixy a obsahuje 
+// různé užitečné prefixy.
 function compile(str, path) {
     return stylus(str)
         .set('filename', path)
@@ -57,6 +82,7 @@ function compile(str, path) {
         .import('nib');
 }
 
+// Nastavení middleware pro Stylus, který zavolá funkci na kompilaci.
 app.use(stylus.middleware({
     src: path.join(__dirname, 'public/'),
     dest: path.join(__dirname, 'public/'),
@@ -64,7 +90,17 @@ app.use(stylus.middleware({
     debug: true
 }));
 
-// uglify setup
+// ## Nastavení minifikace JavaScriptu
+// Nejprve se spojí všechny používané JavaScriptové knihovny do jednoho
+// souboru, který se následně minifikuje s nastavenými parametry.
+// - `sequences` - spojení po sobě jdoucích jednoduchých výrazů čárkou.
+// - `dead_code` - odstranění nedosažitelného kódu.
+// - `conditionals` - optimalizace `if` podmínek.
+// - `booleans` - optimalizace boolean výrazů jako je `!!a ? b : c` na `a ? b : c`.
+// - `unused` - odstranění nepoužívaných funkcí a proměnných.
+// - `if_return` - optimalizace `if/return` a `if/continue` podmínek.
+// - `join_vars` - spojení po sobě jdoucích `var` definic.
+// - `drop_console` - odstranění výpisů do konzole.
 var uglified = uglify.minify([
     path.join(__dirname, 'bower_components/jquery/dist/jquery.js'),
     path.join(__dirname, 'bower_components/velocity/velocity.js'),
@@ -94,6 +130,7 @@ var uglified = uglify.minify([
     }
 });
 
+// Uložení minifikovaného souboru do `public/js/app.min.js`.
 fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, function(err) {
     if (err) {
         console.log(err);
@@ -102,7 +139,16 @@ fs.writeFile(path.join(__dirname, 'public/js/app.min.js'), uglified.code, functi
     }
 });
 
-// Redis Store options
+// ## Nastavení logování
+// Registrace vlastního formátu data pro logování.
+logger.token('customDate', function(req, res) {
+    return '[' + moment().format('gggg-MM-DD HH:mm:ss.SSS') + ']';
+});
+// Nastavení formátu logování.
+app.use(logger(':customDate - :method :url :status :response-time ms - :res[content-length]'));
+
+// ## Nastavení session
+// Konfigurace pro Redis.
 var redisOptions = {
     host: redisConfig.host,
     port: redisConfig.port,
@@ -111,17 +157,14 @@ var redisOptions = {
     ttl: 60 * 60 * 24
 };
 
-logger.token('customDate', function(req, res) {
-    return '[' + moment().format('gggg-MM-DD HH:mm:ss.SSS') + ']';
-});
-
-app.use(logger(':customDate - :method :url :status :response-time ms - :res[content-length]'));
+// ## Nastavení dalších potřebných middleware funkcí
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(expressValidator());
 app.use(cookieParser(config.SECRET));
+// Nastavení používání Redisu jako úložiště pro session.
 app.use(expressSession({
     secret: config.SECRET,
     store: new redisStore(redisOptions),
@@ -129,11 +172,12 @@ app.use(expressSession({
     resave: true,
     unset: 'destroy'
 }));
+// Inicializace Passportu
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// handle lost connection to Redis
+// Odchycení ztraceného připojení k Redisu
 app.use(function(req, res, next) {
     if (!req.session) {
         res.status(500);
@@ -146,10 +190,11 @@ app.use(function(req, res, next) {
     }
 });
 
-// schedule checking unfinished reservations on start and at midnight
+// ## Nastavení kontrolování skončených rezervací
 FinishReservationHelper.scheduleFinishReservations();
 
-// locales
+// ## Nastavení pro jazyky
+// Vlastní funkce na posunutí prvku v poli.
 Array.prototype.move = function(old_index, new_index) {
     if (new_index >= this.length) {
         var k = new_index - this.length;
@@ -160,6 +205,7 @@ Array.prototype.move = function(old_index, new_index) {
     this.splice(new_index, 0, this.splice(old_index, 1)[0]);
 };
 
+// Načtení seznamu dostupných jazyků.
 var availableLocales = fs.readdirSync(__dirname + '/locales'),
     csIndex = 0;
 for (var i = 0; i < availableLocales.length; i++) {
@@ -169,15 +215,18 @@ for (var i = 0; i < availableLocales.length; i++) {
     }
 }
 
+// Posunutí češtiny na první místo v poli dostupných jazyků.
 if (csIndex > 0) {
     availableLocales.move(csIndex, 0);
 }
 
+// Nastavení i18n knihovny pro použití s aplikací.
 i18n.expressBind(app, {
     locales: availableLocales,
     defaultLocale: 'cs'
 });
 
+// Nastavení proměnné prostředí `locale` s hodnotou zvoleného jazyka.
 app.use(function(req, res, next) {
     res.locals.isoLocales = isoLocales;
     res.locals.availableLocales = availableLocales;
@@ -200,7 +249,9 @@ app.use(function(req, res, next) {
     next();
 });
 
-// session-persisted message middleware
+// ## Middleware pro zachování zpráv v session
+// Různé typy: `error`, `success`, `notice`. Zároveň nastavení proměnné
+// prostředí `user`.
 app.use(function(req, res, next) {
     var err = req.session.error,
         msg = req.session.notice,
@@ -222,7 +273,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-// get notification
+// ## Notifikace
 app.use(function(req, res, next) {
     var notification = models.Notification.findOne().then(function(notification) {
         if (notification) {
@@ -235,12 +286,17 @@ app.use(function(req, res, next) {
     });
 });
 
-// passport setup
+// ## Passport pro autentizaci
+// Registrace strategie pro nativní přihlášení. Potřeba nastavit posílání požadavku
+// do callback funkce pomocí `passReqToCallback` a také jména pole s 
+// uživatelským jménem `email`.
 passport.use('login-native', new LocalStrategy({
     usernameField: 'email',
     passReqToCallback: true
 }, function(req, email, password, done) {
+    // Volání funkce v helperu pro autentizaci [AuthHelper](helpers/AuthHelper.html#localAuth).
     AuthHelper.localAuth(email, password).then(function(user) {
+        // Nastavení zprávy buď pro úspěšné přihlášení, nebo pro chybu.
         if (user) {
             req.session.success = req.i18n.__('success_logged_in') + user.fullName + '!';
         } else {
@@ -254,6 +310,10 @@ passport.use('login-native', new LocalStrategy({
     });
 }));
 
+// Registrace strategie pro přihlášení pomocí ISu. Opět potřeba poslat požadavek
+// do callback funkce. Zároveň se musí nastavit i `authorizationURL`, `tokenURL`,
+// `callbackURL` a správci ISu přidělené `clientID` a `clientSecret` nsatavené v
+// `config/global.js`.
 passport.use('login-is', new OAuth2Strategy({
     authorizationURL: 'https://is.sh.cvut.cz/oauth/authorize',
     tokenURL: 'https://is.sh.cvut.cz/oauth/token',
@@ -263,8 +323,10 @@ passport.use('login-is', new OAuth2Strategy({
     passReqToCallback: true
 }, function(req, accessToken, refreshToken, profile, done) {
     var data = {};
+    // Nejprve musíme získat data o přihlášené osobě.
     ApiRequest('/v1/users/me?access_token=' + accessToken).then(function(profileData, res) {
         data = JSON.parse(profileData);
+        // Následně získáme přidělené služby v ISu přihlášenému uživateli.
         return ApiRequest('/v1/services/mine?access_token=' + accessToken).then(function(servicesData, response) {
             servicesData = JSON.parse(servicesData);
             data.service = null;
@@ -274,11 +336,18 @@ passport.use('login-is', new OAuth2Strategy({
                     break;
                 }
             }
+            // Pokud mezi přidělenými službami není Základní, uživatel nemá oprávnění
+            // na použití grilovacího centra.
+            if (!data.service) {
+                throw new UserDoesNotHaveServiceError();
+            }
         });
     }).then(function() {
         data.locale = req.i18n.getLocale();
+        // Volání funkce v helperu pro autentizaci [AuthHelper](helpers/AuthHelper.html#isAuth).
         return AuthHelper.isAuth(accessToken, refreshToken, data);
     }).then(function(user) {
+        // Nastavení zprávy buď pro úspěšné přihlášení, nebo pro chybu.
         if (user) {
             req.session.success = 'You are successfully logged in ' + user.fullName + '!';
         } else {
@@ -292,7 +361,7 @@ passport.use('login-is', new OAuth2Strategy({
     });
 }));
 
-// passport session setup
+// Nastavení passport session
 passport.serializeUser(function(user, done) {
     done(null, user);
 });
@@ -301,9 +370,9 @@ passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
 
-// routes require login
-var UnauthorizedError = require(__dirname + '/errors/UnauthorizedError');
-
+// ## Nastavení route potřebujících login
+// Pokud uživatel není přihlášen, je přesměrován na přihlašovací stránku.
+// Hlavní stránka.
 app.get('/', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next).then(function() {
         next();
@@ -312,6 +381,7 @@ app.get('/', function(req, res, next) {
     });
 });
 
+// Všechny uživatelské routy.
 app.get('/user*', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next).then(function() {
         next();
@@ -320,18 +390,20 @@ app.get('/user*', function(req, res, next) {
     });
 });
 
+// Všechny routy vyžadující administrátorská práva.
 app.get('/admin*', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next).then(function() {
         if (req.user.isAdmin) {
             next();
         } else {
-            res.send(new UnauthorizedError()); // render error page with Unauthorized error
+            res.send(new UnauthorizedError());
         }
     }).catch(function(err) {
         res.redirect('/login');
     });
 });
 
+// Všechny routy pro API.
 app.get('/api*', function(req, res, next) {
     AuthHelper.isAuthenticated(req, res, next).then(function() {
         next();
@@ -340,6 +412,7 @@ app.get('/api*', function(req, res, next) {
     });
 });
 
+// Všechny routy pro API pouze pro administrátory.
 app.get('/api/admin*', function(req, res, next) {
     if (req.user.isAdmin) {
         next();
@@ -348,7 +421,7 @@ app.get('/api/admin*', function(req, res, next) {
     }
 });
 
-// routing
+// ## Routování
 app.use('/', index);
 app.use('/auth', auth);
 app.use('/user', user);
@@ -362,16 +435,16 @@ app.use('/api/admin/reservation', apiAdminReservation);
 app.use('/api/admin/accessory', apiAdminAccessory);
 app.use('/api/admin/notification', apiAdminNotification);
 
-// catch 404 and forward to error handler
+// ## Odchycení 404
+// Přesměruje uživatele na middleware, který řeší chyby.
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
-// error handlers
-
-// custom error handler
+// ## Funkce na řešení chyb
+// Vlastní funkce pro chyby.
 app.use(function(err, req, res, next) {
     if (err.customType) {
         res.status(err.status || 500);
@@ -385,8 +458,7 @@ app.use(function(err, req, res, next) {
     next(err);
 });
 
-// development error handler
-// will print stacktrace
+// Funkce pro chyby při vývoji, vypíše stacktrace.
 if (app.get('env') === 'development' || app.get('env') === 'localhost') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
@@ -398,8 +470,7 @@ if (app.get('env') === 'development' || app.get('env') === 'localhost') {
     });
 }
 
-// production error handler
-// no stacktraces leaked to user
+// Funkce pro chyby na produkci, žádný stacktrace.
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
@@ -409,4 +480,5 @@ app.use(function(err, req, res, next) {
     });
 });
 
+// ## Export proměnné app
 module.exports = app;

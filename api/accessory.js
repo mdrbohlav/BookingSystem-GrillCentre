@@ -1,12 +1,17 @@
+// # Příslušenství
+
+// [Model příslušenství](../models/accessory.html)
 var Accessory = require(__dirname + '/../models').Accessory;
 
 module.exports = {
+    // ## Vytvoření příslušenství
     create(data) {
         return Accessory.create(data).then(function(accessory) {
             return accessory.get({ plain: true });
         });
     },
 
+    // ## Získání příslušenství
     get(where) {
         return Accessory.findAndCountAll({ where: where }).then(function(data) {
             var accessories = [];
@@ -21,6 +26,7 @@ module.exports = {
         });
     },
 
+    // ## Získání raw dat o příslušenství
     getObj(where) {
         return Accessory.findAndCountAll({ where: where }).then(function(data) {
             var accessories = [];
@@ -35,12 +41,14 @@ module.exports = {
         });
     },
 
+    // ## Získání příslušenství podle ID
     getById(id) {
         return Accessory.findById(id).then(function(accessory) {
             return accessory.get({ plain: true });
         });
     },
 
+    // ## Aktualizace příslušenství
     update(data) {
         return Accessory.update(data, {
             where: {
@@ -49,6 +57,7 @@ module.exports = {
         });
     },
 
+    // ## Smazání příslušenství
     delete(id) {
         return Accessory.destroy({
             where: {

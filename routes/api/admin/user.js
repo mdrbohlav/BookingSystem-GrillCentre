@@ -1,12 +1,16 @@
+// # Uživatel
 var express = require('express'),
     router = express.Router();
 
+// [Helper pro autentizaci](../../../helpers/AuthHelper.html)
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    // [API pro uživatele](../../../api/user.html)
     User = require(__dirname + '/../../../api/user');
 
 var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError'),
     MinimumAdminsError = require(__dirname + '/../../../errors/MinimumAdminsError');
 
+// Funkce na získání všech dat v těle požadavku.
 function getData(req, data) {
     if (req.body.password) {
         data.password = req.body.password;
@@ -44,7 +48,8 @@ function getData(req, data) {
     return data;
 }
 
-// POST /api/admin/user/create
+// ## Vytvoření
+// `POST /api/admin/user/create`
 router.post('/create', function(req, res, next) {
     var data = {
         password: req.body.password,
@@ -82,7 +87,8 @@ router.post('/create', function(req, res, next) {
     });
 });
 
-// GET /api/admin/user/:id
+// ## Získání
+// `GET /api/admin/user/:id`
 router.get('/:id', function(req, res, next) {
     var id = req.params.id;
     User.getById(id).then(function(user) {
@@ -104,25 +110,31 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
-// PUT /api/admin/user/:id
+// ## Upravení
+// `PUT /api/admin/user/:id`
 router.put('/:id', function(req, res, next) {
     var data = {
         id: req.params.id
     };
     data = getData(req, data);
 
-    if ('isAdmin' in data &&  data.isAdmin === 'false') {
+    // Odebrání administrátorských práv
+    if ('isAdmin' in data && data.isAdmin === 'false') {
         var options = {
             where: {
                 isAdmin: true
             }
         };
 
+        // Dotaz na počet existujících administrátorů.
         User.count(options).then(function(count) {
+            // Pokud existuje pouze jeden administrátor, vrátit chybu `MinimumAdminsError`,
             if (count < 2) {
                 throw new MinimumAdminsError();
+            // Jinak prověst aktualizaci dat.
             } else {
                 return User.update(data).then(function(count) {
+                    // Pokud aktualizace aktuálně přihlášeného uživatele, načtení nových dat do session.
                     if (req.user.id === req.params.id) {
                         return User.getById(id).then(function(user) {
                             req.logIn(user, function(err) {
@@ -152,8 +164,10 @@ router.put('/:id', function(req, res, next) {
                 next(new InvalidRequestError(data));
             }
         });
+    // Administrátorská práva se neodevírají
     } else {
         User.update(data).then(function(count) {
+            // Pokud aktualizace aktuálně přihlášeného uživatele, načtení nových dat do session.
             if (req.user.id === req.params.id) {
                 return User.getById(id).then(function(user) {
                     req.logIn(user, function(err) {
@@ -184,7 +198,8 @@ router.put('/:id', function(req, res, next) {
     }
 });
 
-// DELETE /api/admin/user/:id
+// ## Smazání
+// `DELETE /api/admin/user/:id`
 router.delete('/:id', function(req, res, next) {
     var id = req.params.id;
     User.delete(id).then(function(count) {
@@ -206,7 +221,8 @@ router.delete('/:id', function(req, res, next) {
     });
 });
 
-// GET /api/admin/user/:id/reservations/:state?
+// ## Získání rezervací uživatele
+// `GET /api/admin/user/:id/reservations/:state?`
 router.get('/:id/reservations/:state?', function(req, res, next) {
     var id = req.params.id,
         options = {
@@ -234,7 +250,8 @@ router.get('/:id/reservations/:state?', function(req, res, next) {
     });
 });
 
-// GET /api/admin/user/:id/ratings
+// ## Získání hodnocení uživatele
+// `GET /api/admin/user/:id/ratings`
 router.get('/:id/ratings', function(req, res, next) {
     var id = req.params.id;
     User.getRatings(id).then(function(ratings) {
@@ -256,4 +273,5 @@ router.get('/:id/ratings', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

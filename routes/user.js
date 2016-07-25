@@ -1,14 +1,21 @@
+// # Uživatel
 var express = require('express'),
     router = express.Router();
 
+// [Helper pro načtení souboru](../helpers/GetFile.html)
 var GetFile = require(__dirname + '/../helpers/GetFile'),
+    // [API pro uživatele](../api/user.html)
     User = require(__dirname + '/../api/user');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
-// GET /user/history
+// ## Historie
+// `GET /user/history`
 router.get('/history', function(req, res, next) {
+    // Načtení config souboru.
     var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
+
+    // Nastavení řazení
     req.query.from = new Date();
     var to = new Date();
     to.setDate(to.getDate() + configCustom.MAX_RESERVATION_UPFRONT);
@@ -23,6 +30,7 @@ router.get('/history', function(req, res, next) {
             offset: 0
         };
 
+    // Příprava na stránkování
     if (req.query.limit) {
         options.limit = parseInt(req.query.limit);
     }
@@ -30,13 +38,17 @@ router.get('/history', function(req, res, next) {
         options.offset = parseInt(req.query.offset);
     }
 
+    // Dotaz na rezervace
     User.getReservations(id, options).then(function(result) {
+        // Příprava proměnné na generování stránkování.
         result.pagination = {
             limit: options.limit,
             offset: options.offset
         };
+        // Pokud chceme JSON, vrátit rezervace v JSONu.
         if (req.query.accept &&  req.query.accept === 'json') {
             res.json(result);
+        // Jinak vykreslit šablonu.
         } else {
             res.render('history', {
                 page: 'history',
@@ -62,7 +74,8 @@ router.get('/history', function(req, res, next) {
     });
 });
 
-// GET /user/update-locale/:locale/:returnUrl
+// ## Nastavení locale pro uživatele
+// `GET /user/update-locale/:locale/:returnUrl`
 router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
     var locale = req.params.locale,
         returnUrl = decodeURIComponent(req.params.returnUrl),
@@ -70,7 +83,10 @@ router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
             id: req.user.id,
             locale: locale
         };
+
+    // Aktualizovat jazyk uživatele v databázi
     User.update(data).then(function(count) {
+        // Aktualizace aktuálně přihlášeného uživatele, načtení nových dat do session.
         return User.getById(data.id, true).then(function(user) {
             req.logIn(user, function(err) {
                 if (err) {
@@ -96,4 +112,5 @@ router.get('/update-locale/:locale/:returnUrl', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

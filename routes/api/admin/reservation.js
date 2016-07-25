@@ -1,14 +1,19 @@
+// # Rezervace
 var express = require('express'),
     router = express.Router();
 
+// [Helper pro autentizaci](../../../helpers/AuthHelper.html)
 var AuthHelper = require(__dirname + '/../../../helpers/AuthHelper'),
+    // [API pro rezervace](../../../api/reservation.html)
     Reservation = require(__dirname + '/../../../api/reservation'),
+    // [API pro uživatele](../../../api/user.html)
     User = require(__dirname + '/../../../api/user');
 
 var InvalidRequestError = require(__dirname + '/../../../errors/InvalidRequestError'),
     ReservationExistsError = require(__dirname + '/../../../errors/ReservationExistsError');
 
-// PUT /api/admin/reservation/:id/confirm
+// ## Potvrzení
+// `PUT /api/admin/reservation/:id/confirm`
 router.put('/:id/confirm', function(req, res, next) {
     var id = req.params.id,
         data = {
@@ -16,7 +21,9 @@ router.put('/:id/confirm', function(req, res, next) {
             stateChangedBy: req.user.id
         },
         options;
+    // Dotaz na rezervaci podle id.
     Reservation.getById(id).then(function(reservation) {
+        // Nastavení voleb pro dotaz na existenci potvrzené rezervace na daný termín.
         var options = {
             where: {
                 state: 'confirmed',
@@ -46,20 +53,14 @@ router.put('/:id/confirm', function(req, res, next) {
             options.where.mobileGrill = true;
         }
 
+        // Dotaz na počet existujících potvrzených rezervací na daný termín.
         return Reservation.count(options).then(function(count) {
+            // Pokud rezervace existuje, vrátit chybu `ReservationExistsError`.
             if (count > 0) {
                 throw new ReservationExistsError();
             }
-            return Reservation.update(id, data, req).then(function(updatedRows) {
-                return User.getById(reservation.userId).then(function(user) {
-                    var id = reservation.id,
-                        start = new Date(reservation.from),
-                        summary = user.fullName + ' reservation',
-                        description = 'Key pickup time: ' + Math.floor(reservation.pickup / 60) + ':' + reservation.pickup % 60,
-                        organizer = user.fullName + ' <' + user.email + '>';
-                    return updatedRows;
-                });
-            });
+            // Jinak potvrzení rezervace.
+            return Reservation.update(id, data, req);
         });
     }).then(function(count) {
         res.json(count);
@@ -80,7 +81,8 @@ router.put('/:id/confirm', function(req, res, next) {
     });
 });
 
-// PUT /api/admin/reservation/:id/reject
+// ## Zamítnutí
+// `PUT /api/admin/reservation/:id/reject`
 router.put('/:id/reject', function(req, res, next) {
     var id = req.params.id,
         data = {
@@ -109,7 +111,8 @@ router.put('/:id/reject', function(req, res, next) {
     });
 });
 
-// PUT /api/admin/reservation/:id/cancel
+// ## Zrušení
+// `PUT /api/admin/reservation/:id/cancel`
 router.put('/:id/cancel', function(req, res, next) {
     var id = req.params.id,
         data = {
@@ -138,7 +141,8 @@ router.put('/:id/cancel', function(req, res, next) {
     });
 });
 
-// POST /api/admin/reservation/:id/rating
+// ## Hodnocení
+// `POST /api/admin/reservation/:id/rating`
 router.post('/:id/rating', function(req, res, next) {
     var data = {
         value: req.body.value,
@@ -167,4 +171,5 @@ router.post('/:id/rating', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;

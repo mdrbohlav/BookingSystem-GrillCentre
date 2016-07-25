@@ -453,7 +453,7 @@ block scripts
             $('.modalUser__title').text(user.fullName);
             $('.modalUser__admin .value').text((user.isAdmin ? '!{__('labels_yes')}' : '!{__('labels_no')}'));
             $('.modalUser__email .value').html('<a href="mailto:' + user.email + '">' + user.email + '</a>');
-            if (user.block && user.room) {
+            if (user.block && user.room) {
                 $('.modalUser__cell').show();
                 $('.modalUser__cell .value').text(user.block + '/' + user.room);
             } else {
@@ -739,4 +739,4 @@ block scripts
                     });
                 }
             });
-        });
+        });        

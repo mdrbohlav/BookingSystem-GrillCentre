@@ -1,3 +1,4 @@
+// # Model oznámení
 'use strict';
 module.exports = function(sequelize, DataTypes) {
     var Notification = sequelize.define('Notification', {

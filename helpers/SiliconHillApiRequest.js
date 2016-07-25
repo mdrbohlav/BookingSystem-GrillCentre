@@ -1,3 +1,4 @@
+// # Helper na dotaz na SiliconHill API
 var https = require('https'),
     config = require(__dirname + '/../config/global');
 

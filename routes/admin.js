@@ -1,23 +1,32 @@
+// # Admin
 var express = require('express'),
     fs = require('fs'),
     router = express.Router();
 
+// [Helper pro načtení souboru](../helpers/GetFile.html)
 var GetFile = require(__dirname + '/../helpers/GetFile'),
+    // [API pro rezervace](../api/reservaion.html)
     Reservation = require(__dirname + '/../api/reservation'),
+    // [API pro uživatele](../api/user.html)
     User = require(__dirname + '/../api/user'),
+    // [API pro příslušenství](../api/accessory.html)
     Accessory = require(__dirname + '/../api/accessory'),
+    // [API pro oznámení](../api/notification.html)
     Notification = require(__dirname + '/../api/notification');
 
 var InvalidRequestError = require(__dirname + '/../errors/InvalidRequestError');
 
-// GET /admin/reservations
+// ## Rezervace
+// `GET /admin/reservations`
 router.get('/reservations', function(req, res, next) {
     var options = {},
+        // Nastavení výchozího řazení.
         ordering = {
             by: req.query['order-by'] ? req.query['order-by'] : 'from',
             type: req.query.order ? req.query.order : 'ASC'
         };
 
+    // Úprava řazení v požadavku.
     if (['from', 'createdAt'].indexOf(ordering.by) === -1) {
         ordering.by = 'from'
     }
@@ -29,6 +38,7 @@ router.get('/reservations', function(req, res, next) {
         [ordering.by, ordering.type]
     ];
 
+    // Pokud dotaz na konkrétní měsíc, nastavit.
     if (req.query.month) {
         var date = new Date(parseInt(req.query.month)),
             y = date.getFullYear(),
@@ -53,6 +63,7 @@ router.get('/reservations', function(req, res, next) {
                 ]
             }]
         };
+    // Jinak vzít současný měsíc.
     } else {
         var date = new Date(),
             y = date.getFullYear(),
@@ -84,9 +95,12 @@ router.get('/reservations', function(req, res, next) {
         };
     }
 
+    // Dotaz na rezervace.
     Reservation.get(options, true).then(function(result) {
+        // Pokud chceme JSON, vrátit rezervace v JSONu.
         if (req.query.accept && req.query.accept === 'json') {
             res.json(result);
+        // Jinak vykreslit šablonu.
         } else {
             res.render('reservations', {
                 page: 'reservations',
@@ -113,8 +127,10 @@ router.get('/reservations', function(req, res, next) {
     });
 });
 
-// GET /admin/accessories
+// ## Příslušenství
+// `GET /admin/accessories`
 router.get('/accessories', function(req, res, next) {
+    // Dotaz na všechna příslušenství.
     Accessory.get().then(function(result) {
         res.render('accessories', {
             page: 'accessories',
@@ -139,16 +155,21 @@ router.get('/accessories', function(req, res, next) {
     });
 });
 
-// GET /admin/users
+// ## Uživatelé
+// `GET /admin/users`
 router.get('/users', function(req, res, next) {
     var options = {
+        // Nastavení řazení.
         order: [
             ['lastLogin', 'DESC']
         ],
         where: {},
+        // Výchozcí natavení pro stránkování.
         limit: 20,
         offset: 0
     };
+
+    // Pokud vyhledávání podle jména, emailu nebo IS ID.
     if (req.query.search) {
         var tmp = req.query.search.split(' ');
         options.where = {
@@ -179,29 +200,43 @@ router.get('/users', function(req, res, next) {
             }
         }
     }
+
+    // Pokud jen ty, kteří mají IS ID.
     if (req.query.isId) {
         options.where.isId = req.query.isId === 'true' ? { $ne: null } : null;
     }
+
+    // Jen zabanované uživatele.
     if (req.query.ban) {
         options.where.banned = req.query.ban === 'true' ? true : false;
     }
+
+    // Uživatele z konrétního bloku.
     if (req.query.block) {
         options.where.block = parseInt(req.query.block);
     }
+
+    // Vlastní limit.
     if (req.query.limit) {
         options.limit = parseInt(req.query.limit);
     }
+
+    // Nastavení offsetu.
     if (req.query.offset) {
         options.offset = parseInt(req.query.offset);
     }
 
+    // Dotaz na uživatele.
     User.get(options).then(function(result) {
+        // Nastavení proměnné pro vygenerování stránkování.
         result.pagination = {
             limit: options.limit,
             offset: options.offset
         };
+        // Pokud chceme JSON, vrátit rezervace v JSONu.
         if (req.query.accept && req.query.accept === 'json') {
             res.json(result);
+        // Jinak vykreslit šablonu.
         } else {
             res.render('users', {
                 page: 'users',
@@ -227,9 +262,12 @@ router.get('/users', function(req, res, next) {
     });
 });
 
-// GET /admin/config
+// ## Nastavení
+// `GET /admin/config`
 router.get('/config', function(req, res, next) {
+    // Načtení configu do proměnné.
     var fileData = JSON.parse(GetFile('./config/app.json')),
+        // Klíče pro konfiguraci a vygenerování formuláře.
         configKeys = {
             general: {
                 name: req.i18n.__('config__sections_0_title'),
@@ -393,9 +431,13 @@ router.get('/config', function(req, res, next) {
     });
 });
 
-// PUT /admin/config
+// ## úPRAVA NASTAVENÍ
+// `PUT /admin/config`
 router.put('/config', function(req, res, next) {
+    // Načtení config souboru.
     var fileData = JSON.parse(GetFile('./config/app.json'));
+
+    // Nahrazení všech příslušných hodnot novými z požadavku.
     for (var k in req.body) {
         if (['tel', 'time'].indexOf(fileData.default[k].type) > -1) {
             fileData.custom[k] = parseInt(req.body[k]);
@@ -406,8 +448,11 @@ router.put('/config', function(req, res, next) {
         }
     }
     fileData = JSON.stringify(fileData, null, 4);
+    // Zápis dat do souboru.
     fs.writeFileSync('./config/app.json', fileData);
+    // Vrázení informace o úspěchu.
     res.json({ success: true });
 });
 
+// ## Exportování routeru
 module.exports = router;

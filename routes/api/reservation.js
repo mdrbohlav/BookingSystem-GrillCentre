@@ -1,7 +1,10 @@
+// # Rezervace
 var express = require('express'),
     router = express.Router();
 
+// [Helper pro načtení souboru](../../helpers/GetFile.html)
 var GetFile = require(__dirname + '/../../helpers/GetFile'),
+    // [API pro rezervace](../../api/reservation.html)
     Reservation = require(__dirname + '/../../api/reservation');
 
 var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError'),
@@ -10,10 +13,12 @@ var InvalidRequestError = require(__dirname + '/../../errors/InvalidRequestError
     MaxReservationLengthError = require(__dirname + '/../../errors/MaxReservationLengthError'),
     UnauthorizedError = require(__dirname + '/../../errors/UnauthorizedError');
 
-// POST /api/reservation/create
+// ## Vytvoření
+// `POST /api/reservation/create`
 router.post('/create', function(req, res, next) {
     var configCustom = JSON.parse(GetFile('./config/app.json')).custom;
 
+    // Pokud rezervace pouze mobilního grilu a příslušenství, vrátit chybu `InvalidRequestError`.
     if (req.body['accessories[]'] && req.body.onlyMobileGrill) {
         res.send(new InvalidRequestError('Cannot add accessories when booking standalone mobile grill!'));
     }
@@ -37,14 +42,19 @@ router.post('/create', function(req, res, next) {
     dateStartMs = dateStart.getTime();
     dateEndMs = dateEnd.getTime();
 
+    // Pokud datum začátku rezervace přesahuje datum po který lze provést rezervaci dopředu
+    // a zároveň rezervaci neprovádí admin, vrátit chybu `MaxReservationUpfrontError`.
     if (dateStart > dateUpfront && !req.user.isAdmin) {
         res.send(new MaxReservationUpfrontError());
     }
 
+    // Pokud délka rezervace přesahuje maximální délku rezervace a rezervaci neprovádí admin,
+    // vrátit chybu `MaxReservationLengthError`.
     if (dateEndMs - dateStartMs > configCustom.MAX_RESERVATION_LENGTH * MS_PER_DAY && !req.user.isAdmin) {
         res.send(new MaxReservationLengthError());
     }
 
+    // Nastavení pro dotaz na počet předrezervací na daný termín.
     var options = {
         where: {
             state: 'draft',
@@ -67,11 +77,15 @@ router.post('/create', function(req, res, next) {
         }
     };
 
+    // Dotaz na počet předrezervací na daný termín.
     Reservation.count(options).then(function(countReservations) {
+        // Pokud počet předrezrvací je větší nebo roven maximu a rezervaci neprovádí admin,
+        // vrátit chybu `MaxReservationsError`.
         if (countReservations >= configCustom.MAX_PRERESERVATIONS_DAY && !req.user.isAdmin) {
             throw new MaxReservationsError();
         }
 
+        // Úprava nastavení pro dotaz na počet předrezervací a potvrzených rezrvací uživatele.
         delete options.where.$and;
         delete options.where.state;
         options.where.from = { gte: today };
@@ -81,7 +95,9 @@ router.post('/create', function(req, res, next) {
         ];
         options.where.userId = req.user.id;
 
+        // Dotaz na počet předrezdrvací a počet potvrzených rezervací uživatele.
         return Reservation.count(options).then(function(countUserReservations) {
+            // Pokud je větší jak maximum a nejedná se o admina, vrátit chybu `MaxReservationsError`.
             if (countUserReservations >= configCustom.MAX_RESERVATIONS_USER && !req.user.isAdmin) {
                 throw new MaxReservationsError(true);
             }
@@ -110,6 +126,7 @@ router.post('/create', function(req, res, next) {
                 }
             }
 
+            // Vytvoření rezervace v databázi.
             return Reservation.create(req, data, accessories).then(function(result) {
                 res.json(result);
             });
@@ -131,7 +148,8 @@ router.post('/create', function(req, res, next) {
     });
 });
 
-// GET /api/reservation
+// ## Získání všech rezervací
+// `GET /api/reservation`
 router.get('/', function(req, res, next) {
     var options = {
             where: {}
@@ -139,9 +157,11 @@ router.get('/', function(req, res, next) {
         startInterval,
         endInterval;
 
+    // Nastavení intervalu, ve kterém chceme získat všechny rezervace.
     startInterval = req.query.from ? new Date(decodeURIComponent(req.query.from)) : new Date();
     endInterval = req.query.to ? new Date(decodeURIComponent(req.query.to)) : new Date();
 
+    // Pokud byl zadán špatný formát data, vrátit chybu `InvalidRequestError`.
     if (startInterval.toString() === 'Invalid Date' || endInterval.toString() === 'Invalid Date') {
         res.send(new InvalidRequestError('Invalid date format!'));
     }
@@ -181,7 +201,8 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// GET /api/reservation/:id
+// ## Získání konkrétní rezervace
+// `GET /api/reservation/:id`
 router.get('/:id', function(req, res, next) {
     var id = req.params.id;
     Reservation.getById(id).then(function(reservation) {
@@ -206,7 +227,8 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
-// PUT /api/reservation/:id/cancel
+// ## Zrušení rezervace
+// `PUT /api/reservation/:id/cancel`
 router.put('/:id/cancel', function(req, res, next) {
     var id = req.params.id,
         data = {
@@ -215,6 +237,7 @@ router.put('/:id/cancel', function(req, res, next) {
         };
 
     Reservation.getById(id).then(function(reservation) {
+
         if (reservation.userId !== req.user.id) {
             throw new UnauthorizedError();
         }
@@ -239,4 +262,5 @@ router.put('/:id/cancel', function(req, res, next) {
     });
 });
 
+// ## Exportování routeru
 module.exports = router;
